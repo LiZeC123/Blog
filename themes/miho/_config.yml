@@ -114,7 +114,7 @@ youyan_id: false
 # disqus
 #disqus: lizec
 disqus: false
-
+gitment: false
 
 # Analytics | 分析
 # 站长分析，输入站点id
