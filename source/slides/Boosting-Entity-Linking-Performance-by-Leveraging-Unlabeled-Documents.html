@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <title>Boosting-Entity-Linking-Performance-by-Leveraging-Unlabeled-Documents</title>
+    <link rel="shortcut icon" href="./favicon.ico"/>
+    <link rel="stylesheet" href="./dist/reveal.css" />
+    <link rel="stylesheet" href="./dist/theme/solarized.css" id="theme" />
+    <link rel="stylesheet" href="./css/highlight/zenburn.css" />
+
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides"><section  data-markdown><script type="text/template">
+
+### Boosting Entity Linking Performance by Leveraging Unlabeled Documents
+
+- Author: Phong Le and Ivan Titov
+- Source: Association of Computational Linguistics
+- Year  : 2019
+</script></section><section ><section data-markdown><script type="text/template">
+### 1. Research Overview
+
+
+<aside class="notes"><ul>
+<li>为什么要做这个研究(理论走向和目前的缺陷)</li>
+<li>说明论文的主要假设, 主要公式, 主要应用方式</li>
+</ul>
+</aside></script></section><section data-markdown><script type="text/template">
+### 1.1 Research Background
+
+- Modern entity linking systems rely on large collections of documents specifically annotated for the task
+- Such human-annotated resources are scarce and expensive to create
+
+
+
+<aside class="notes"><p>human-annotated resources are available mostly for English</p>
+</aside></script></section></section><section ><section data-markdown><script type="text/template">
+### 2 Disambiguation Model
+
+<aside class="notes"><p>怎么做这个研究(方法, 尤其是不同的地方)</p>
+<ul>
+<li>这篇论文主要创意是什么</li>
+<li>这些创意在应用上有什么好处</li>
+<li>这些创意和应用上的好处是那些条件下才成立的</li>
+</ul>
+</aside></script></section><section data-markdown><script type="text/template">
+### 2.1 Setting
+
+- We assume that for each mention \\( m_i \\), we are provided with a set of candidates \\(E_i^+\\)
+- We assume that for each mention \\( m_i \\), we are given a set of wrong entities \\(E_i^-\\)
+</script></section><section data-markdown><script type="text/template">
+### Example
+
+![image](images/entity-linking-3.jpg)
+
+<aside class="notes"><p>通过例子解释基础概念</p>
+</aside></script></section><section data-markdown><script type="text/template">### 2.2 Scoring Function
+
+$$s(e_i|D)=\phi(e_i|D) + \sum_{i \neq j} \max_{e_j \in E_j^+} \varphi (e_i,e_j|D)$$
+
+- the first term scores how well an entity fits the context, the second one judges coherence with the ‘most compatible’ candidate for each mention in the document
+- This scoring strategy has been shown effective in the supervised setting by Globerson et al. (2016).
+</script></section><section data-markdown><script type="text/template">
+### 2.2 Scoring Function
+
+$$s(e_i|D)=\phi(e_i|c_i,m_i) + \sum_{i \neq j} \alpha_{ij} \max_{e_j \in E_j^+} \varphi (e_i,e_j|D)$$
+
+- we use \\(m_i\\) to denote an entity mention, \\(c_i\\) is its context (a text window)
+- \\(\varphi (e_i,e_j|D)\\) is a pair-wise compatibility score 
+- \\(\alpha_{ij}\\) are attention weights, measuring relevance of an entity at position j to predicting entity \\(e_i\\)
+
+<aside class="notes"><p>基本上就是一点小小的改进, 结构和以前的方法没有太大的区别</p>
+</aside></script></section><section data-markdown><script type="text/template">
+### 2.2 Final Scoring Function
+
+- Ganea and Hofmann additionally exploited a simple extra feature \\(p_{wiki}(e_i|m_i)\\)
+- the normalized frequency of mention \\(m_i\\) being used as an anchor text for entity \\(e_i\\) in Wikipedia articles
+- We combine this score \\(p_{wiki}(e_i|m_i)\\) with the model score \\( s(e_i|D) \\) using a one-layer neural network to yield\\( \hat{s}(e_i|D) \\)
+
+<aside class="notes"><ul>
+<li>The anchor text, link label or link text is the visible, clickable text in an HTML hyperlink. (即超链接的文字部分)</li>
+<li>这个p_{wiki}是一个重点, 后面还会提到</li>
+</ul>
+</aside></script></section><section data-markdown><script type="text/template">
+### 2.3 Objective Function
+
+$$J(\Theta) = \sum_D \sum_{m_i} \left\[ \delta + \max_{e_i^- \in E_i^-} \hat{s}(e_i^-|D) - \max_{e_i^+ \in E_i^+} \hat{s}(e_i^+|D) \right\]_+$$
+
+- \\(\Theta\\) is the set of model parameters, \\(\delta\\) is a margin (hyperparameter), \\(\[x\]_+ = max(0,x)\\)
+- we train the model to score at least one candidate in \\(E^+_i\\) higher than any negative example from \\(E^-_i\\)
+
+<aside class="notes"><p>基于正负样本间隔的目标函数也是常见的一种目标函数</p>
+</aside></script></section></section><section ><section data-markdown><script type="text/template">
+### 3. Producing Weak Supervision 
+</script></section><section data-markdown><script type="text/template">
+- We start with a set of candidates for a mention m containing all entities refereed to with anchor text m in Wikipedia
+- The first step is the preprocessing technique of Ganea and Hofmann (2017). 
+- The second step, we use Wikipedia to create a link graph
+
+</script></section><section data-markdown><script type="text/template">
+### 3.1 Initial filtering 
+
+$$q_{wiki}(e|m,c) \propto \exp\{ x_e^T \sum_{w \in (m,c)} x_w\}$$
+
+- Ganea use this model measuring similarity in the embedding space between an entity and words within the mention span m and a window c around it 
+- \\( x_e\\) and \\( x_w\\) are external embeddings for entity e and word w
+</script></section><section data-markdown><script type="text/template">
+### 3.1 Initial filtering 
+
+$$q_{wiki}(e|m,c) \propto \exp\{ x_e^T \sum_{w \in (m,c)} x_w\}$$
+
+- The word and entity embeddings are not fine-tuned, so the model does not have any free parameters
+- Extract \\(N_p = 4\\) top candidates according to \\(p_{wiki}\\) and \\(N_q = 3\\) top candidates according to \\(q_{wiki}\\) to get the candidate list.
+
+
+<aside class="notes"><ul>
+<li>On the development set, this step yields recall of 97.2%. </li>
+<li>使用的是外部的词嵌入, 所以所有的变量都实际上是确定值</li>
+<li>因此整个计算过程也是唯一确定的, 不需要任何的训练</li>
+<li>这部分是介绍Ganea and Hofmann和预处理方法, 原文没有详细介绍, 这里也不细说</li>
+</ul>
+</aside></script></section><section data-markdown><script type="text/template">
+### 3.2 Link Graph
+
+- We construct an undirected graph from Wikipedia
+- vertices of this graph are Wikipedia entities.
+</script></section><section data-markdown><script type="text/template">
+- We link vertex \\(e_u\\) with vertex \\(e_v\\) if there is a document \\(D_{wiki}\\) in Wikipedia such that either 
+- \\(D_{wiki}\\) is a Wikipedia article describing \\(e_u\\), and \\(e_v\\) appears in it, or
+- \\(D_{wiki}\\) contains \\(e_u\\) , \\(e_v\\) and there are less than \\(l\\) entities between them. 
+
+<aside class="notes"><p>一篇文章介绍e_u, 则里面所有的实体都连接, 或者两个词共同出现且间隔小于L</p>
+</aside></script></section><section data-markdown><script type="text/template">
+![image](images/entity-linking-2.jpg)
+
+<aside class="notes"><p>这是介绍Brexit的文章, 所以Brexit与所有的词连接, 这些词之间, 距离短的</p>
+</aside></script></section><section data-markdown><script type="text/template">
+### 3.3 Model and Inference
+
+- First, we produce at most \\(N_q + N_p\\) candidates for each mention in a document D as described above
+- Then we define a probabilistic model over entities in D:
+$$r_{wiki}(e_1, \cdots, e_n) \propto \exp \sum_{j \neq j} \varphi_{wiki}(e_i,e_j)$$
+- \\(\varphi_{wiki}(e_i,e_j) = 0\\) if \\(e_i\\) is linked with \\(e_j\\) in the graph, \\(-\Delta\\) otherwise (\\(\Delta \in R^+\\))
+</script></section><section data-markdown><script type="text/template">
+### 3.3 Model and Inference
+
+- We use max-product version of LBP to produce approximate marginals:
+
+$$r_{wiki}(e_1|D) \approx \max_{e_1,\cdots,e_{i-1}, \\\\ e_{i+1},\cdots,e_n} r_{wiki}(e_1, \cdots, e_n)$$
+
+- We can reduce \\(N_p + N_q = 7\\) candidates down to \\(N_w = 2\\) and still maintain recall of 93.9%.
+- The remaining \\(N_p + N_q -N _w\\) entities are kept as ‘negative-examples’ \\(E_i^-\\) for training the disambiguation model
+
+<aside class="notes"><ul>
+<li>The general idea behined Loopy Belief Propagation (LBP) is to run Belief Propagation on a graph containing loops, despite the fact that the presence of loops does not guarantee convergence</li>
+</ul>
+</aside></script></section></section><section ><section data-markdown><script type="text/template">
+### 4. Conclusions
+
+</script></section><section data-markdown><script type="text/template">
+1. The model was trained on unlabeled documents which were automatically annotated using Wikipedia.
+2. The model rivals fully-supervised models trained on data specifically annotated for the entity-linking problem.
+3. Maybe human-annotated data is not beneficial for entity linking, given that we have Wikipedia and web links
+</script></section></section><section ><section data-markdown><script type="text/template">
+### 5. Future Work
+</script></section><section data-markdown><script type="text/template">
+- combine human-annotated data with naturally occurring one
+- to see if mistakes made by fully-supervised systems differ from the ones made by this system and other Wikipedia-based linkers. 
+</script></section></section><section  data-markdown><script type="text/template">
+### 6. Reading Suggestions
+
+
+<aside class="notes"><ul>
+<li>建议学长学弟什么时候参考这篇论文的那些部分</li>
+<li>以及自我感受</li>
+</ul>
+</aside></script></section></div>
+    </div>
+
+    <script src="./dist/reveal.js"></script>
+
+    <script src="./plugin/markdown/markdown.js"></script>
+    <script src="./plugin/highlight/highlight.js"></script>
+    <script src="./plugin/zoom/zoom.js"></script>
+    <script src="./plugin/notes/notes.js"></script>
+    <script src="./plugin/math/math.js"></script>
+    <script>
+      function extend() {
+        var target = {};
+        for (var i = 0; i < arguments.length; i++) {
+          var source = arguments[i];
+          for (var key in source) {
+            if (source.hasOwnProperty(key)) {
+              target[key] = source[key];
+            }
+          }
+        }
+        return target;
+      }
+
+      // default options to init reveal.js
+      var defaultOptions = {
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        transition: 'default', // none/fade/slide/convex/concave/zoom
+        plugins: [
+          RevealMarkdown,
+          RevealHighlight,
+          RevealZoom,
+          RevealNotes,
+          RevealMath
+        ]
+      };
+
+      // options from URL query string
+      var queryOptions = Reveal().getQueryHash() || {};
+
+      var options = extend(defaultOptions, {"transition":"fade"}, queryOptions);
+    </script>
+
+
+    <script>
+      Reveal.initialize(options);
+    </script>
+  </body>
+</html>

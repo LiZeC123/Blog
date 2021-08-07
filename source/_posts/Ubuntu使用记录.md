@@ -1,0 +1,273 @@
+---
+title: Ubuntu使用记录
+date: 2017-08-10 21:36:11
+tags:
+	- Ubuntu
+	- 数据库
+cover_picture:  images/ubuntu.jpg
+---
+
+## 内容概述
+本文包含我在日常使用Ubuntu系统中遇到的一些问题的记录, 没有什么特定的顺序和联系, 不定期更新
+
+
+Ubuntu下如何挂载U盘
+-------------------------
+1. 使用  `sudo fdisk -l` 命令查看U盘的位置
+``` 
+# 结果可能包含如下字段
+$ sudo fdisk -l
+Disk /dev/sda: 16.1 GB, 16106127360 bytes
+2 heads, 63 sectors/track, 249660 cylinders, total 31457280 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x003996fb
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sda1   *          64    31457279    15728608    c  W95 FAT32 (LBA)
+
+# 看到U盘的位置是/dev/sda1是一个FAT32格式
+```
+2. 挂载U盘到指定节点 
+```
+# 挂载FAT32格式的U盘
+$ sudo mount  -t vfat /dev/sda1 /media/u 
+# 挂载NTFS格式的U盘 
+$ sudo mount -t ntfs-3g /dev/sda1 /media/u 
+# 其中/media/u 为你要挂载到的节点, 这个可以随便指定, 但是这个目录一定要存在
+```
+3. 卸载u盘 
+```
+# 卸载之前挂载的U盘
+$ sudo umount /media/u
+```
+
+
+ubuntu开机自动挂载新硬盘
+---------------------------
+
+**操作需要Root权限**
+
+1. 查看分区的UUID
+
+```
+sudo blkid
+```
+
+2. 配置开机加载
+
+打开`/etc/fstab`, 按照如下格式写入配置
+
+
+```
+UUID=66E85884E8585501   /home/deepin/WinHome/C ntfs defaults 0 1
+UUID=58682F90682F6BC6   /home/deepin/WinHome/D ntfs defaults 0 1
+UUID=FA1CAC411CABF733   /home/deepin/WinHome/E ntfs defaults 0 1
+UUID=0472ECE072ECD806   /home/deepin/WinHome/F ntfs defaults 0 1
+```
+
+以上配置前三项分别是`分区ID`, `挂载点`, `分区格式`. 其余的配置可以使用默认值.
+
+3. 验证配置
+
+执行以下指令检查配置是否正确, 不正确的配置可能导致无法正常启动
+
+```
+sudo mount -a
+```
+
+确认无误后重启系统即可使配置生效
+
+- [ubuntu开机自动挂载新硬盘](https://blog.csdn.net/iAm333/article/details/17224115)
+
+
+清理软件安装缓存
+-------------------------
+
+
+使用apt安装软件后, 相应的安装包会缓存在`/var/cache/apt/archives/`, 可以使用以下的指令查看这部分缓存占用的空间.
+
+```
+sudo du -sh /var/cache/apt/archives/
+```
+
+如果已经占用较大的空间, 可以使用以下指令自动清理缓存:
+
+```
+sudo apt clean
+```
+
+
+扩展可用空间
+-------------------------
+```
+$ sudo fs_resize
+WARNING: Do you want to resize "/dev/mmcblk0p2" (y/N)?  y
+```
+
+查看文件夹空间占用情况
+-------------------------
+
+直接使用以下指令查看文件夹内空间占用情况的概述
+
+```
+du -ah --max-depth=1
+```
+
+查看当前目录总共占的容量, 而不单独列出各子项占用的容量 
+
+```
+du -sh 
+```
+
+查看当前目录下一级子文件和子目录占用的磁盘容量
+
+```
+du -lh --max-depth=1
+```
+
+
+开机执行程序
+-------------------------
+- 找到 `/etc/re.local`
+- 在此文件中写入需要的命令
+
+**注意**: 在18.04中,可以在Tweak中直接设置开启启动程序
+
+
+
+双系统设置默认启动项
+-------------------------
+1. 打开相关的配置文件
+```
+$ sudo gedit /etc/default/grub
+```
+
+2. 修改相关选项
+```
+# 节选其中的一段内容如下所示
+GRUB_DEFAULT=0     # 此项表示默认选择项位置, 从0开始计数
+#GRUB_HIDDEN_TIMEOUT=0
+GRUB_HIDDEN_TIMEOUT_QUIET=true
+GRUB_TIMEOUT=2     # 此项表示默认选择时间, 单位为秒
+GRUB_DISTRIBUTOR=`lsb_release -i -s 2> /dev/null || echo Debian`
+GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"
+GRUB_CMDLINE_LINUX=""
+```
+
+3. 更新
+只有更新上述设置以后, 相关的修改才会生效
+```
+$ sudo update-grub
+```
+
+
+添加搜索路径
+-------------------------
+通常系统会在用户的home目录下添加一个搜索路径, 以便于用户可以调用自己编写的程序, 如果没有, 可以按照如下方式添加
+1. 修改`.bashrc`
+	- 此文件位于用户的home目录下, 可以使用顺手的编辑器打开
+
+2. 添加指令
+	- 例如将home目录下的bin目录添加到搜索路径中, 则添加如下语句
+```
+export PATH=~/bin:"$PATH"
+```
+
+3. 重启终端使配置生效
+
+
+编译线程有关程序
+-------------------------
+如果用到来pthread.h中的函数,在使用gcc编译的时候,需要加上-pthread 
+
+
+MySQL中文乱码
+-------------------------
+
+注意到在Ubuntu上的MySQL并非默认使用UTF8编码, 因此需要手动将默认编码修改为UTF8, 过程如下
+
+修改/etc/mysql/my.cnf, 添加如下的内容：
+
+```
+[client]
+default-character-set=utf8
+[mysqld]
+character-set-server=utf8
+```
+
+然后重启数据库. 
+
+**注意**： 以前添加的表还是会乱码, 因此需要重新创建有关的表
+
+
+
+查看已安装软件位置
+-------------------------
+
+``` 
+dpkg -L <软件名>
+```
+
+创建桌面快捷方式
+-------------------
+
+使用文件编辑器在桌面创建一个以`.desktop`结尾的文件. 然后依据需要设置一下的内容
+
+``` shell
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0                                     #version of an app.
+Name[en_US]=yEd                                 #name of an app.
+GenericName=GUI Port Scanner                    #longer name of an app.
+Exec=java -jar /opt/yed-3.11.1/yed.jar          #command used to launch an app.
+Terminal=false                                  #whether an app requires to be run in a terminal
+Icon[en_US]=/opt/yed-3.11.1/icons/yicon32.png   #location of icon file.
+Type=Application                                #type
+Categories=Application;Network;Security;        #categories in which this app should be listed.
+Comment[en_US]=yEd Graph Editor                 #comment which appears as a tooltip.
+```
+
+- [如何在Linux的桌面上创建快捷方式或启动器](https://linux.cn/article-2289-1.html)
+
+
+
+
+
+Linux系统目录结构
+--------------
+- [Linux各目录及每个目录的详细介绍](https://www.cnblogs.com/duanji/p/yueding2.html)
+- [Linux 系统的/usr目录](https://www.cnblogs.com/ftl1012/p/9278578.html)
+
+
+Ubuntu管理多版本Java
+-----------------------
+
+Ubuntu可以直接使用apt安装多个版本的Java, 多个版本的Java并不会直接产生冲突. 
+
+使用如下的指令, 可以切换`java`指令的版本
+``` bash
+sudo update-alternatives --config java
+```
+
+输入上述指令后, 会显示类似如下的内容
+
+```
+There are 3 choices for the alternative java (providing /usr/bin/java).
+
+  Selection    Path                                            Priority   Status
+------------------------------------------------------------
+* 0            /usr/lib/jvm/java-11-openjdk-amd64/bin/java      1101      auto mode
+  1            /usr/lib/jvm/java-11-openjdk-amd64/bin/java      1101      manual mode
+  2            /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java   1081      manual mode
+  3            /usr/lib/jvm/java-8-oracle/jre/bin/java          1081      manual mode
+```
+
+输入相应的编号就可以切换java的默认版本. 同理还可以切换`javac`, `javadoc`等命令的版本.
+
+
+Zsh与oh-my-zsh
+------------------
+- [Ubuntu 16.04下安装zsh和oh-my-zsh](https://www.cnblogs.com/EasonJim/p/7863099.html)
+

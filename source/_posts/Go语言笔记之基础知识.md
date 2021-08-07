@@ -1,0 +1,520 @@
+---
+title: Go语言笔记之基础知识
+date: 2021-07-01 20:06:01
+categories: Go语言笔记
+tags: 
+    - Go
+cover_picture: images/go.png
+---
+<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default"></script> -->
+
+
+Go基础配置
+---------------
+
+Go语言的下载和安装过程比较简单, 不需要进行特殊处理. 在Go安装完毕后, 需要注意两个特殊的环境变量`GOROOT`和`GOPATH`. 其中`GOROOT`表示Go语言安装的位置, 安装后自动设置不需要管. `GOPATH`表示项目的位置, 一般位于用户目录下的`go`目录, 例如在我的电脑上就是`C:\Users\lizec\go`
+
+因为`GOPATH`指定了项目的存放位置, 所以一般情况下就不要在其他地方放置源代码, 否则虽然Go也能编译项目, 但其他工具不一定完全支持. `GOPATH`下一般具有如下的目录结构
+
+```
+- bin
+    - gocode.exe
+    - godef.exe
+    - ...
+- pkg
+    - mod
+    - sumdb
+- src
+    - example.com
+        - gohttp
+        - hello
+    - github.com
+        - cmp
+```
+
+其中`bin`目录存放编译好的可执行文件, `pkg`目录存放相关的包, `src`目录存放源代码. 由于Go项目的名称需要表示如何下载这个项目, 所以源码的文件夹一般以发布代码的平台开头, 例如在Github上发布代码, 则以`github.com`开头.
+
+
+Go项目开发流程
+---------------
+
+### 初始化项目
+
+需要初始化一个Go项目时, 首先创建保存项目的文件夹, 然后执行
+
+```
+go mod init example.com/hello
+```
+
+Go语言中以模块作为基本单位, 所以创建一个项目就是创建一个模块. 最后的`example.com/hello`是模块的名称. 执行完此命令以后, Go会在当前目录下创建`go.mod`文件, 其中存储了此模块的基本信息, 例如模块的名称, 使用的Go语言版本, 依赖的模块等. 
+
+> 如果在src目录初始化, 那么也可以不指定模块名称, Go可以自动根据路径产生模块名称
+
+
+### 引入第三方模块
+
+需要使用第三方模块时, 可以使用[https://pkg.go.dev/](https://pkg.go.dev/)网站查询需要的模块.  进入相应模块的详细页面中可以看到模块的主要功能, API文档等信息. 找到需要的模块后, 使用get指令获取这一模块, 例如
+
+```
+go get rsc.io/quote
+```
+
+以上指令会更新当前模块的`go.mod`文件, 并下载对应的依赖, 之后在代码中可以通过import的方式引入模块, 例如
+
+```go
+package main
+
+import "fmt"
+import "rsc.io/quote"
+
+
+func main() {
+    fmt.Println(quote.Go())
+}
+```
+
+> 可以使用`go mod tidy`使编译器检查依赖变化, 添加新的依赖, 删除未使用的依赖
+
+### 添加测试
+
+在当前模块下创建以`_test.go`结尾的文件来表面一个文件是测试文件. 在测试文件中可以进行任意形式的测试, 例如
+
+```go
+import (
+    "testing"
+    "regexp"
+)
+
+// TestHelloName calls greetings.Hello with a name, checking
+// for a valid return value.
+func TestHelloName(t *testing.T) {
+    name := "Gladys"
+    want := regexp.MustCompile(`\b`+name+`\b`)
+    msg, err := Hello("Gladys")
+    if !want.MatchString(msg) || err != nil {
+        t.Fatalf(`Hello("Gladys") = %q, %v, want match for %#q, nil`, msg, err, want)
+    }
+}
+
+// TestHelloEmpty calls greetings.Hello with an empty string,
+// checking for an error.
+func TestHelloEmpty(t *testing.T) {
+    msg, err := Hello("")
+    if msg != "" || err == nil {
+        t.Fatalf(`Hello("") = %q, %v, want "", error`, msg, err)
+    }
+}
+```
+
+最后使用
+
+```
+go test -v
+```
+
+运行测试并查看测试结果
+
+
+
+### 编译应用程序
+
+每个应用程序需要包含一个main包并包含一个位于此包下的main函数.  然后使用
+
+```
+go build
+```
+
+编译应用程序并生成可执行文件.  如果进一步执行
+
+```
+go install
+```
+
+还可以将此可执行文件复制到指定的目录之中. 
+
+### 发布模块
+
+模块在发布以后才能够被其他模块引用. 因为模块的名称会作为获得模块的依据, 因此在创建模块的时候就需要设置一个合适的模块名称. 例如创建模块时打算在GitHub上进行发布, 那么可以在GitHub上创建一个仓库, 然后以仓库的URL路径作为名称（例如`github.com/LiZeC123/go-test`）
+
+此后在开发代码的过程中, 对GitHub上的代码标记适当的版本tag就完成来模块的发布. 
+
+----------
+
+对于自己使用的模块, 如果不想走发布流程, 也可以通过编辑`go.mod`文件来修改Go语言查找模块的方式, 从而即使不发布模块也能够被其他模块引用. 指令为
+
+```
+go mod edit -replace=example.com/greetings=../greetings
+```
+
+这条指令的含义非常简单, 即如果需要查找`example.com/greetings`模块, 就访问`../greetings`路径.  执行上面的指令后, 会在`go.mod`文件中加入如下的一行内容
+
+```
+replace example.com/greetings => ../greetings
+```
+
+
+错误处理
+----------
+
+错误处理分为两个部分, 即如何抛出错误和如何处理错误.  因为Go语言的函数支持返回多个值, 因此如果一个函数需要抛出错误, 一般具有如下的格式
+
+```go
+// 导入errors模块
+import (
+    "errors"
+    "fmt"
+)
+
+
+// 返回值包含正常的输出和错误信息
+func Hello(name string) (string, error) {
+
+    if name == "" {
+        // 如果出现错误, 返回错误信息
+        return "", errors.New("Empty Name")
+    }
+
+    message := fmt.Sprintf("Hi, %v. Welcome!", name)
+
+    // 如果没有错误, 错误信息位置返回nil
+    return message, nil
+}
+```
+
+
+当调用这种函数时, 一般具有如下的格式
+
+```go
+func main() {
+    // 调用时接受返回值和错误信息
+    message, err := greating.Hello("")
+    // 检查是否有错误
+    if err != nil {
+        // 有错误执行错误分支
+        log.Fatal(err)
+    }
+    // 没有错误执行正常分支
+    fmt.Println(message)
+}
+```
+
+> 以上为Go语言中标准的错误抛出和处理方案
+
+
+使用模块
+----------
+
+Go程序的基本单位是模块, 一个Go应用程序对应一个模块, 一个Go的库也对应一个模块. 模块的名称与项目顶层文件夹的名称不必保持相同, 而且为了方便Go的工具获取模块, 模块名称一般也指定来如何获得这个模块, 例如如果需要模块`golang.org/x/tools`表明Go的工具可以直接访问`https://golang.org/x/tools`来获取这一模块. 
+
+Go语言中一个模块由一系列的包组成. 一个包由一组位于同一目录下的若干源文件组成. Go的包名称不必和目录名称一致, 但同一目录下只能有一个包名. 例如在`ROOT/hello`目录下的文件包名可以是`hello`也可以是`abc`或者任何其他的名称, 但位于该目录下的文件必须具有同样的包名称. 
+
+> 为了减少导入时的问题, 一般还是会保持包名与路径名称一致
+
+同一个包内的一个文件中的函数变量等各种元素对包内的其他文件都是可见的. 
+
+> 根据规则, 首字母大写的函数和变量才可以被导出, 从而被其他包访问
+
+
+
+语法结构
+------------
+
+### 控制流
+
+Go的if结构与C语言类似, 但是不需要圆括号且始终需要大括号, 例如
+
+```go
+if x < 0 {
+    return sqrt(-x) + "i"
+}
+```
+
+可以在if的条件前加入一个语句, 这个语句在执行后再进行if条件判断, 例如
+
+```go
+if v := math.Pow(x, n); v < lim {
+    return v
+}
+```
+
+
+Go语言只有一种循环语句, 即for循环. 通过设置不同的条件来实现不同的循环语句, 例如
+
+```go
+func main() {
+    sum := 0
+    for i := 0; i < 10; i++ {
+        sum += i
+    }
+    fmt.Println(sum)
+}
+
+func main() {
+    sum := 1
+    for sum < 1000 {
+        sum += sum
+    }
+    fmt.Println(sum)
+}
+```
+
+### defer
+
+被defer修饰的语句会在当前模块的其他语句执行结束后执行. 如果是函数调用, 那么函数的参数会立即计算, 但函数调用会延后执行. 
+
+```go
+func main() {
+    defer fmt.Println("world")
+
+    fmt.Println("hello")
+}
+```
+
+> 对于需要关闭的资源, 在开启后紧跟一个defer引导的关闭语句就可以确保不会忘记关闭资源
+
+
+### 结构体
+
+```go
+type Vertex struct {
+    X int
+    Y int
+}
+
+func main() {
+    fmt.Println(Vertex{1, 2})
+    v.X = 4
+    // 指针操作与C类似, 但不需要 ->
+    p := &v
+    p.X = 1e9
+}
+```
+
+### 数组
+
+```go
+func main() {
+    var a [2]string
+    a[0] = "Hello"
+    a[1] = "World"
+    fmt.Println(a[0], a[1])
+    fmt.Println(a)
+
+    primes := [6]int{2, 3, 5, 7, 11, 13}
+    fmt.Println(primes)
+}
+```
+
+### 切片
+
+```go
+func main() {
+    primes := [6]int{2, 3, 5, 7, 11, 13}
+
+    var s []int = primes[1:4]
+    fmt.Println(s)
+}
+```
+
+
+类
+-------------
+
+Go语言中并没有类, 但可以把方法绑定到一个类型上. 例如
+
+```go
+type Vertex struct {
+    X, Y float64
+}
+
+func (v Vertex) Abs() float64 {
+    return math.Sqrt(v.X*v.X + v.Y*v.Y)
+}
+
+func main() {
+    v := Vertex{3, 4}
+    fmt.Println(v.Abs())
+}
+```
+
+其实这一操作有点类似与lambda表达式的变量捕获.  当Vertex直接以变量的形式声明时, 采取复制的方式传递值, 因此方法内部不能对变量进行修改(准确来说, 修改是无效的). 如果希望方法能够修改变量, 则需要声明为指针, 例如
+
+```go
+func (v *Vertex) Scale(f float64) {
+    v.X = v.X * f
+    v.Y = v.Y * f
+}
+```
+
+
+------------------------------------------------------------------------------
+
+除了绑定在一个自定义的类似上, 也可以绑定到已有的类型上, 例如
+
+```go
+type MyFloat float64
+
+func (f MyFloat) Abs() float64 {
+    if f < 0 {
+        return float64(-f)
+    }
+    return float64(f)
+}
+
+func main() {
+    f := MyFloat(-math.Sqrt2)
+    fmt.Println(f.Abs())
+}
+```
+
+> 方法只能绑定在同一个包中的类型上
+
+
+
+接口
+-------
+
+与其他语言中的概念一致, 接口是一组方法签名的集合.  例如
+
+```go
+type Abser interface {
+    Abs() float64
+}
+```
+
+可以将实现了接口中方法的变量赋值给接口, 例如
+
+```go
+
+func main() {
+    var a Abser
+    f := MyFloat(-math.Sqrt2)
+    v := Vertex{3, 4}
+
+    a = f  // a MyFloat implements Abser
+    a = &v // a *Vertex implements Abser
+
+    fmt.Println(a.Abs())
+}
+```
+
+> **注意：**在对**接口**赋值时, 绑定在Vertex上的方法和绑定在*Vertex上的方法是不通用的. 
+
+基于上面的赋值操作, 我们可以注意到对于接口的实现是没有显式的声明的.  这有点类似Python的鸭子类型, 只要实现了对应的方法就可以视为对应的接口. 
+
+
+### 接口类型转换
+
+可以使用如下的语法得到接口下对应的具体实现
+
+```go
+func main() {
+    var i interface{} = "hello"
+
+    s := i.(string)
+    fmt.Println(s)
+
+    s, ok := i.(string)
+    fmt.Println(s, ok)
+
+    f, ok := i.(float64)
+    fmt.Println(f, ok)
+
+    f = i.(float64) // panic
+    fmt.Println(f)
+}
+
+func do(i interface{}) {
+    switch v := i.(type) {
+    case int:
+        fmt.Printf("Twice %v is %v\n", v, v*2)
+    case string:
+        fmt.Printf("%q is %v bytes long\n", v, len(v))
+    default:
+        fmt.Printf("I don't know about type %T!\n", v)
+    }
+}
+```
+
+并发编程
+-------------
+
+### 协程
+
+协程是Go的运行时管理的一种轻量级的线程. 协程之间通过自己主动切换来实现调度. 使用go关键字即可使一个函数在协程上运行, 例如
+
+```go
+func say(s string) {
+    for i := 0; i < 5; i++ {
+        time.Sleep(100 * time.Millisecond)
+        fmt.Println(s)
+    }
+}
+
+func main() {
+    go say("world")
+    say("hello")
+}
+```
+
+
+### 通道
+
+```go
+func sum(s []int, c chan int) {
+    sum := 0
+    for _, v := range s {
+        sum += v
+    }
+    c <- sum // send sum to c
+}
+
+func main() {
+    s := []int{7, 2, 8, -9, 4, 0}
+
+    c := make(chan int)
+    go sum(s[:len(s)/2], c)
+    go sum(s[len(s)/2:], c)
+    x, y := <-c, <-c // receive from c
+
+    fmt.Println(x, y, x+y)
+}
+```
+
+> make创建通道时, 可以额外用一个参数指定通道缓冲区的大小, 此时只有缓冲区空或者满时才会阻塞
+
+
+> 可以调用close函数关闭通道, 但一般情况下不需要手动关闭
+
+### select
+
+select语句可以时协程在多个条件上等待, 直到其中一个条件能够执行时, 执行相应的语句.  如果同时有多个条件可以执行, 则Go随机选择一个条件分支执行. 
+
+
+```go
+func fibonacci(c, quit chan int) {
+    x, y := 0, 1
+    for {
+        select {
+        case c <- x:        // 等待c通道可以写入
+            x, y = y, x+y
+        case <-quit:        // 等待quit通道可以读取
+            fmt.Println("quit")
+            return
+        }
+    }
+}
+
+func main() {
+    c := make(chan int)
+    quit := make(chan int)
+    go func() {
+        for i := 0; i < 10; i++ {
+            fmt.Println(<-c)    // 循环读取c通道, 使得fibonacci函数能够持续计算
+        }
+        quit <- 0                // 向quit写入数据, 使得fibonacci函数中quit通道变为可读状态
+    }()
+    fibonacci(c, quit)
+}
+
+```

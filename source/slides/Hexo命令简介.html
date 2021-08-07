@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <title>Hexo命令简介</title>
+    <link rel="shortcut icon" href="./favicon.ico"/>
+    <link rel="stylesheet" href="./dist/reveal.css" />
+    <link rel="stylesheet" href="./dist/theme/solarized.css" id="theme" />
+    <link rel="stylesheet" href="./css/highlight/zenburn.css" />
+
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides"><section  data-markdown><script type="text/template">
+
+## Hexo命令简介
+</script></section><section  data-markdown><script type="text/template">
+## 基础流程
+
+过程        |    指令
+-----------|-----------------------
+创建新文章  | `hexo new filename`
+渲染        | `hexo g`
+本地测试    | `hexo s`
+部署        | `hexo d`
+
+</script></section><section ><section data-markdown><script type="text/template">
+## 草稿
+
+过程        |    指令
+-----------|-----------------------
+创建草稿    | `hexo new draft <filename>`
+发布        | `hexo publish <filename>`
+</script></section><section data-markdown><script type="text/template">
+## 草稿
+
+- 新创建的草稿位于`source/_draft`
+- 发布草稿时会修改文件属性
+</script></section></section><section  data-markdown><script type="text/template">
+## 注意事项
+
+1. 所有指令都应该在hexo文件夹下执行,否则无效
+2. 及时备份源文件, 远程仓库中仅包含渲染后的文件
+
+</script></section></div>
+    </div>
+
+    <script src="./dist/reveal.js"></script>
+
+    <script src="./plugin/markdown/markdown.js"></script>
+    <script src="./plugin/highlight/highlight.js"></script>
+    <script src="./plugin/zoom/zoom.js"></script>
+    <script src="./plugin/notes/notes.js"></script>
+    <script src="./plugin/math/math.js"></script>
+    <script>
+      function extend() {
+        var target = {};
+        for (var i = 0; i < arguments.length; i++) {
+          var source = arguments[i];
+          for (var key in source) {
+            if (source.hasOwnProperty(key)) {
+              target[key] = source[key];
+            }
+          }
+        }
+        return target;
+      }
+
+      // default options to init reveal.js
+      var defaultOptions = {
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        transition: 'default', // none/fade/slide/convex/concave/zoom
+        plugins: [
+          RevealMarkdown,
+          RevealHighlight,
+          RevealZoom,
+          RevealNotes,
+          RevealMath
+        ]
+      };
+
+      // options from URL query string
+      var queryOptions = Reveal().getQueryHash() || {};
+
+      var options = extend(defaultOptions, {"transition":"fade"}, queryOptions);
+    </script>
+
+
+    <script>
+      Reveal.initialize(options);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <title>重构代码</title>
+    <link rel="shortcut icon" href="./favicon.ico"/>
+    <link rel="stylesheet" href="./dist/reveal.css" />
+    <link rel="stylesheet" href="./dist/theme/solarized.css" id="theme" />
+    <link rel="stylesheet" href="./css/highlight/zenburn.css" />
+
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides"><section  data-markdown><script type="text/template">
+
+## 重构的基本要求
+
+保证系统的每个接口在改造前后是等价的
+</script></section><section ><section data-markdown><script type="text/template">
+## 测试的目标
+
+实现自动化测试, 从而保证重构后与原来的系统一致,
+</script></section><section data-markdown><script type="text/template">
+## 实际情况
+
+- 维护的项目根本不存在自动化测试
+- 在现实中, 往往需要先手动测试, 之后逐步引入自动测试
+</script></section></section><section  data-markdown><script type="text/template">
+## 大布局与小步快跑
+
+- 提前设计能够解决一部分问题
+- 很多问题在编写过程中才会发现
+- 保持小步的修改迭代, 每次只完成一个小任务
+</script></section><section  data-markdown><script type="text/template">
+## 重构的两个阶段
+
+1. 只重构不增加新功能
+2. 为系统添加新功能
+</script></section><section  data-markdown><script type="text/template">
+## 重构的层次
+
+1. 方法的重构
+2. 对象的重构
+3. 对象间的重构
+4. 继承体系之间的重构
+5. 组织数据的重构
+6. 体系架构的重构</script></section></div>
+    </div>
+
+    <script src="./dist/reveal.js"></script>
+
+    <script src="./plugin/markdown/markdown.js"></script>
+    <script src="./plugin/highlight/highlight.js"></script>
+    <script src="./plugin/zoom/zoom.js"></script>
+    <script src="./plugin/notes/notes.js"></script>
+    <script src="./plugin/math/math.js"></script>
+    <script>
+      function extend() {
+        var target = {};
+        for (var i = 0; i < arguments.length; i++) {
+          var source = arguments[i];
+          for (var key in source) {
+            if (source.hasOwnProperty(key)) {
+              target[key] = source[key];
+            }
+          }
+        }
+        return target;
+      }
+
+      // default options to init reveal.js
+      var defaultOptions = {
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        transition: 'default', // none/fade/slide/convex/concave/zoom
+        plugins: [
+          RevealMarkdown,
+          RevealHighlight,
+          RevealZoom,
+          RevealNotes,
+          RevealMath
+        ]
+      };
+
+      // options from URL query string
+      var queryOptions = Reveal().getQueryHash() || {};
+
+      var options = extend(defaultOptions, {"transition":"fade"}, queryOptions);
+    </script>
+
+
+    <script>
+      Reveal.initialize(options);
+    </script>
+  </body>
+</html>

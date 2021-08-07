@@ -1,0 +1,150 @@
+---
+title: RabbitMQ学习笔记
+date: 2019-08-29 17:52:14
+categories:
+tags:
+    - RabbitMQ
+    - Spring
+cover_picture: images/RabbitMQ.jpg
+---
+<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default"></script> -->
+
+
+
+
+RabbitMQ是一个消息队列, 消息队列总结起来有三个主要的功能, 分别是解耦合, 异步和削峰填谷. 使用消息队列后, 消息发送方和消息接收方都只面向消息队列编程, 而不必相互了解, 从而能够相互独立的修改. 消息队列能够使操作异步进行, 系统A在完成自己的相关工作后可以将消息放入队列, 让系统B进行后续的处理. 
+
+虽然消息队列有上述的好处, 但同时也导致系统的可用性降低, 现在既要保证执行业务的系统高可用, 还要保证消息队列本身高可用. 此外, 引入消息队列后, 也会同时导致系统复杂性增加, 现在还需要考虑系统之间的一致性问题, 消息的重复消费问题等等. 
+
+
+
+基本概念
+-----------
+
+名称        | 解释
+------------|-----------------------
+Broker      | 消息队列服务器
+Connection  | 应用程序与消息队列的连接
+Channel     | 在Connection上虚拟的连接
+Queue       | 收发消息的实体
+Exchange    | 转发消息的实体
+
+Connection代表一个真实的TCP连接, Channel代表构建在Connection上的虚拟的连接. 一个Connection上可以存在多个Channel连接. RabbitMQ的所有操作都在Channel级别, 而不直接涉及Connection. 如果只有一个线程,则可以使用一个Channel处理所有事情, 如果有多个线程, 最好是每个线程持有一个Channel. 多线程时,任意时刻只有一个线程的Channel发送的命令被执行.
+
+交换机定义了转发的规则, 例如是匹配还是直接转发, 是单播还是广播. 一个交换机可以绑定多个队列, 一个队列也可以绑定多个交换机.
+
+
+- [RabbitMQ基本概念和使用](https://www.cnblogs.com/starof/p/4173413.html)
+
+
+交换机规则
+-----------------
+
+RabbitMQ提供了几种交换机规则. 不同的交换机规则有不同的性能开销, 需要根据使用场景选择合适的规则.
+
+规则    | 转发方式  | 解释
+--------|-----------|------------------------------
+Direct  | 单播      | 只有Key完全匹配时才进行转发
+Topic   | 组播      | 将消息转发给匹配规则的队列
+Fanout  | 广播      | 将消息转发给所有注册在此交换机的队列
+
+- [RabbitMQ基本概念和使用](https://www.cnblogs.com/starof/p/4173413.html)
+
+
+
+
+确认机制
+---------
+
+### 发送方确认机制
+
+当发送方将消息发送给MQ后, 只要消息被投递到目标服务器或者被持久化到硬盘, 就会向发送方发送确认消息, 表示此消息已经收到, 且不会丢失. 确认机制是异步的（回调发送方定义的处理函数）, 在等待确认的时候发送方依然可以发送消息. 
+
+如果消息丢失, 消息队列也会发送相应的消息给发送方, 
+
+### 接收方确认机制
+
+接收方对于MQ发送给它每一条消息都需要确认以后, MQ才能将消息从队列中移除, 否则视为消息没有送达, MQ会尝试将消息派发给其他接收方或者进行重试. 
+
+
+消息幂等性
+---------
+
+由于网络原因和重试机制, 接收方有可能两次收到同样的消息.  接收方需要保证自身的幂等性, 即多次收到同样的消息不产生副作用.  实现幂等性的主流解决方法是记录使消息包含一个唯一ID, 在处理消息前比对ID是否处理过, 如果处理过则直接返回确认而不进行处理. 唯一ID可以存储在数据库中, 也可以存储在Redis中. 
+
+
+
+持久化
+---------
+
+RabbitMQ通过将消息写入到硬盘实现持久化. 但写入硬盘的速度显著低于内存读写速度, 因此对所有消息都开启持久化会严重降低性能. 而且RabbitMQ的硬盘写入操作并不是完全实时的, 因此可能存在数据还未写入MQ就故障的情况, 此时这些还未写入的消息是无法恢复的. 
+
+可以引入镜像队列的方式来提高RabbitMQ的可用性. 即设置一个完全相同的从消息队列, 如果主队列故障自动切换到从队列. 这实际上就是一个主从结构. 
+
+
+死信队列
+----------
+
+当一条消息变成死信后就会进入死信队列, 死信队列实际上是一个普通的Exchange, 可以被订阅. 程序可以监听死信队列来对这些信息进行处理. 消息变成死信的原因包括
+
+1. 消息被拒绝
+2. 消息TTL过期
+3. 消息队列达到最大长度
+
+
+
+
+
+
+Spring RabbitMQ Support
+---------------------------
+
+`Spring RabbitMQ Support`是一个关于RabbitMQ的Spring库, 提供了`@RabbitListener`, `@RabbitHandler`等注解, 从而可以方便的使用Java接受RabbitMQ发送的消息.
+
+`@RabbitListener`可以标注在类上面, 配合`@RabbitHandler`注解一起使用. 一个类中可以有多个`@RabbitHandler`注解的方法, 收到消息后根据消息的类型调用相应的方法.
+
+- [RabbitMQ：@RabbitListener 与 @RabbitHandler 及 消息序列化](https://www.jianshu.com/p/911d987b5f11)
+- [Spring-rabbit之@RabbitListener解析](https://www.jianshu.com/p/c2abde83a241)
+
+
+
+AMQP
+--------
+
+AMQP 0-9-1 (Advanced Message Queuing Protocol) 是一个中间件消息协议. RabbitMQ使用这一协议. 关于这一协议的内容, 可以参考官网文档[AMQP 0-9-1 Model Explained](https://www.rabbitmq.com/tutorials/amqp-concepts.html). 
+
+这篇文档除了介绍AMQP协议以外, 也解释了RabbitMQ中的很多基本概念. 包括交换机类型, 队列特点, 消息应答机制等, 因此在学习更多RabbitMQ高级特性之前, 都可以考虑先阅读此文档.
+
+
+
+
+参考资料
+--------------
+
+- [2019年12道RabbitMQ高频面试题你都会了吗？（含答案解析）](https://juejin.cn/post/6844904025008128013)
+- [消息中间件MQ与RabbitMQ面试题（2020最新版）](https://blog.csdn.net/ThinkWon/article/details/104588612)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,125 @@
+---
+title: 使用LaTeX进行学术写作
+date: 2019-07-20 11:42:32
+categories: 学术写作
+tags:
+  - LaTeX
+cover_picture: images/latex.PNG
+---
+<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default"></script> -->
+
+
+以前的文章已经介绍过如何使用LaTeX语法在Markdown中输入数学公式, 但输入数学公式只是LaTeX的一个基本功能, LaTeX的本质是一个排版工具. 本文将正式的介绍LaTeX的语法, 以及如何使用LaTeX进行学术写作.
+
+
+
+基础知识
+---------------
+
+LaTex的一些基础特性如下表所示
+
+特性    | 解释
+--------|-----------------------------------
+空格    | 源文件中的多个连续的空白字符均视为一个空白字符
+指令    | 以`\`开始的一个词(只包含字母)
+注释    | 以`%`开始的一行
+特殊字符|  `# $ % ^ & _ { } \`
+
+每个特殊字符的具体的作用在之后会有介绍, 因此不需要特别记忆.
+
+
+
+### 源文件结构
+
+``` latex
+\documentclass{article}
+\usepackage{...}
+
+% 这一部分称为导言区
+
+\begin{document}
+
+% 这里是正文
+
+\end{document}
+```
+
+在导言区可以设置使用的包, 文档的元信息等.
+
+
+### 常见文件格式
+
+
+类型  | 作用                          |类型  | 作用
+----|--------------------------------|------|----------------------------------------
+tex | LaTeX源文件                     | sty | 宏包文件
+dtx | 文档化TeX文件                   | ins | dtx文件对应的安装文件
+cls | 定义文档外观的文件               | fd  | 字体描述文件
+dvi | 设备无关文件, 编译的主要结果      |log | 编译的日志信息
+toc | 存储章节标题的文件               | lof | 存储图像目录的文件
+lot | 存储表格目录的文件               | aux | 向下一次编译传递的信息, 主要是交叉引用信息
+idx | 存储索引的文件                   | ind | 处理过的idx文件
+ilg | 记录makeindex指令执行日志        |      |  
+
+
+本文排版
+---------------
+
+与Markdown相同, 两段文字之间直接换行并不会产生分段效果, 而是直接合并成一段. 如果想要分成两段, 则必须有一个空行. 以下是一些常见的排版指令
+
+指令        | 效果
+------------|---------------
+`\\`        | 换行
+`\newpage`  | 分页
+
+
+### 标题和章节
+
+指令                  |  含义
+----------------------|-------------------------------
+`\section{...}`       | 创建一个节, 并且指定小节名称
+`\subsection{...}`    | 二级节
+`\subsubsection{...}` | 三级节 
+`\paragraph{...}`     | 创建一个段落, 并且指定段落名称
+`\subparagraph{...}`  | 二级段落
+`\maketitle`          | 生成标题
+
+
+注意: 在执行生成标题操作前, 必须使用`\title`,`\author`等指令提供必要的信息.
+
+
+### 交叉引用
+
+指令                  |  含义
+----------------------|----------------------------------
+`\label{...}`         | 给标题, 图片等资源添加一个引用名称
+`\ref{...}`           | 根据名称获得被应用资源的序号
+`\pageref{...}`       | 根据名称获得被应用资源的页码
+
+`\label`可以跟随在包括`\section`在内的各种可引用的标签后面, 从而给这些资源添加一个可以被引用的名称.
+
+
+### 插入图片
+
+首先导入图片的包
+
+```
+\usepackage{graphicx}
+```
+
+然后使用如下的格式导入图片
+
+```
+\begin{figure}[htbp] %htbp 代表图片插入位置的设置
+\centering
+\includegraphics[scale=0.5]{SearchEnginAtchitecture.jpg}
+\caption{搜索引擎架构} \label{SearchEnginAtchitecture}
+\end{figure}
+```
+
+
+参考资料
+--------------
+
+- [LaTeX常用操作](https://blog.csdn.net/meiqi0538/article/details/82887300)
+- [Latex中插图总结](https://blog.csdn.net/chichoxian/article/details/52588833)

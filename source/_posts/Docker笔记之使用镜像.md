@@ -1,0 +1,200 @@
+---
+title: Docker笔记之使用镜像
+date: 2020-06-19 14:17:47
+categories: Docker笔记
+tags:
+    - docker
+cover_picture: images/docker.jpg
+---
+<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default"></script> -->
+
+
+Docker可以视为一种轻量级的虚拟机, 可以将应用程序和其依赖环境进行打包, 从而在新平台上直接部署. 因此如果依赖环境基本不变, 服务器状态基本不变, 只有其中的应用程序不断更新, 那么在这种场景下, Docker的意义不大. 以Python项目为例, Conda完全可以实现配置依赖环境的功能, 且与Docker相比, 减少了打包等操作.
+
+Docker的另外一个意义是实现微服务, 每一个组件都可以单独放置在一个Docker容器内, 并且容器之间相互隔离. 因此如果不使用微服务, 那么这种情况下也不适合使用Docker.
+
+在适合Docker的场景下, 使用Docker可以减少工作量, 在其他场景下, 使用脚本可能是一个更适合的方案. 本文介绍Docker的基本概念, 配置方法, 和基本使用.
+
+
+
+Docker安装与配置
+----------------------
+
+对于Linux系统, 可以直接执行apt进行安装, 指令如下
+
+```
+sudo apt install docker.io
+sudo systemctl start docker
+sudo systemctl enable docker
+```
+
+> 注意: 如果已经安装了docker, 需要先卸载相关组件在进行安装
+
+其他的安装方式, 可以参考如下内容
+- [How To Install Docker On Ubuntu 18.04 Bionic Beaver](https://phoenixnap.com/kb/how-to-install-docker-on-ubuntu-18-04)
+
+
+### 配置镜像
+
+在 /etc/docker/daemon.json 中写入如下内容（如果文件不存在请新建该文件）
+```json
+{
+  "registry-mirrors": [
+    "https://hub-mirror.c.163.com",
+    "https://mirror.baidubce.com"
+  ]
+}
+```
+
+然后重启服务
+``` bash
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+```
+
+- [镜像加速器](https://yeasy.gitbook.io/docker_practice/install/mirror)
+
+
+Docker操作镜像
+-----------------
+
+Docker的镜像操作都是以`docker image`开始的指令, 常见指令如下表所示
+
+操作         | 指令                 | 操作        | 指令
+-------------|---------------------|-------------|----------------------
+显示本地镜像  | `ls`                | 删除本地镜像   | `rm <imageName>`
+拉取远程镜像  | `pull <imageName>`  | 清理无效的镜像 | `prune`
+
+例如, 想要拉取官方的测试镜像, 可以执行
+
+``` bash
+docker image pull library/hello-world
+```
+
+由于官方的镜像都位于`library/`下, 因此`library/`是默认路径, 也可以省略不写. 此外, 每个镜像还可以具有不同的标签, 例如`UBUNTU:18.04`表示具有`18.04`标签的的`UBUNTU`镜像. 如果不指定标签, 则默认下载`LATEST`标签
+
+
+### 官方镜像
+
+[Docker Hub](https://hub.docker.com/search?q=&type=image&image_filter=official)是官方的镜像查询网站. 在此网站上可以查询最近的进行镜像, 以及镜像的使用说明. 
+
+
+
+Docker操作容器
+-----------------
+
+镜像文件在运行之后, 就会生成容器文件. 关闭容器后, 其中的程序停止运行, 但容器文件本身并不会被删除. 容器操作的指令都是以`docker container`开头的指令, 常见的指令如下表所示
+
+
+操作         | 指令                 | 操作        | 指令
+-------------|---------------------|-------------|----------------------
+查看运行中容器| `ls`                 | 查看所有容器 | `ls --all`
+启动镜像      | `run <imageName>`   | 启动容器     | `start <containerId>`
+删除容器      | `rm <containerID>`  | 停止容器     | `stop <containerId>`
+
+执行`ls`指令后, 会输入类似如下格式的内容
+```
+CONTAINER ID        IMAGE                       COMMAND                  CREATED             STATUS
+f1cdbb6d6fce        onlyoffice/documentserver   "/bin/sh -c /app/ds/…"   5 weeks ago         Up 5 weeks
+673ef1834e3d        nextcloud                   "/entrypoint.sh apac…"   2 months ago        Up 2 months
+```
+
+### 运行镜像
+
+启动镜像时, 可以指定如下的一些参数来控制容器的行为, 具体如下表所示:
+
+
+参数  | 效果                   | 参数  | 效果
+------|------------------------|------|------------------
+`-i`  | 交互使用                | `-t` | 连接镜像的终端
+`--rm`| 容器关闭后删除容器文件   
+
+例如, 以下指令表示启动ubuntu 18.04的镜像文件, 以交互模式连接该系统的终端, 并且在容器关闭后删除容器文件.
+
+```
+docker container run -it --rm ubuntu:18.04 bash
+```
+
+通常情况下, 是不会删除容器文件的, 但出于测试的目的, 可以在使用完毕后删除容器文件, 从而节省硬盘空间.
+
+### 进入容器
+
+在镜像运行以后, 还可以通过命令行进入容器内, 从而查看或者执行需要的指令. 可以使用如下的指令进入容器并启动一个shell
+
+```
+sudo docker exec -it <containerID> /bin/bash  
+```
+
+例如可以进入一个mysql容器中, 并查看IP地址信息, 从而从外部连接到数据库.
+
+- [进入docker容器的四种方法](https://blog.csdn.net/skh2015java/article/details/80229930)
+
+
+
+Docker维护
+--------------------
+
+### 映射
+
+
+通常情况下, 可以直接运行相关的镜像, 如果容器需要存储空间, 会自动映射数据卷. 但也可以通过手动指定的方式, 明确数据卷的存储位置.
+
+
+```
+$ docker run -d -v nextcloud:/var/www/html -p 8080:80 nextcloud
+```
+
+以上述指令为例, 通过`-v`参数将宿主机的相对路径目录`nextcloud`映射到了容器中的`/var/www/html`. 当宿主机使用功能相对路径时, 其相对于数据卷的根目录`/var/lib/docker/volumes/`.
+
+通过`-p`参数, 将宿主机的8080端口与容器的80端口关联, 从而访问宿主机8080端口就等价于访问容器的80端口.
+
+
+
+
+- [关于Docker目录挂载的总结](https://www.cnblogs.com/ivictor/p/4834864.html)
+
+
+
+
+### 查看空间占用情况
+
+Docker的容器在运行过程中可能需要存储数据, 进而在磁盘上创建数据卷, 可以使用`docker system df -v`查看docker所有相关组件的空间占用情况
+
+
+```
+root@iZ:~# docker system df -v
+Images space usage:
+
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE                SHARED SIZE         UNIQUE SIZE         CONTAINERS
+nextcloud           latest              137bb882dbc1        12 months ago       676.3MB             0B                  676.3MB             0
+
+Containers space usage:
+
+CONTAINER ID        IMAGE               COMMAND             LOCAL VOLUMES       SIZE                CREATED             STATUS              NAMES
+
+Local Volumes space usage:
+
+VOLUME NAME                                                        LINKS               SIZE
+1faa7f03e67410a04aa6fb5038d89f8349210e0c3a27cf30d65043843426ea5e   0                   202.6MB
+3124a81cd8cfae41156f80fb6d4ff49df17d4af1d10705b9aae609e0851cd5c5   0                   1.201GB
+
+Build cache usage: 0B
+
+CACHE ID            CACHE TYPE          SIZE                CREATED             LAST USED           USAGE               SHARED
+```
+
+
+其中`VOLUME`为容器的数据卷, 其生命周期独立于容器, 如果需要清理无用的数据卷, 可以执行`docker volume prune`
+
+### 查看资源使用情况
+
+Docker的容器运行过程中需要消耗CPU和内存，可以使用`docker stats`查看所有正在运行的容器当前消耗的资源数量。
+
+
+参考文献
+----------------
+
+第一篇文章对Docker进行了简要的介绍, 第二篇文章是一个系列教程, 对Docker进行了比较深入的介绍.
+
+- [Docker 入门教程](https://www.ruanyifeng.com/blog/2018/02/docker-tutorial.html)
+- [Docker —— 从入门到实践](https://yeasy.gitbook.io/docker_practice/)

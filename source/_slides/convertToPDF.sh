@@ -1,0 +1,2 @@
+
+DEBUG=reveal-md reveal-md ${1/'.md'/''}.md --print ${1/'.md'/''}.pdf --puppeteer-chromium-executable "C:\Users\lizec\AppData\Roaming\npm\node_modules\puppeteer\.local-chromium\win64-800071\chrome-win\chrome.exe"

@@ -1,0 +1,75 @@
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js"></script>
+<script>
+  var mihoConfig = {
+      root: "<%=config.url%>",
+      animate: <%=theme.open_animation%>,
+      isHome: <%=is_home()%>,
+      share: <%=theme.share%>,
+      reward: <%=theme.reward.status%>
+  }
+</script>
+<%- partial('_partial/sidebar') %>
+<%- js('js/search') %>
+<%- js('js/main') %>
+
+<% if (theme.open_bg_particle){ %>
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <div id="particles"></div>
+  <%- js('js/particles') %>
+<% } %>
+
+<% if (config.disqus_shortname){ %>
+<script>
+  var disqus_shortname = '<%= config.disqus_shortname %>';
+  <% if (page.permalink){ %>
+  var disqus_url = '<%= page.permalink %>';
+  <% } %>
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/<% if (page.comments) { %>embed.js<% } else { %>count.js<% } %>';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<% } %>
+
+<% if (theme.fancybox){ %>
+  <%- css('fancybox/jquery.fancybox') %>
+  <%- js('fancybox/jquery.fancybox.pack') %>
+<% } %>
+
+<% if (theme.open_animation){ %>
+  <%- css('https://cdn.jsdelivr.net/npm/animate.css@3.5.0/animate.min.css') %>
+  <script src="https://cdn.jsdelivr.net/npm/scrollreveal@3.0.5/dist/scrollreveal.min.js"></script>
+  <%- js('js/animate') %>
+<% } %>
+<% if (! is_home()){ %>
+  <%- js('js/pop-img') %>
+  <script>
+     $(".article-entry p img").popImg();
+  </script>
+<% } %>
+
+<% if (theme.graphviz.enable) { %>
+  <script src='https://cdn.jsdelivr.net/npm/viz.js@1.7.1/viz.js'></script>
+  <script>
+    String.prototype.replaceAll = function(search, replacement) {
+      var target = this;
+      return target.split(search).join(replacement);
+    };
+
+    let vizObjects = document.querySelectorAll('.graphviz')
+
+    for (let item of vizObjects) {
+      let svg = undefined
+      try {
+        svg = Viz(item.textContent.replaceAll('–', '--'), 'svg')
+      } catch(e) {
+        svg = `<pre class="error">${e}</pre>`
+      }
+      item.outerHTML = svg
+    }
+  </script>
+<% } %>

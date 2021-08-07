@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <title>远程监督关系抽取概述</title>
+    <link rel="shortcut icon" href="./favicon.ico"/>
+    <link rel="stylesheet" href="./dist/reveal.css" />
+    <link rel="stylesheet" href="./dist/theme/solarized.css" id="theme" />
+    <link rel="stylesheet" href="./css/highlight/zenburn.css" />
+
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides"><section  data-markdown><script type="text/template">
+
+## 远程监督关系抽取概述
+</script></section><section  data-markdown><script type="text/template">
+### 目录
+
+- 知识图谱
+- 关系抽取
+- 远程监督
+</script></section><section ><section data-markdown><script type="text/template">
+### 知识图谱案例: 人物与配音演员
+
+![image](images/NRE/1.jpg)
+
+</script></section><section data-markdown><script type="text/template">
+### 知识图谱
+
+![image](images/NRE/3.jpg)
+
+</script></section></section><section ><section data-markdown><script type="text/template">
+### 构建知识图谱
+
+![image](images/NRE/4.jpg)
+</script></section><section data-markdown><script type="text/template">
+### 构建知识图谱
+
+![image](images/NRE/5.jpg)
+</script></section></section><section  data-markdown><script type="text/template">
+### 什么是关系抽取
+
+![image](images/NRE/6.jpg)
+
+</script></section><section ><section data-markdown><script type="text/template">
+### 远程监督关系抽取
+
+- 传统的机器学习方法需要人工标注数据集
+- 通过**远程监督假设**自动生成训练数据
+
+</script></section><section data-markdown><script type="text/template">
+### 远程监督假设
+
+![远程监督举例](images/NRE/7.jpg)
+</script></section><section data-markdown><script type="text/template">
+### 远程监督假设的问题: 数据噪声多
+
+<aside class="notes"><p>根据提出远程监督假设的论文, 大约有30%的句子都是噪声数据</p>
+</aside></script></section><section data-markdown><script type="text/template">
+### 基础解决方案: 将句子构成句袋
+
+![远程监督举例](images/NRE/7.jpg)
+
+<aside class="notes"><ul>
+<li>将出现的实体相同的句子构成句袋, 以句袋为单位处理数据</li>
+<li>平均而言, 只能获得大约30%的正确率</li>
+</ul>
+</aside></script></section></section><section  data-markdown><script type="text/template">
+### 远程监督效果
+
+![image](images/NRE/8.jpg)
+
+- [https://arxiv.org/abs/1911.09788](https://arxiv.org/abs/1911.09788)</script></section></div>
+    </div>
+
+    <script src="./dist/reveal.js"></script>
+
+    <script src="./plugin/markdown/markdown.js"></script>
+    <script src="./plugin/highlight/highlight.js"></script>
+    <script src="./plugin/zoom/zoom.js"></script>
+    <script src="./plugin/notes/notes.js"></script>
+    <script src="./plugin/math/math.js"></script>
+    <script>
+      function extend() {
+        var target = {};
+        for (var i = 0; i < arguments.length; i++) {
+          var source = arguments[i];
+          for (var key in source) {
+            if (source.hasOwnProperty(key)) {
+              target[key] = source[key];
+            }
+          }
+        }
+        return target;
+      }
+
+      // default options to init reveal.js
+      var defaultOptions = {
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        transition: 'default', // none/fade/slide/convex/concave/zoom
+        plugins: [
+          RevealMarkdown,
+          RevealHighlight,
+          RevealZoom,
+          RevealNotes,
+          RevealMath
+        ]
+      };
+
+      // options from URL query string
+      var queryOptions = Reveal().getQueryHash() || {};
+
+      var options = extend(defaultOptions, {"transition":"fade"}, queryOptions);
+    </script>
+
+
+    <script>
+      Reveal.initialize(options);
+    </script>
+  </body>
+</html>
