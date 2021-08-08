@@ -12,7 +12,12 @@ function runService() {
 }
 
 function stopService() {
-  true
+  runID=$(docker ps | awk '$2=="blog"  {print $1}')
+
+  if [ $runID ]; then
+    docker stop $runID
+  fi
+
 }
 
 function backup() {
