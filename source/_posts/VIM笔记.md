@@ -272,8 +272,7 @@ set easymotion
 VIM基础配置
 ---------------
 
-VIM基本上是不能认为开箱即用的, 需要进行一些基本配置. VIM的配置位于用户目录的.vimrc文件, 建议在其中加入如下的内容
-
+对于服务器上的VIM，因为大部分时候都是简单改配置，所以不需要太过复杂的配置文件，可以使用如下的简化版配置文件。VIM的配置位于用户目录的.vimrc文件, 建议在其中加入如下的内容
 
 ```
 syntax on                   " 开启语法高亮
@@ -290,6 +289,13 @@ set backspace=2             " 修正backspace的行为
 set number                  " 显示行号
 
 colorscheme slate           " 颜色主题
+
+" 定义快捷键到行首和行尾
+map H ^
+map L $
+map J <C-d>
+map K <C-u>
+
 ```
 
 > 如果只是使用VIM的键位映射, 那么就没必要进行配置了
