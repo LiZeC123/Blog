@@ -19,7 +19,9 @@ function stopService() {
 }
 
 function backup() {
-  zip -r Blog.zip . -x "node_modules/*" -x  "public/*" -x ".git/*" 
+  echo "zip data"
+  zip -r Blog.zip . -x "node_modules/*" -x  "public/*" -x ".git/*" > /dev/null
+  echo "zip data done"
 }
 
 function update() {
