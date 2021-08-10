@@ -73,7 +73,7 @@ ENTRYPOINT [ "python3", "app.py"]
 
 Docker分层的另一个作用是缓存，如果一个层没有发生变化，则可以直接复用。例如在上面的例子中，先复制Python项目的依赖配置文件并使用pip安装依赖，再复制项目的代码。如果后续只修改了代码文件，而没有修改依赖，则再次构建的时候，安装好依赖的一层就可以直接复用，从而节省了构建时间。
 
--[关于RUN和层的一些讨论](https://yeasy.gitbook.io/docker_practice/image/build#run-zhi-hang-ming-ling)
+- [关于RUN和层的一些讨论](https://yeasy.gitbook.io/docker_practice/image/build#run-zhi-hang-ming-ling)
 
 ### 扩展阅读
 
@@ -158,6 +158,15 @@ Docker-Compose文件详解
 
 
 
+
+
+
+
 前后端分离部署
 -------------
+
+对于前后端分离的项目，一般有如下的几个要素
+
+1. 前端的编译环境和运行环境。如果使用Vue.js开发，那么编译过程需要npm环境，运行过程则只需要nginx代理编译后的静态文件。
+2. 后端的编译环境和运行环境。后端根据需要可能需要单独的编译和运行环境，也可能解释执行只需要一个环境。
 
