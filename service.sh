@@ -19,9 +19,9 @@ function stopService() {
 }
 
 function backup() {
-  echo "zip data"
+  echo "Zip Blog..."
   zip -r Blog.zip . -x "node_modules/*" -x  "public/*" -x ".git/*" > /dev/null
-  echo "zip data done"
+  echo "Done."
 }
 
 function update() {
@@ -58,11 +58,3 @@ else
   echo "backup    备份数据文件"
   echo ""
 fi
-
-
-
-
-
-
-
-
