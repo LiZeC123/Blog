@@ -30,7 +30,7 @@ ENTRYPOINT [ "python3", "app.py"]
 
 ### 指定基础镜像
 
-自定义的镜像可以再一个基础镜像上进行处理，从而避免一些重复性的工作。 使用`FROM`指令指定基础镜像，可用的基础镜像可以[Docker Hub](https://hub.docker.com/)上查询。
+自定义的镜像可以再一个基础镜像上进行处理，从而避免一些重复性的工作。 使用`FROM`指令指定基础镜像，可以在[Docker Hub](https://hub.docker.com/)上查询可用的镜像。
 
 > alpine是一种体积非常小的操作系统，一般的镜像都有针对alpine系统的版本
 
@@ -44,27 +44,46 @@ ENTRYPOINT [ "python3", "app.py"]
 
 > Dokcerfile中有两个指令可以复制文件，分别是ADD指令和COPY指令。 两个指令没有太大区别，一般采用COPY指令。
 
+### 执行指令
+
+使用`RUN`指令可以在Guest中执行任意的Shell指令，例如进行一些参数设置或者安装需要的依赖程序。
+
+
 ### 程序入口
 
 `ENTRYPOINT`指定镜像启动后需要执行的程序。 例如上面的例子指定程序启动时执行python指令。
 
 > 注意：镜像中将直接启动指定的程序而不是用shell启动，因此并不能执行shell的语法
 
+除了使用`ENTRYPOINT`指定启动程序以外，也可以使用`CMD`指定启动程序。两者的区别在于`ENTRYPOINT`指令比较明确的表明这个镜像就应该执行`ENTRYPOINT`指定的唯一的程序，而`CMD`指定的程序则可以在启动镜像的时候直接被命令行上的参数覆盖。
 
+### 定义数据卷
 
+如果直接在容器内写入数据，则数据保存在容器内部。如果容器被删除，那么对应的数据也就一起没了。使用数据卷可以将数据写入到Host中，从而是容器变为无状态的应用，可以随意的创建和删除。使用`VOLUME`定义镜像的数据卷，从而在容器启动后，如果用户没有手动挂载这些数据卷的时候，自动挂在一个匿名数据卷。
 
-Docker启动参数
-----------------
+> 用户在启动时当然还是可以用命令直接覆盖这些配置，挂载一个命名的数据卷
 
-TODO： 也许需要在另外一篇文章中记录相关内容
-端口映射， 卷映射
+### 声明端口
+
+使用`EXPOSE`可以声明容器想要暴露的端口。这个指令是一个纯粹的声明，没有任何效果，仅仅用于提示用户这个镜像希望暴露的服务端口。
+
+### 深入原理：层和缓存
+
+使用Docker构建镜像的一个常见的错误操作就是像写Shell脚本一样分多次执行`RUN`指令。Dockerfile中每执行一行指令，都会构建一个新的层，每个层之间是没有关系的，上一层中创建的文件在下一层中无法删除。因此分多次执行`RUN`指令只会产生大量无意义的中间层而浪费空间，通过之间产生的临时文件也会残留在镜像中，增加体积。
+
+Docker分层的另一个作用是缓存，如果一个层没有发生变化，则可以直接复用。例如在上面的例子中，先复制Python项目的依赖配置文件并使用pip安装依赖，再复制项目的代码。如果后续只修改了代码文件，而没有修改依赖，则再次构建的时候，安装好依赖的一层就可以直接复用，从而节省了构建时间。
+
+-[关于RUN和层的一些讨论](https://yeasy.gitbook.io/docker_practice/image/build#run-zhi-hang-ming-ling)
+
+### 扩展阅读
+
+更多关系Dockerfile的详细信息，可以参考如下的一些资源
+
+- [Docker从入门到实践--Dockerfile指令详解](https://yeasy.gitbook.io/docker_practice/image/dockerfile)
 
 
 深入Docker机制
 ----------------
-
-### 层和缓存
-
 
 ### 限制资源使用量
 
@@ -102,6 +121,35 @@ TODO： 也许需要在另外一篇文章中记录相关内容
 
 Dockerfile多阶段构建
 -------------------
+
+在上一节中以部署Python应用给出了一个Dockerfile的例子，因为Python是解释执行的，所以部署相对简单一些。对于需要编译执行的语言，其部署就更想对而言更复杂一些。例如以Java语言为例，编译Java需要JDK环境，而运行Java只需要JRE环境。或者对于更极端的C语言或者Go语言，编译需要编译环境，但运行可能不需要任何额外的依赖。如果直接在编译环境运行程序，虽然也可以运行，但镜像体积就太大了。
+
+对此Dockerfile提供了多阶段构建的能力，可以分别使用两个镜像来编译和运行程序。例如如下的Dockerfile分别使用两个镜像来构建Java镜像。在编译阶段，使用maven镜像将源码打包为jar，在运行阶段直接在jre环境运行上一步打包的jar。
+
+```
+# First stage: complete build environment
+FROM maven:3.5.0-jdk-8-alpine AS builder
+
+# add pom.xml and source code
+ADD ./pom.xml pom.xml
+ADD ./src src/
+
+# package jar
+RUN mvn clean package
+
+# Second stage: minimal runtime environment
+From openjdk:8-jre-alpine
+
+# copy jar from the first stage
+COPY --from=builder target/my-app-1.0-SNAPSHOT.jar my-app-1.0-SNAPSHOT.jar
+
+EXPOSE 8080
+
+CMD ["java", "-jar", "my-app-1.0-SNAPSHOT.jar"]
+```
+
+-[在Dockerfile中使用多阶段构建打包Java应用](https://help.aliyun.com/document_detail/173175.html)
+
 
 
 
