@@ -191,6 +191,33 @@ CACHE ID            CACHE TYPE          SIZE                CREATED             
 Docker的容器运行过程中需要消耗CPU和内存，可以使用`docker stats`查看所有正在运行的容器当前消耗的资源数量。
 
 
+
+### 限制资源使用量
+
+默认情况下容器使用的CPU和内存是不受限制的，为了避免容器消耗了太多资源导致其他服务不可用，可以对CPU和内存使用量进行限制。 使用以下参数对CPU使用进行限制
+
+
+参数           | 含义
+--------------|----------------------------------
+--cpus        | 指定CPU的使用量，可以包含小数
+--cpuset-cpus | 指定具体使用那个CPU
+--cpu-shares  | 指定获得CPU的权重
+
+`--cpus=2`可以理解为使用2个CPU `--cpus=0.9`则可以理解为使用0.9个CPU。具体执行的时候， 并不一定是真的使用2个或者0.9个CPU，而是保证在使用时间上等价于使用2个或者0.9个CPU。
+
+`--cpuset-cpus="1,3"`表示容器只在1号和3号CPU行运行。 `--cpu-shares=512`表示获取CPU时间的权重为512（默认值为1024）
+
+---------------
+
+使用以下参数对内存进行限制
+
+参数           | 含义
+--------------|--------------------------------------------------
+-m            | 指定最大内存使用量
+--memory-swap | 指定包括swap在内的可用内存总量， -1表示无限制使用swap
+
+`-m 300M --memory-swap -1`表示最大可用内存为300M，但是可以无限制使用swap空间，`-m 300M --memory-swap 500M`表示最大可用内存为300M，还可以额外使用200M的swap空间。
+
 参考文献
 ----------------
 
@@ -198,3 +225,10 @@ Docker的容器运行过程中需要消耗CPU和内存，可以使用`docker sta
 
 - [Docker 入门教程](https://www.ruanyifeng.com/blog/2018/02/docker-tutorial.html)
 - [Docker —— 从入门到实践](https://yeasy.gitbook.io/docker_practice/)
+
+------------------
+
+以下的几篇文章讨论了限制容器的资源使用情况的指令.
+
+- [Docker: 限制容器可用的 CPU](https://www.cnblogs.com/sparkdev/p/8052522.html)
+- [Docker: 限制容器可用的内存](https://cnblogs.com/sparkdev/p/8032330.html)
