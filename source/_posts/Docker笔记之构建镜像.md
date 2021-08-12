@@ -32,7 +32,20 @@ ENTRYPOINT [ "python3", "app.py"]
 
 自定义的镜像可以再一个基础镜像上进行处理，从而避免一些重复性的工作。 使用`FROM`指令指定基础镜像，可以在[Docker Hub](https://hub.docker.com/)上查询可用的镜像。
 
-> alpine是一种体积非常小的操作系统，一般的镜像都有针对alpine系统的版本
+--------
+
+很多镜像的标签都包含一些代号， 常见代号的含义如下
+
+名称     ｜ 含义
+--------｜------------------------------------
+alpine  ｜ 一种体积非常小的操作系统，本体只有5M
+slim    ｜ 包含指定工具的最小软件包
+buster  ｜ buster是Debian系统当前稳定版的代号
+
+如果希望体积尽可能下，同时不需要其他依赖，那么可以选择alpine版本。如果alpine缺少依赖，则可以考虑slim版本。虽然buster版本体积比较大，但如果其他镜像都不行，那么buster版本最稳妥。
+
+
+> Debian系统最近的版本代号分别时 Jessie(8.x) / Stretch(9.x) / Buster(10.x) / Bullseye(11.x) / Bookworm(12.x) / Trixie(13.x)
 
 ### 设定工作目录
 
