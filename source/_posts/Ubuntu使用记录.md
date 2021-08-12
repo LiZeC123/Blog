@@ -2,8 +2,8 @@
 title: Ubuntu使用记录
 date: 2017-08-10 21:36:11
 tags:
-	- Ubuntu
-	- 数据库
+    - Ubuntu
+    - 数据库
 cover_picture:  images/ubuntu.jpg
 ---
 
@@ -142,20 +142,40 @@ du -lh --max-depth=1
 使用`crontab -e`打开文件, 并输入要执行的指令. 例如
 
 ```
-* 3 * * * /root/Application/TimeMachine.sh daily
+0 3 * * * /root/Application/TimeMachine.sh daily
 ```
 
-表示每天3点执行后面规定的脚本.
+> 注意: 全部位置都要使用绝对路径,并且手动执行一次脚本，确认权限和路径没有问题
 
-> 注意: 全部位置都要使用绝对路径
+### Crontab语法解析
+
+在Crontab的文件中，每一行表示一个要执行的指令，每一行都具有如下的格式
+
+```
+* * * * * /path/to/script.sh
+```
+
+前面的5个`*`的位置分别表示分钟，小时，天，月，和星期。如果是数字就是具体的时刻，如果是`*`则表示所有，例如
+
+```
+0 3 * * *  ==> 每天3点0分执行一次
+* 3 * * *  ==> 每天3点0分到3点59分的时间段内，每分钟执行一次
+```
+
+更多配置方式， 可以参考下面的文章
+
+- [Crontab in Linux with 20 Useful Examples to Schedule Jobs](https://tecadmin.net/crontab-in-linux-with-20-examples-of-cron-schedule/)
+
 
 ### 不执行原因排查
 
-可以将指令的执行情况输出到文件中, 以便于排查错误原因, 例如
+首先在根目录手动执行一次脚本，确定脚本的权限和路径设置都是正确的。 如果脚本可以手动执行，但配置就是不生效，可以将脚本的输出重定向到日志文件， 例如
 
 ```
-* 3 * * * /root/Application/TimeMachine.sh daily >> /root/TM.log 2>&1
+* * * * * /root/Application/TimeMachine.sh daily >> /root/TM.log 2>&1
 ```
+
+之后可以在日志中查看是否有报错。
 
 
 双系统设置默认启动项
@@ -201,7 +221,7 @@ export PATH=~/bin:"$PATH"
 
 编译线程有关程序
 -------------------------
-如果用到来pthread.h中的函数,在使用gcc编译的时候,需要加上-pthread 
+如果用到了pthread.h中的函数,在使用gcc编译的时候,需要加上-pthread 
 
 
 MySQL中文乱码
