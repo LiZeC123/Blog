@@ -24,19 +24,19 @@ banner_img: images/banner.jpg
 menu:
   archive:
     title: Archives
-    url: /archives
+    url: /archives/
     target: false
   tv:
     title: Slides
-    url: /slides
+    url: /slides/
     target: false
   sticky-note:
     title: NoteBook
-    url: /notebook
+    url: /notebook/
     target: false
   user:
     title: About
-    url: /about
+    url: /about/
     target: false
 # Social setting, use to display social information | 社交设置，用来展示社交信息
 #  name:                  Font Awesome icon | Font Awesome 图标
