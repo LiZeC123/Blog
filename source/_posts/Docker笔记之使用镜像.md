@@ -3,7 +3,7 @@ title: Docker笔记之使用镜像
 date: 2020-06-19 14:17:47
 categories: Docker笔记
 tags:
-    - docker
+    - Docker
 cover_picture: images/docker.jpg
 ---
 <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default"></script> -->
