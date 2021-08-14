@@ -120,13 +120,7 @@ disqus: false
 #
 # clien_id 和 client_secret可以直接在配置文件指定, 也可以留空表示从环境变量读取
 # 环境变量的名称为 gitalk_client_id, gitalk_client_secret
-gitment: 
-  #你的 GitHub ID
-  owner: LiZeC123   
-  #存储评论的 repo
-  repo: Blog
-  client_id: 
-  client_secret:
+gitment: false
 
 # Analytics | 分析
 # 站长分析，输入站点id
