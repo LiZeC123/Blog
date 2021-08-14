@@ -3,8 +3,8 @@
 <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
 <script>
     const gitalk = new Gitalk({
-    clientID: '<%- theme.gitment.client_id %>',
-    clientSecret: '<%- theme.gitment.client_secret %>',
+    clientID: '<%- theme.gitment.client_id || process.env.gitalk_client_id %>',
+    clientSecret: '<%- theme.gitment.client_secret || process.env.gitalk_client_secret %>',
     repo: '<%- theme.gitment.repo %>',     
     owner: '<%- theme.gitment.owner %>',
     admin: ['<%- theme.gitment.owner %>'],
