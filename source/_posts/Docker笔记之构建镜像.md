@@ -187,3 +187,49 @@ Docker-Compose文件详解
 
 - [docker-compose 部署 Vue+SpringBoot 前后端分离项目](https://segmentfault.com/a/1190000021008496)
 - [前后端分离应用（单应用/多应用）docker部署](https://segmentfault.com/a/1190000023939043)
+
+
+Docker镜像构建常见问题
+---------------------------
+
+
+### 设置时区
+
+经过实践, 相比于使程序支持时区的切换, 还是直接使用本地时间并修改容器的时区最简单. 毕竟程序也不是真的需要支持多时区.
+
+无论是哪种镜像, 都可以通过将Host中的时间配置文件映射到容器中实现修改时区. 即加入映射
+
+```
+-v /etc/timezone:/etc/timezone:ro -v /etc/localtime:/etc/localtime:ro
+```
+
+但对于apline镜像, 必须安装了`tzdata`包后才会生效, 因此还需要在构建镜像的时候执行
+
+```
+RUN apk update && \
+    apk add --no-cache tzdata
+```
+
+对于Ubuntu之类的系统, 更简单的方式是直接指定环境变量`TZ=Asia/Shanghai`实现时区的修改.
+
+- [Docker 时区调整方案](https://cloud.tencent.com/developer/article/1626811)
+- [docker: Apline configure timezone](https://quaded.com/docker-apline-configure-timezone/)
+
+### MySQL镜像配置
+
+为了是镜像可以被远程连接, 可以设置如下的环境变量
+
+```
+ENV MYSQL_ROOT_PASSWORD="123456" MYSQL_ROOT_HOST=%
+```
+
+----------------------
+
+如果希望MySQL镜像在第一次启动时执行指定的初始化脚本, 可以将文件复制到`/docker-entrypoint-initdb.d`, 例如
+
+```
+COPY sql/ /docker-entrypoint-initdb.d/
+```
+
+可以参考Docker Hub上的[文档](https://hub.docker.com/_/mysql)的 Initializing a fresh instance 章节
+
