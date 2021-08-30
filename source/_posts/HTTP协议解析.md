@@ -4,6 +4,7 @@ date: 2019-08-08 14:09:32
 categories:
 tags:
     - HTTP
+    - 计算机网络
 cover_picture: images/http.jpg
 ---
 <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default"></script> -->
@@ -115,6 +116,22 @@ title
 
 可以看到, HTTP Body被boundary指定的字符串分割为多个部分, 而每个部分中, 又可以分割为Header和Body. 
 
+
+
+HTTP状态码
+------------------
+
+HTTP状态码由三个十进制数字组成, 可以分为如下的5种类别
+
+Code    | Message
+--------|----------------------------------------------------
+1xx     | 信息，服务器收到请求，需要请求者继续执行操作
+2xx     | 成功，操作被成功接收并处理
+3xx     | 重定向，需要进一步的操作以完成请求
+4xx     | 客户端错误，请求包含语法错误或无法完成请求
+5xx     | 服务器错误，服务器在处理请求的过程中发生了错误
+
+- [HTTP状态码](https://www.runoob.com/http/http-status-codes.html)
 
 
 参考文献和扩展阅读
