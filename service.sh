@@ -13,6 +13,7 @@ function stopService() {
 
   if [ $runID ]; then
     docker stop $runID
+    docker container rm $runID
   fi
 
 }
