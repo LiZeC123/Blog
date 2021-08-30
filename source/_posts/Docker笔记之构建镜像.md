@@ -217,7 +217,7 @@ RUN apk update && \
 
 ### MySQL镜像配置
 
-为了是镜像可以被远程连接, 可以设置如下的环境变量
+为了使镜像可以被远程连接, 可以设置如下的环境变量
 
 ```
 ENV MYSQL_ROOT_PASSWORD="123456" MYSQL_ROOT_HOST=%
