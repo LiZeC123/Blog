@@ -5,7 +5,7 @@ function compileService() {
 
 function runService() {
     docker build -f docker/nginx/Dockerfile -t blog .
-    docker run -d -p 7080:80 blog  
+    docker run -d -p 7080:80 --name blog blog  
 }
 
 function stopService() {
