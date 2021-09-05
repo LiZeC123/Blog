@@ -1,9 +1,10 @@
 ---
 title: Spring笔记之通用配置
 date: 2021-09-01 16:07:21
-categories:
+categories: Spring笔记
 tags:
-cover_picture:
+    - Spring
+cover_picture: images/spring.jpg 
 ---
 <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default"></script> -->
 
