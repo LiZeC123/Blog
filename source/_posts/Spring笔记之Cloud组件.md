@@ -1,28 +1,18 @@
 ---
-title: Spring笔记之SpringCloud
-date: 2019-07-14 15:24:27
+title: Spring笔记之Cloud组件
+date: 2021-09-01 16:07:25
 categories: Spring
 tags:
     - Spring
-    - SpringCloud
 cover_picture: images/spring.jpg 
 ---
 <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default"></script> -->
 
 
 
-项目依赖一致性
------------------
+由于Spring Cloud涉及的组件太多, 各个组件之间的依赖关系比较复杂, 因此为了保证项目的一致性, 任何时候都不建议手写这些配置文件. 可以使用SpringBoot官网上的[Spring Initializr](https://start.spring.io/)来获得初始项目的结构和pom文件. 如果使用IDEA, 也可以在创建的时候使用Spring Initializr工具创建项目.
 
-由于Spring Cloud涉及的组件太多, 各个组件之间的依赖关系比较复杂, 因此为了保证项目的一致性, 需要通过引入合适的parent文件来规定各个组件的版本.
 
-手写pom文件比较复杂, 任何时候都不建议手写这些配置文件. 可以使用SpringBoot官网上的[Spring Initializr](https://start.spring.io/)来获得初始项目的结构和pom文件. 如果使用IDEA, 也可以在创建的时候使用Spring Initializr工具创建项目.
-
-> 官方帮助我们解决版本问题, 不用白不用啊!
-
-如果是父子项目结构, 由于子项目继承父项目, 因此上述配置都应该写在父项目中(由于只是声明, 因此不会造成额外的空间占用)
-
-- [SpringCloud--第一篇 搭建maven子母项目](https://www.jianshu.com/p/19b6553eb603)
 
 
 Actuator

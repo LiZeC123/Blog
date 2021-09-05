@@ -312,3 +312,24 @@ Zsh与oh-my-zsh
 ------------------
 - [Ubuntu 16.04下安装zsh和oh-my-zsh](https://www.cnblogs.com/EasonJim/p/7863099.html)
 
+
+
+curl指令
+--------------
+
+curl指令是Linux中经常使用的一个文件传输指令, 可以用来简单的模拟GET, POST等请求. 对于大部分Linux系统, 都内置了此指令. 在Windows系统中, 如果安装了git bash, 则git bash也内置了此指令.
+
+curl指令具有如下的一些用法
+
+用法示例                                         | 作用
+------------------------------------------------|----------------------------------------
+curl www.baidu.com                              | 直接发送请求并输出结果
+curl -i www.baidu.com                           | 直接发送请求并且只返回头部的内容
+curl URL -H "Content-Type:application/json"     | 设置请求头后发送请求
+curl URL -d "param1=value1&param2=value2"       | 发送POST请求
+curl URL -F "file=XXX" -F "name=YYY"            | 上传文件
+
+
+注意: 如果URL或者参数中包含特殊字符, 则需要使用引号将内容包裹起来,否则shell会错误的解析指令的内容.
+
+Chrome的postman插件也可以完成curl的功能, 如果能够安装此插件, 则可以完全图形化地完成上述的操作.

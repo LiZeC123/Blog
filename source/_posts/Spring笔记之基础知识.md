@@ -1,6 +1,6 @@
 ---
 title: Spring笔记之基础知识
-date: 2018-12-15 14:23:38
+date: 2021-09-01 16:07:22
 categories: Spring笔记
 tags:
     - Spring
@@ -255,3 +255,24 @@ public Object printReceiveLog(final ProceedingJoinPoint joinPoint) throws Throwa
 
 
 关于AOP 表达式的详细规则可以查阅Spring文档中的[Aspect Oriented Programming with Spring](https://docs.spring.io/spring/docs/5.1.3.RELEASE/spring-framework-reference/core.html#aop-pointcuts)章节
+
+
+MVC架构
+---------------
+
+通常情况下, MVC项目按照如下的结构放置代码
+
+包名        |  注解          | 内容
+------------|---------------|-------------------------------
+controller  | @Controller   | MVC的控制器
+service     | @Service      | 业务逻辑有关的代码
+mapper      | @Repository   | 数据映射相关的代码
+entity      | N/A           | 业务实体类
+conf        | @Configuration| 配置类
+
+
+控制器接受到请求后, 首先完成请求参数的处理, 然后调用service层的方法实现业务逻辑. service层通过mapper层提供的数据库方法完成需要的业务逻辑. mapper层通常由框架实现具体的操作, 因此仅仅需要提供方法声明, 然后使用配置文件配置具体的行为. 
+
+关于Spring Web的基础知识 , 还可以参考以下的内容
+- [Spring Mybatis Maven 项目搭建（Java配置）](https://blog.csdn.net/w1196726224/article/details/52784588)
+- [关于web.xml配置的那些事儿](https://segmentfault.com/a/1190000011404088)

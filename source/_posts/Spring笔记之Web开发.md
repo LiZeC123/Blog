@@ -1,6 +1,6 @@
 ---
-title: Spring笔记之WebMVC常用注解
-date: 2019-08-12 10:39:53
+title: Spring笔记之Web开发
+date: 2021-09-01 16:07:24
 categories: Spring
 tags:
     - Spring
@@ -10,28 +10,14 @@ cover_picture: images/spring.jpg
 
 
 
-依赖配置
-----------------
-
-本文涉及的Web相关注解都需要导入如下的依赖
-
-```xml
-<dependency>
-    <groupId>org.mybatis.spring.boot</groupId>
-    <artifactId>mybatis-spring-boot-starter</artifactId>
-</dependency>
-```
-
-由于此项目来自于SpringBoot, 因此可以用SpringBoot相关的依赖进行统一版本控制, 否则容易造成冲突.
+在Spring中, 最常使用的技术就是MVC框架, 使用Sping中的MVC框架, 可以实现将HTTP URL 映射到Controller某个方法上, 将HTTP 参数映射到Controller方法的参数上, 对参数进行检验, 调用视图等功能. 
 
 
 
 请求绑定
----------------
+-------------------
 
-### @RequestMapping
-
-此注解将一个HTTP请求与Controller中的一个方法进行绑定, 既可以注释在类上, 也可以注释在一个方法上, 最终的效果等于类注解和方法注解的组合. 例如
+在Controller层, 首先需要使用@Controller注解将当前类声明为一个控制器, 然后使用@RequestMapping注解来实现HTTP请求与方法之间的映射. @RequestMapping既可以注解在类上, 也可以注解在方法上, 最终的路径由类上的注解和方法上的注解共同决定.  例如
 
 ```java
 @RequestMapping("/gasMeter")
@@ -45,11 +31,25 @@ public class GasMeterWeb {
 
 则访问`/gasMeter/get`时, Spring会接受HTTP请求, 并调用getGasMeterById方法. 
 
------------
 
-除了简单的字符串匹配以外, @RequestMapping还支持多种匹配方式, 具体方法可以参考以下的文章
+> 除了简单的字符串匹配以外, @RequestMapping还支持多种匹配方式
 
 - [超详细 Spring @RequestMapping 注解使用技巧 ](https://www.oschina.net/translate/using-the-spring-requestmapping-annotation?lang=chs&p=1)
+
+
+--------------------------------
+
+
+默认情况下, 被注解的方法应该返回一个字符串, 表示需要返回的视图的名称. 但如果只需要返回字符串, 则可以加上@ResponseBody注解, 从而表示系统应该讲返回值转为为字符串, 然后直接返回给客户端. 示例如下所示:
+
+``` java
+@RequestMapping("/index.json")
+public @ResponseBody String say() {
+    return "Hello World";
+}
+```
+
+如果整个类都是直接返回字符串, 则可以使用@RestController替换原来的@Controller, 这相当于给每个方法都加上@ResponseBody.
 
 
 请求参数绑定
@@ -90,6 +90,20 @@ public User findById(@PathVariable("id") Long id)
 在实践上, 一般传递少量简单对象时, 使用GET方法+直接定义参数, 需要传递大量复杂对象时, 使用POST方法+@RequestBody注释的对象.
 
 
+
+### 其他特殊参数
+
+对于控制器中的方法, 可以定义为无参数的方法, 也可以定义为如下的一些类型, Spring会自动将这些变量注入当方法之中.
+
+
+参数类型             | 含义                           | 参数类型             | 含义
+--------------------|--------------------------------|---------------------|---------------------------------
+MultipartFile       | 代表上传的文件                  | @RequestHeader      | 将HTTP头部的参数转化为指定的类型
+Model               | 表示视图中使用的Model部分        | ModelAndView        | 包含模型和视图的对象
+@ModelAttribute     | 将注解的变量作为Model的一个属性   | JavaBean            | 将HTTP参数映射为指定的JavaBean
+HttpServletRequest  | 代表HTTP Request                | HttpServletResponse | 代表HTTP Response
+
+
 ### 参考文献和扩展阅读
 - [Spring mvc中Controller参数绑定注解详解](https://blog.csdn.net/iwillbeaceo/article/details/72878114)
 - [【SpringMVC学习05】SpringMVC中的参数绑定总结](https://blog.csdn.net/eson_15/article/details/51718633)
@@ -104,8 +118,10 @@ public User findById(@PathVariable("id") Long id)
 
 
 
-其他组合注解
+组合注解
 --------------
+
+Spring提供了一些组合组件，从而减少在逐渐上的重复代码
 
 ### @RestController
 
@@ -116,13 +132,18 @@ public User findById(@PathVariable("id") Long id)
 对于HTTP的GET, POST等方法, 都提供了一个特殊化的注解, 例如@GetMapping就等于@RequestMapping(method = {RequestMethod.GET})
 
 
-Spring参数绑定过程
-----------------------
 
-虽然经过上述的归纳, 各种注解在语义上没有理解的障碍, 但如果想要搞清楚各个注解具体有什么效果, 默认情况下相当于什么注解, 那么还是需要从Spring的参数绑定过程入手.
+转发和重定向
+-------------------
 
-这一部分的内容正在学习之中, 可以参考以下的一些文章
-    
-- https://blog.csdn.net/eson_15/article/details/51718633
-- https://blog.csdn.net/iwillbeaceo/article/details/72878114
-- https://blog.csdn.net/u013310119/article/details/79776708
+通常情况下, Controller返回表示视图的字符串. 但如果返回一个以`redirect:`为前缀的URL, 则表示重定向到指定的URL. 例如
+
+``` java
+@RequestMapping("/order/saveorder.html")
+public String saveOrder(Order order) {
+    Long orderId = service.addOrder(order);
+    return "redirect:/order/detail.html?orderId="+orderId;
+}
+```
+
+同理, 返回一个以`foward:`为前缀的URL, 则表示转发到指定的URL.
