@@ -9,11 +9,6 @@ cover_picture: images/spring.jpg
 ---
 <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default"></script> -->
 
-本文介绍Spring框架中与数据库操作相关的内容, 主要包括数据库连接池以及MyBatis的基本知识. 在本文的前半部分, 假定已经按照之前的文章[Spring笔记之Spring Web](http://lizec.top/2018/12/23/Spring%E7%AC%94%E8%AE%B0%E4%B9%8BSpringWeb/)完成了基础的配置, 本文将此基础上介绍Spring框架下的数据库配置方法.
-
-在本文的后半部分, 将会介绍Spring Boot环境中如何进行同样的配置. 最后, 本文还将介绍一些可以帮助我们简化MyBatis配置和数据库访问的第三方库.
-
-
 
 数据库组件
 ----------------

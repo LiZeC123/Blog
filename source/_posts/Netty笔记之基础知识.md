@@ -57,7 +57,7 @@ epoll函数相比于前两种函数， 返回时能够提供发生事件的描�
 - ET模式（Edge Trigger）：当epoll_wait检测到描述符事件发生并将此事件通知应用程序，应用程序必须立即处理该事件。如果不处理，下次调用epoll_wait时，不会再次响应应用程序并通知此事件。
 
 - [Linux IO模式及 select、poll、epoll详解](https://segmentfault.com/a/1190000003063859)
-
+- [I/O 模型如何演进及 I/O 多路复用是什么？](https://zhuanlan.zhihu.com/p/77340796)
 
 #### 异步IO
 

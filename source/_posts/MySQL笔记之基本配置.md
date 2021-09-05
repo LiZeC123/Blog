@@ -91,4 +91,3 @@ bind-address      = 127.0.0.1
 - [How To Allow Remote Connections To MySQL](https://phoenixnap.com/kb/mysql-remote-connection)
 
 
-MySQL笔记之事务原理
