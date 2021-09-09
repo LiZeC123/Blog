@@ -120,6 +120,15 @@ protected synchronized Class<?> loadClass(String name, boolean resolve) throws C
 > 自定义的类加载器应该重写findClass方法, 从而复用loadClass的双亲委派逻辑
 
 
+### 破坏双亲委派模型
+
+1. 直接重写loadClass方法, 从而覆盖原本的双亲委派逻辑
+2. SPI机制: 由于SPI机制需要核心类加载用户提供的类, 因此引入线程上下文加载器.
+3. OSGI热部署: 每个模块使用一个单独的类加载器
+
+- [类加载器如何打破双亲委派加载机制（SPI原理）](https://segmentfault.com/a/1190000020858126)
+- [Java使用自定义类加载器实现热部署](https://www.cnblogs.com/yuanyb/p/12066388.html)
+
 ### 模块化的类加载器
 
 JDK9中引入模块化系统, 模块化下的类加载器发生了一些变化.

@@ -14,6 +14,19 @@ cover_picture: images/java.jpg
 在内容方面, 当某些知识变成尝试或者达到了写一篇文章的标准, 那么相应的内容就会从这里删除.
 
 
+
+SPI机制
+---------------
+
+SPI机制即Service Provider Interface, 是服务提供方根据现有接口提供服务实现的一种机制. 典型应用是JDBC驱动, 即无论具体使用哪一种数据库, 客户端代码都只使用JDBC的接口进行交互, 而各个数据库厂商根据接口提供相应的驱动实现类.
+
+SPI提供了一种运行时加载具体实现类的方式. 本质上来说就是根据JAR包中提供的类名, 在运行时动态的加载指定的实现类. 这一套逻辑完全可以自己用代码实现.
+
+- [JDBC驱动加载机制详解以及spi机制](https://blog.csdn.net/qq_38712932/article/details/82987865)
+
+
+
+
 检测线程死锁
 ---------------
 
@@ -58,12 +71,6 @@ serialVersionUID 用于标记序列化类的版本, 如果对类进行了修改,
 
 手动检查是否为Null, 并手动抛出NullPointException可以视为一种防御性编程, 即如果可能发生错误, 则应该尽可能早的产生.
 
-
-Lombok
---------
-
-- [lombok](https://www.projectlombok.org/features/all)
-    - @Slf4j 自动生成LOG对象
 
 
 

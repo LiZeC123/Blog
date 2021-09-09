@@ -86,6 +86,14 @@ runtime     | 编译和打包时不需要, 运行时需要此依赖
 
 提供这些必要信息以后, Maven会自动去中央仓库下载需要的依赖包到本地的仓库. 可以在[MavenRepository](https://mvnrepository.com/)搜索可用的依赖库. 
 
+------------------------
+
+**为什么需要runtime选项:** 对于runtime选项, 由于其在运行时需要, 因此还是会被打包到项目之中, 因此行为上compile并无差别. 但使用runtime选项可以保证在编译阶段不包含此依赖,从而避免客户端错误的引用了其中的代码.
+
+一个典型的例子是JDBC驱动. 客户端代码应该只和对应的API交互, 但运行时需要包含具体的实现类, 例如MySQL驱动. 使用runtime选项导入MySQL驱动既可以保证最终的JAR包中具有相应的驱动, 又可以保证客户端代码中不会错误的导入MySQL的实现类.
+
+- [When would I need maven dependency with runtime scope](https://stackoverflow.com/questions/45842742/when-would-i-need-maven-dependency-with-runtime-scope)
+
 
 ### 仓库
 
