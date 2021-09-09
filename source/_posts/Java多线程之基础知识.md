@@ -23,17 +23,21 @@ cover_picture: images/java.jpg
 
 ![线程状态图](/images/thread/ThreadStates.jpg)
 
-线程在调用start方法后进入RUNNABLE状态, 而RUNNABLE状态根据是否正在运行, 又可以分为READY状态和RUNNING状态.
 
-WAITING是程序主动要求等待某一个信号, 而BLOCKED是JVM控制的等待行为. 因此BLOCKED状态由JVM负责唤醒, 而WAITING由程序控制唤醒.
+1. RUNNABLE状态根据是否正在运行, 又可以分为READY状态和RUNNING状态
+2. 根据是否设置超时时间, WATING状态可分为WAITING和TIMED_WAITING
+3. BLOCKED是JVM控制的等待行为, 而WAITING是程序主动要求等待行为
+4. 进入WAITING状态后, 会放弃持有的锁
+5. [Java线程的6种状态及切换(透彻讲解)](https://blog.csdn.net/pange1991/article/details/53860651)
 
-Java线程进入WAITING状态后, 会放弃持有的锁, 因此被notify唤醒后, 需要先进入BLOCKED状态, 获得锁后才能恢复RUNNING状态.
+----------------
 
+**同步队列与等待队列:** 所有调用wait方法的线程都会进入对应的等待队列, 等待唤醒. 当线程被唤醒后并不是立刻进入RUNNABLE状态, 而是进入同步队列, 等待重新获得锁以后才可以恢复执行.
 
+**为什么wait需要锁:** 因为wait通常需要伴随条件检查, 需要保证条件检查和wait调用是原子的, 否则分开执行可能导致条件已经变化了但还是执行了wait方法.
 
-更多关于线程切换的细节, 可以参考以下资料
-- [Java线程的6种状态及切换(透彻讲解)](https://blog.csdn.net/pange1991/article/details/53860651)
-
+- [阿里巴巴面试题： 为什么wait()和notify()需要搭配synchonized关键字使用](https://blog.csdn.net/lengxiao1993/article/details/52296220)
+- [wait为什么要在同步块中使用？ 为什么sleep就不用再同步块中？](https://www.cnblogs.com/myseries/p/13903051.html)
 
 
 ### 创建线程
