@@ -257,6 +257,24 @@ public Object printReceiveLog(final ProceedingJoinPoint joinPoint) throws Throwa
 关于AOP 表达式的详细规则可以查阅Spring文档中的[Aspect Oriented Programming with Spring](https://docs.spring.io/spring/docs/5.1.3.RELEASE/spring-framework-reference/core.html#aop-pointcuts)章节
 
 
+三级缓存结构
+-----------------
+
+如果对象A和对象B循环依赖，且都有代理的话，那创建的顺序就是
+
+- A半成品加入第三级缓存
+- A填充属性注入B -> 创建B对象 -> B半成品加入第三级缓存
+- B填充属性注入A -> 创建A代理对象，从第三级缓存移除A对象，A代理对象加入第二级缓存（此时A还是半成品，B注入的是A代理对象）
+- 创建B代理对象（此时B是完成品） -> 从第三级缓存移除B对象，B代理对象加入第一级缓存
+- A半成品注入B代理对象
+- 从第二级缓存移除A代理对象，A代理对象加入第一级缓存
+
+
+参考资料
+- [Spring循环依赖三级缓存是否可以去掉第三级缓存？](https://segmentfault.com/a/1190000023647227)
+
+
+
 MVC架构
 ---------------
 
