@@ -3,7 +3,7 @@ FROM node:14.17-alpine
 ENV TZ Asia/Shanghai
 
 RUN apk update && \
-    apk add --no-cache tzdata \
+    apk add --no-cache tzdata && \
     npm install hexo-cli -g
 
 COPY package.json package-lock.json /app/
