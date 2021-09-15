@@ -1,0 +1,9 @@
+version: '2'
+services:
+  blog:
+    container_name: blog
+    build: 
+      context: ./
+      dockerfile: docker/Dockerfile
+    ports: 
+        - "7080:80"
