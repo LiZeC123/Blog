@@ -37,7 +37,7 @@ cover_picture: images/JVM.png
 
 验证阶段主要的工作是验证字节码是否满足Java虚拟机中的约束要求, 是否存在危害虚拟机安全的代码. 
 
-Java语言规定了很对不安全的行为, 包括数组越界, 跳转到不存在的代码位置等. 如果在Java语言中出现了这些行为, 代码将无法编译. 但字节码文件可以通过其他方式产生, 因此JVM并不能直接信任字节码文件中的代码.
+Java语言规定了很多不安全的行为, 包括数组越界, 跳转到不存在的代码位置等. 如果在Java语言中出现了这些行为, 代码将无法编译. 但字节码文件可以通过其他方式产生, 因此JVM并不能直接信任字节码文件中的代码.
 
 验证阶段的内容比较多且比较细节, 具体可以查看[Java Virtual Machine Specification 5.4.1. Verification](https://docs.oracle.com/javase/specs/jvms/se15/html/jvms-5.html#jvms-5.4.1)
 
