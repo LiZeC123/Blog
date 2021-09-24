@@ -103,7 +103,7 @@ protected synchronized Class<?> loadClass(String name, boolean resolve) throws C
 
         if (c == null) {
             // 在父类加载器无法加载时
-            // 再调用本身的findClass方法来进行类加载
+            // 再调用本身的findClass方法来进行类加载    
             c = findClass(name);
         }
     }
