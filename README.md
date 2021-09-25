@@ -1,5 +1,10 @@
-LiZeC的博客的项目源代码
+LiZeC的博客源码
 ==========================
+
+![](https://img.shields.io/github/license/LiZeC123/Blog)
+![GitHub commit activity](https://img.shields.io/github/commit-activity/m/LiZeC123/Blog)
+![GitHub last commit](https://img.shields.io/github/last-commit/LiZeC123/Blog)
+
 
 
 LiZeC的博客的项目源代码, 访问 https://lizec.top 查看博客.
