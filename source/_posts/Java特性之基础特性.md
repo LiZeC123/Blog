@@ -316,7 +316,7 @@ Integer.compare(a,b)    | 比较两个数的值,并且保证没有溢出风险
 全局日志
 -----------
 
-从Java 7开始, 提供了一种简便获得日志对象的方法, 即`Logger.getClobel()`, 使用此函数可以简便的替换`System.out.println()`进行日志输出.
+从Java 7开始, 提供了一种简便获得日志对象的方法, 即`Logger.getGlobel()`, 使用此函数可以简便的替换`System.out.println()`进行日志输出.
 
 ``` java
 Logger.getGlobal().setLevel(Level.WARNING);

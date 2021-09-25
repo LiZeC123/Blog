@@ -135,8 +135,13 @@ BOM是`Bill Of Materials`的缩写, 所谓Maven BOM实际上也是一个普通�
 3. 导入的BOM文件中声明的版本
 4. 版本协调机制
 
+> 其中使用`dependencyManagement`标签指定版本的方式又被称为版本锁定, 因为其直接指定了版本, 因此就不用进入后续的版本协调机制.
 
-### 版本协调机制
+
+版本协调机制
+--------------
+
+### 最短路径原则
 
 当有两个依赖B和C同时依赖D, 但依赖的D的版本不同的时候, Maven会优先选择离依赖树顶部最近的版本. 例如有如下的两个依赖
 
@@ -148,62 +153,10 @@ A - E - D (1.0)
 上面的依赖关系中, A依赖B和E, B和E最终都依赖D, 由于D(1.0)在依赖树中离A更近, 因此Maven最终会选择D(1.0)
 
 
+### 版本排除
 
-Spring依赖管理
---------------
+可以使用`exclusion`标签来显式的排除依赖, 例如对于上面的依赖E, 可以在其中直接排除对D的依赖, 使得整个项目最终采取C中的1.2版本依赖.
 
-### Spring Framework BOM
-在使用Spring的过程中, 我们多少都有过版本冲突的问题, 如果我们没有明确指定冲突的版本, 很容易产生一些意料之外的错误. 为了克服这种问题, 我们可以导入`spring-framework-bom`
+### 可选依赖
 
-``` xml
-<dependencyManagement>
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-framework-bom</artifactId>
-            <version>4.3.8.RELEASE</version>
-            <type>pom</type>
-            <scope>import</scope>
-        </dependency>
-    </dependencies>
-</dependencyManagement>
-```
-
-导入此文件后, 我们使用Spring依赖时不再需要指定版本, 由BOM文件保证所有的Spring依赖使用同样的版本.
-
-### Spring Boot Starter Parent
-
-如果创建Spring Boot应用, 可以将`spring-boot-starter-parent`作为父项目, 从而基础一些配置和依赖, 实现编译控制, 打包支持, 插件配置等功能. 
-
-``` xml
-<parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.1.6.RELEASE</version>
-</parent>
-```
-
-使用这种方案继承`spring-boot-starter-parent`后, 也不再需要指定spring boot相关项目的依赖版本.
-
-
-### 导入dependency
-如果需要使用Spring Boot 和Spring Cloud等组件, 由于POM的单继承, 不能同时继承, 此时可以使用导入的方式导入相应的依赖.
-
-```xml
-<dependencyManagement>
-    <dependencies>
-        <dependency>
-            <!-- Import dependency management from Spring Boot -->
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-dependencies</artifactId>
-            <version>2.2.0.BUILD-SNAPSHOT</version>
-            <type>pom</type>
-            <scope>import</scope> 
-        </dependency>
-    </dependencies>
-</dependencyManagement>
-```
-
-
-导入依赖以后, 同样不需要指定版本, 但关于
-- [理解spring-boot-starter-parent](https://www.jianshu.com/p/628acadbe3d8)  
+在导入依赖时, 可以将其指定为`optional`, 从而如果此项目被其他项目依赖, 则可选依赖不会被间接依赖.
