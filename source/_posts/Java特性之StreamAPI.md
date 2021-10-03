@@ -169,7 +169,8 @@ sorted的排序依赖Comparable<T>接口, String,Integer等类已经实现了此
 min         | 获得流中最小值                    | max         | 获得流中最大值
 findFirst   | 返回第一个符合条件的元素           |findAny     | 返回任意一个符合条件的元素(对多线程操作更友好) 
 allMatch    | 返回是否所有元素均匹配给定的条件    |noneMatch   | 返回是否所有元素均不匹配给定的条件 
- 
+
+
 findFirst和findAny需要在调用之前调用filter函数进行筛选,而allMatch和noneMatch本身接受一个函数,因此可以直接使用
 
 findFirst和findAny方法返回元素,而allMatch和noneMatch方法返回Boolean值
@@ -309,10 +310,6 @@ Map<Integer,Person> idToPerson = people.collect(Collectors.toMap(Person::getID, 
 
 **如果有多个元素具有同样的key, 此方法会抛出IllegalStateException.** 针对这种冲突, Collectors提供了groupingby方法来处理这种情况.
 
-
-```
-
-```
 
 ### 转化为字符串
 
