@@ -93,3 +93,34 @@ JDK集合类归纳
 
 - [Java语法总结--Java集合类](https://www.cnblogs.com/zhouyuqin/p/5168573.html)
 - [排序算法时间复杂度、空间复杂度、稳定性比较](https://blog.csdn.net/yushiyi6453/article/details/76407640)
+
+
+JVM常用参数
+----------------
+
+参数                        | 含义
+----------------------------|------------------------------------
+-Xms                        | 设置初始堆大小
+-Xmx                        | 设置最大堆大小
+-XX:+PrintCommandLineFlags  | 打印设置的参数(包括默认参数)
+
+
+
+实际上JVM会根据设备可用的内存数量来调整默认使用的垃圾回收算法. 例如在我的服务器上(1GB内存)和开发机器上(16GB内存)分别答应默认的参数. 其结果如下所示:
+
+
+```
+-XX:InitialHeapSize=16071680 -XX:MaxHeapSize=257146880 -XX:+PrintCommandLineFlags -XX:ReservedCodeCacheSize=251658240 -XX:+SegmentedCodeCache -XX:+UseCompressedClassPointers -XX:+UseCompressedOops -XX:+UseSerialGC 
+openjdk 11.0.10 2021-01-19
+OpenJDK Runtime Environment 18.9 (build 11.0.10+9)
+OpenJDK 64-Bit Server VM 18.9 (build 11.0.10+9, mixed mode, sharing)
+```
+
+```
+-XX:G1ConcRefinementThreads=8 -XX:GCDrainStackTargetSize=64 -XX:InitialHeapSize=267607488 -XX:MaxHeapSize=4281719808 -XX:+PrintCommandLineFlags -XX:ReservedCodeCacheSize=251658240 -XX:+SegmentedCodeCache -XX:+UseCompressedClassPointers -XX:+UseCompressedOops -XX:+UseG1GC -XX:-UseLargePagesIndividualAllocation
+java 11.0.4 2019-07-16 LTS
+Java(TM) SE Runtime Environment 18.9 (build 11.0.4+10-LTS)
+Java HotSpot(TM) 64-Bit Server VM 18.9 (build 11.0.4+10-LTS, mixed mode)
+```
+
+由于服务器上内存较少, 因此默认采取最简单的Serial系列垃圾回收器, 从而节省内存消耗. 而开发机器上内存比较充足, 因此采取了性能更好的G1垃圾收集器.
