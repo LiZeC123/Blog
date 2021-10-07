@@ -76,7 +76,7 @@ Math::pow           <==> (x,y) -> Math.pow(x,y)
 
 对于第三种情况,第一个参数将成为执行方法的对象,例如
 ``` java
-String::length() <==> x -> x.length()
+String::length <==> x -> x.length()
 String::compareToIgnoreCase <==> (x,y) -> x.compareToIgnoreCase(y)
 ```
 
@@ -94,7 +94,8 @@ public class Main {
 }
 ```
 在上述hello()函数中,this指的就是所在的Main类,而this::greet就是该类中的greet函数. 实际上这与匿名类中使用`外部类.this`来访问外部的变量是类似的效果.
-注意: 内部类中使用的this指的是内部类本身,而不是外部的类,这是lambda与内部类的一个区别
+
+> 注意: 内部类中使用的this指的是内部类本身,而不是外部的类,这是lambda与内部类的一个区别
 
 除了引用普通的方法以外,还可以**引用构造函数**,例如
 ``` java
