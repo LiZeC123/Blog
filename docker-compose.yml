@@ -2,8 +2,6 @@ version: '2'
 services:
   blog:
     container_name: blog
-    build: 
-      context: ./
-      dockerfile: docker/Dockerfile
+    image: ghcr.io/lizec123/blog:latest
     ports: 
         - "7080:80"
