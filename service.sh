@@ -4,6 +4,13 @@ function backup() {
   echo "Done."
 }
 
+function update() {
+  git pull
+  docker-compose down
+  docker pull ghcr.io/lizec123/blog:latest
+  docker-compose up -d
+}
+
 
 if [ "$1"x == "backup"x ]; then
   backup
