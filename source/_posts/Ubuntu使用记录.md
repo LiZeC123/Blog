@@ -333,3 +333,37 @@ curl URL -F "file=XXX" -F "name=YYY"            | 上传文件
 注意: 如果URL或者参数中包含特殊字符, 则需要使用引号将内容包裹起来,否则shell会错误的解析指令的内容.
 
 Chrome的postman插件也可以完成curl的功能, 如果能够安装此插件, 则可以完全图形化地完成上述的操作.
+
+
+配置Samba服务
+----------------
+
+执行如下指令安装服务并设置共享路径和用户名密码
+
+```bash
+sudo apt-get install samba samba-common
+sudo mkdir /home/lizec/share
+sudo chmod 777 /home/lizec/share
+sudo smbpasswd -a lizec
+```
+
+配置`/etc/samba/smb.conf`文件, 添加如下内容
+
+```
+[share]
+comment = share folder
+browseable = yes
+path = /home/lizec/share
+create mask = 0700
+directory mask = 0700
+valid users = lizec
+force user = lizec
+force group = lizec
+public = yes
+available = yes
+writable = yes
+```
+
+> 如果使用VIM, 注意复制的时候开头的字母是否完整的复制. 此服务不检查配置文件语法结构是否正确
+
+- [Ubuntu 18.04安装Samba服务器及配置](linuxidc.com/Linux/2018-11/155466.htm)
