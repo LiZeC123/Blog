@@ -61,10 +61,9 @@ sudo blkid
 
 
 ```
-UUID=66E85884E8585501   /home/deepin/WinHome/C ntfs defaults 0 1
-UUID=58682F90682F6BC6   /home/deepin/WinHome/D ntfs defaults 0 1
-UUID=FA1CAC411CABF733   /home/deepin/WinHome/E ntfs defaults 0 1
-UUID=0472ECE072ECD806   /home/deepin/WinHome/F ntfs defaults 0 1
+UUID=66E85884E8585501   /home/lizec/share/C ntfs defaults 0 1
+UUID=58682F90682F6BC6   /home/lizec/share/D ntfs defaults 0 1
+UUID=FA1CAC411CABF733   /home/lizec/share/E ntfs defaults 0 1
 ```
 
 以上配置前三项分别是`分区ID`, `挂载点`, `分区格式`. 其余的配置可以使用默认值.
