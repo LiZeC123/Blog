@@ -366,3 +366,25 @@ writable = yes
 > 如果使用VIM, 注意复制的时候开头的字母是否完整的复制. 此服务不检查配置文件语法结构是否正确
 
 - [Ubuntu 18.04安装Samba服务器及配置](linuxidc.com/Linux/2018-11/155466.htm)
+
+
+配置代理服务
+----------------
+
+对于部分常用软件, 可以通过配置代理的方式加速
+
+### Git
+
+```
+git config --global http.proxy 'socks5://127.0.0.1:1080'
+git config --global https.proxy 'socks5://127.0.0.1:1080'
+```
+
+### Docker
+
+Docker首先设置环境变量, 输入代理的配置, 然后重启docker服务即可生效
+
+``` bash
+export ALL_PROXY=socks5://127.0.0.1:1080 
+sudo service docker restart
+```
