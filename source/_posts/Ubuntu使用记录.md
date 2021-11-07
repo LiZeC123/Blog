@@ -363,6 +363,11 @@ writable = yes
 
 - [Ubuntu 18.04安装Samba服务器及配置](linuxidc.com/Linux/2018-11/155466.htm)
 
+> 如果客户端连接遇到问题, 可以参考如下的解决方案
+
+- [win10不能访问samba共享问题的解决](https://blog.csdn.net/maxzero/article/details/81410620)
+- [win10系统访问samba服务器时提示：用户名和密码错误](https://blog.csdn.net/Panda_YinLP/article/details/104687438)
+
 
 配置代理服务
 ----------------
