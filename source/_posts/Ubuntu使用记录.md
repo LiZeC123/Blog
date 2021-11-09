@@ -218,10 +218,6 @@ export PATH=~/bin:"$PATH"
 3. 重启终端使配置生效
 
 
-编译线程有关程序
--------------------------
-如果用到了pthread.h中的函数,在使用gcc编译的时候,需要加上-pthread 
-
 
 MySQL中文乱码
 -------------------------
@@ -387,9 +383,41 @@ git config --global https.proxy 'socks5://127.0.0.1:1080'
 
 ### Docker
 
-Docker首先设置环境变量, 输入代理的配置, 然后重启docker服务即可生效
+Docker的代理分为两类, 一类是docker指令在拉取镜像过程中使用的代理, 配置可以参考[HTTP/HTTPS proxy](https://docs.docker.com/config/daemon/systemd/#httphttps-proxy). 一类是容器运行过程中使用的代理, 可以参考[Configure the Docker client](https://docs.docker.com/network/proxy/#configure-the-docker-client). 配置文件可以参考如下的内容:
 
-``` bash
-export ALL_PROXY=socks5://127.0.0.1:1080 
-sudo service docker restart
+```
+{
+ "proxies":
+ {
+   "default":
+   {
+     "httpProxy": "socks5://127.0.0.1:1080",
+     "httpsProxy": "socks5://127.0.0.1:1080",
+     "noProxy": ""
+   }
+ }
+}
+
+[Service]
+Environment="HTTP_PROXY=socks5://127.0.0.1:1080"
+Environment="HTTPS_PROXY=socks5://127.0.0.1:1080"
+```
+
+编译线程有关程序
+-------------------------
+如果用到了pthread.h中的函数,在使用gcc编译的时候,需要加上-pthread 
+
+
+编译32位程序
+-----------------------
+
+安装如下的包
+
+```
+sudo apt install build-essential module-assistant gcc-multilib g++-multilib  
+```
+
+之后可以使用`-m32`指令进行编译, 例如
+```
+gcc -m32 hello.c
 ```
