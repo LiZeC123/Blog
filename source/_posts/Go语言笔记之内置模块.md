@@ -84,24 +84,52 @@ Go语言中使用map定义哈希表, 例如
 
 ```go
 dict := make(map[string]string) 
-    // 添加数据
-    dict["go"] = "Golang"
-    dict["cs"] = "CSharp"
-    dict["rb"] = "Ruby"
-    dict["py"] = "Python"
-    dict["js"] = "JavaScript"
-    // 遍历
-    for k, v := range dict {
-        fmt.Printf("Key: %s Value: %s\n", k, v)
-    }
-    //删除
-    delete(dict, "go") 
+// 添加数据
+dict["go"] = "Golang"
+dict["cs"] = "CSharp"
+dict["rb"] = "Ruby"
+dict["py"] = "Python"
+dict["js"] = "JavaScript"
+// 遍历
+for k, v := range dict {
+    fmt.Printf("Key: %s Value: %s\n", k, v)
+}
+//删除
+delete(dict, "go") 
+```
 
-    // 获取数据
-    goString, ok := dict["go"]
-    if !ok { /* ... */ }
+map会自动扩容, 但创建是设置一个合适的初始值有助于减少扩容的性能消耗.  map是引用类型, 因此传递map对象与传递一个指针的代价相同. 
 
-    if goString, ok := dict["go"]; !ok{
-        /* ... */ 
-    }
+
+### 获取数据
+
+由于map中能够存储任意类型的数据, 因此获取数据时可以采用如下的两种方式
+
+```go
+// 如果数据不存在返回nil, 如果本身就是nil, 也会返回nil
+val = dict[key]
+
+// 如果数据存在, ok值为true, 否则为false
+val, ok = dict[key]
+
+// 仅判断是否存在数据
+_, ok = dict[key]
+
+
+// 与if混合使用
+if goString, ok := dict["go"]; !ok{
+    /* ... */ 
+}
+```
+
+### map的切片
+
+如果需要获得一个map的切片, 则需要分为两步构造此数据结构. 第一步对切片分配空间, 第二步对每个元素分配map的空间, 即
+
+```go
+items := make([]map[int]int, 5)
+for i:= range items {
+    items[i] = make(map[int]int, 1)
+    items[i][1] = 2
+}
 ```
