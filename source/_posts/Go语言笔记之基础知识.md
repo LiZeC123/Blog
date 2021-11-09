@@ -283,7 +283,11 @@ func main() {
 > 对于需要关闭的资源, 在开启后紧跟一个defer引导的关闭语句就可以确保不会忘记关闭资源
 
 
-### 结构体
+结构体
+--------------
+
+
+Go语言中的结构体与C语言中的结构体定义基本一致. 一个简单的结构体定义如下
 
 ```go
 type Vertex struct {
@@ -301,8 +305,47 @@ func main() {
 ```
 
 
-类
--------------
+在代码中可以直接创建结构体, 也能够通过new关键字以指针的形式访问
+
+```go
+type Interval struct {
+    start int
+    end   int
+}
+
+intr := Interval{0, 3}  
+intr := Interval{end:5, start:1}
+intr := Interval{end:5}
+
+p := new(Interval)
+p := &Interval{0, 3} // 特殊写法, 本质还是new初始化
+```
+
+> 和C一样, Go的结构体布局默认是紧凑的连续存储布局, 只有显示的存放指针的时候才会和Java的对象布局一样.
+
+
+### 构造函数
+
+由于Go中实际上并不存在类, 因此如果一个结构体需要初始化函数, 通常创建一个以new开头的函数, 例如
+```go
+type File struct {
+    fd      int     // 文件描述符
+    name    string  // 文件名
+}
+
+func NewFile(fd int, name string) *File {
+    if fd < 0 {
+        return nil
+    }
+
+    return &File{fd, name}
+}
+```
+
+> 通过控制结构体本身的可见性和构造函数的可见性就可以实现强制使用构造函数
+
+
+### 方法
 
 Go语言中并没有类, 但可以把方法绑定到一个类型上. 例如
 
