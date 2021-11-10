@@ -403,6 +403,16 @@ Environment="HTTP_PROXY=socks5://127.0.0.1:1080"
 Environment="HTTPS_PROXY=socks5://127.0.0.1:1080"
 ```
 
+### pip
+
+pip可以临时指定使用的镜像, 例如
+
+```
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple some-package
+```
+
+- [ubuntu更换安装源和pip镜像源](https://blog.csdn.net/wssywh/article/details/79216437)
+
 编译线程有关程序
 -------------------------
 如果用到了pthread.h中的函数,在使用gcc编译的时候,需要加上-pthread 
