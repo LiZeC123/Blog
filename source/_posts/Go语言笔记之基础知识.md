@@ -344,6 +344,50 @@ func NewFile(fd int, name string) *File {
 
 > 通过控制结构体本身的可见性和构造函数的可见性就可以实现强制使用构造函数
 
+### 匿名成员
+
+在定义结构体时可以不指定成员变量的名称，而是直接给定类型，此时相当于定义了一个与类型同名的成员变量
+
+```go
+type MyNumber struct {
+	int
+	float32
+}
+
+number := MyNumber{
+    int:     12,
+    float32: 3.14,
+}
+```
+
+
+### 结构体嵌套
+
+除了基本类型以外，结构体类型也可以声明匿名成员，此时就相当于直接将该结构体直接嵌入到定义的结构体中。例如
+
+```go
+
+type Honor struct {
+	Title string
+	GetTime time.Time
+}
+
+type Chef struct {
+	Name string
+	Age int
+	Honor
+	Trainee *Chef
+}
+
+func main() {
+	chef := Chef{Name: "LiZeC", Age: 3, Honor:Honor{}, Trainee: nil}
+    chef.Honor.GetTime = time.Now()     // 通过Horror间接访问 
+	chef.Title = "Honor Test"           // 直接访问
+}
+```
+
+定义Chef类型时，直接声明了一个Honor类型而没有设置变量的名称（也被称为匿名成员），此时Chef等价于自动具有了Honor类型的所有字段，可以直接用对应的变量名访问。
+
 
 ### 方法
 
@@ -358,21 +402,21 @@ func (v Vertex) Abs() float64 {
     return math.Sqrt(v.X*v.X + v.Y*v.Y)
 }
 
+func (v *Vertex) Scale(f float64) {
+    v.X = v.X * f
+    v.Y = v.Y * f
+}
+
+
 func main() {
     v := Vertex{3, 4}
     fmt.Println(v.Abs())
 }
 ```
 
-其实这一操作有点类似与lambda表达式的变量捕获.  当Vertex直接以变量的形式声明时, 采取复制的方式传递值, 因此方法内部不能对变量进行修改(准确来说, 修改是无效的). 如果希望方法能够修改变量, 则需要声明为指针, 例如
+当Vertex直接以值类型的形式声明时, 采取复制的方式传递值, 因此方法内部不能对变量进行修改(准确来说, 修改是无效的)，同时拷贝数据也会产生一些性能消耗. 如果希望方法能够修改变量, 或者避免拷贝大量数据的性能消耗，则可以声明为指针类型。
 
-```go
-func (v *Vertex) Scale(f float64) {
-    v.X = v.X * f
-    v.Y = v.Y * f
-}
-```
-
+绑定在值类型上的方法和绑定在指针类型上的方法属于不同的集合。但用方法时Go会自动转换，因此无论调用方是值类型还是指针类型都可以直接调用。
 
 ------------------------------------------------------------------------------
 
@@ -412,22 +456,24 @@ type Abser interface {
 可以将实现了接口中方法的变量赋值给接口, 例如
 
 ```go
+type Vertex struct {
+	X float64
+	Y float64
+}
+
+func (v *Vertex) Abs() float64 {
+	return math.Sqrt(v.X*v.X + v.Y*v.Y)
+}
 
 func main() {
-    var a Abser
-    f := MyFloat(-math.Sqrt2)
-    v := Vertex{3, 4}
-
-    a = f  // a MyFloat implements Abser
-    a = &v // a *Vertex implements Abser
-
-    fmt.Println(a.Abs())
+	var abser Abser
+	abser = &Vertex{}
 }
 ```
 
-> **注意：**在对**接口**赋值时, 绑定在Vertex上的方法和绑定在*Vertex上的方法是不通用的. 
+**注意：**  绑定在值类型的方法和绑定在指针类型上的方法属于不同的集合，因此在对**接口**赋值时, 需要保证对象具有的方法完全一致。由于Abs方法绑定在*Vertex类型，因此只能将Vertex类型取地址后复制给Abser接口。
 
-基于上面的赋值操作, 我们可以注意到对于接口的实现是没有显式的声明的.  这有点类似Python的鸭子类型, 只要实现了对应的方法就可以视为对应的接口. 
+Go语言的接口是鸭子类型的，只要实现了对应的方法就可以视为对应的接口. 
 
 
 ### 接口类型转换
@@ -484,6 +530,31 @@ type File interface {
     Close()
 }
 ```
+
+---------------------
+
+除了接口继承接口以外，也可以使用结构体继承接口，例如
+
+```go
+type UpperWriter struct {
+	io.Writer
+}
+
+func (p *UpperWriter) Write(data []byte) (n int, err error) {
+	return p.Writer.Write(bytes.ToUpper(data))
+}
+
+func main() {
+ 	fmt.Fprintln(&UpperWriter{Writer:os.Stdout}, "Hello World");
+}
+```
+
+首先UpperWriter声明了一个匿名接口io.Writer，因此获得了一个成员变量Writer，并且实现了Write方法。由于在创建UpperWriter时，将成员变量Writer绑定到os.Stdout上，因此此时调用Write就等于调用os.Stdout的Write方法。
+
+之后UpperWriter重写了Write方法，将文本大写后转发给成员变量Writer进行处理，因此相当于继承了os.Stdout并重写了Write方法。
+
+最后，由于接口io.Writer只定义了一个Write方法，而UpperWriter的Write方法绑定在指针上，所以传入fmt.Fprintln时需要取地址才能转化为io.Writer接口。
+
 
 ### 空接口
 
