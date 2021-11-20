@@ -59,7 +59,12 @@ buster  | buster是Debian系统当前稳定版的代号
 
 ### 执行指令
 
-使用`RUN`指令可以在Guest中执行任意的Shell指令，例如进行一些参数设置或者安装需要的依赖程序。
+使用`RUN`指令可以在Guest中执行任意的Shell指令，例如进行一些参数设置或者安装需要的依赖程序。由于每行指令都会产生一个新的层，因此不要用写Shell的思路写`RUN`指令，而应该尽可能一次性执行全部指令，例如
+
+```
+RUN apk update && \
+    apk add --no-cache tzdata
+```
 
 
 ### 程序入口
