@@ -31,7 +31,7 @@ menu:
     url: /slides/
     target: false
   sticky-note:
-    title: NoteBook
+    title: Note
     url: /notebook/
     target: false
   user:
