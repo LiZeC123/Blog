@@ -32,7 +32,7 @@ menu:
     target: false
   sticky-note:
     title: Note
-    url: /notebook/
+    url: /note/
     target: false
   user:
     title: About
