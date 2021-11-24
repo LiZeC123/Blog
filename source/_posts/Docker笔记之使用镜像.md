@@ -9,9 +9,9 @@ cover_picture: images/docker.jpg
 <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default"></script> -->
 
 
-Docker可以视为一种轻量级的虚拟机, 可以将应用程序和其依赖环境进行打包, 从而在新平台上直接部署. 因此如果依赖环境基本不变, 服务器状态基本不变, 只有其中的应用程序不断更新, 那么在这种场景下, Docker的意义不大. 以Python项目为例, Conda完全可以实现配置依赖环境的功能, 且与Docker相比, 减少了打包等操作.
+Docker可以视为一种轻量级的虚拟机, 可以将应用程序和其依赖环境进行打包, 从而在新平台上直接部署. 由于Docker将程序的依赖全部打包到一起, 因此极大的简化了部署操作, 提高了软件部署的效率.
 
-Docker的另外一个意义是实现微服务, 每一个组件都可以单独放置在一个Docker容器内, 并且容器之间相互隔离. 因此如果不使用微服务, 那么这种情况下也不适合使用Docker.
+此外, 由于Docker本身具有的隔离性, 将其作为开发环境使用也非常方便, 可以随意尝试各种指令. 如果出现问题只需要重新运行镜像就可以恢复到最初的状态.
 
 在适合Docker的场景下, 使用Docker可以减少工作量, 在其他场景下, 使用脚本可能是一个更适合的方案. 本文介绍Docker的基本概念, 配置方法, 和基本使用.
 
@@ -34,7 +34,7 @@ sudo systemctl enable docker
 - [How To Install Docker On Ubuntu 18.04 Bionic Beaver](https://phoenixnap.com/kb/how-to-install-docker-on-ubuntu-18-04)
 
 
-### 配置镜像
+### 配置国内加速器
 
 在 /etc/docker/daemon.json 中写入如下内容（如果文件不存在请新建该文件）
 ```json
@@ -53,6 +53,10 @@ sudo systemctl restart docker
 ```
 
 - [镜像加速器](https://yeasy.gitbook.io/docker_practice/install/mirror)
+
+------------------------------------------
+
+如果需要拉取的进行镜像在国内的加速器中没有, 则还可以考虑对docker配置代理, 使用代理服务器加速. 具体的配置可以参考[Docker代理配置](https://lizec.top/2017/08/10/Ubuntu%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/#Docker)
 
 
 Docker操作镜像
@@ -117,6 +121,8 @@ docker container run -it --rm ubuntu:18.04 bash
 
 通常情况下, 是不会删除容器文件的, 但出于测试的目的, 可以在使用完毕后删除容器文件, 从而节省硬盘空间.
 
+> 但实际上只有修改的文件才会产生空间消耗, 所以容器本身并没有那么消耗空间
+
 ### 进入容器
 
 在镜像运行以后, 还可以通过命令行进入容器内, 从而查看或者执行需要的指令. 可以使用如下的指令进入容器并启动一个shell
@@ -129,13 +135,21 @@ sudo docker exec -it <containerID> /bin/bash
 
 - [进入docker容器的四种方法](https://blog.csdn.net/skh2015java/article/details/80229930)
 
+### 保存容器
+
+可以使用docker commit指令将容器保存为镜像. 
+
+```bash
+sudo docker commit -a "runoob.com" -m "my apache" a404c6c174a2  mymysql:v1 
+```
+
+> 通过保存容器的方式可以交互式的构建复杂的镜像, 实现搭建开发环境, 临时保存工作区等功能
 
 
 Docker维护
 --------------------
 
 ### 映射
-
 
 通常情况下, 可以直接运行相关的镜像, 如果容器需要存储空间, 会自动映射数据卷. 但也可以通过手动指定的方式, 明确数据卷的存储位置.
 
@@ -144,22 +158,16 @@ Docker维护
 $ docker run -d -v nextcloud:/var/www/html -p 8080:80 nextcloud
 ```
 
-以上述指令为例, 通过`-v`参数将宿主机的相对路径目录`nextcloud`映射到了容器中的`/var/www/html`. 当宿主机使用功能相对路径时, 其相对于数据卷的根目录`/var/lib/docker/volumes/`.
+以上述指令为例, 通过`-v`参数将宿主机的相对路径目录`nextcloud`映射到了容器中的`/var/www/html`. 当宿主机使用相对路径时, 其相对的根目录是数据卷的根目录`/var/lib/docker/volumes/`.
 
 通过`-p`参数, 将宿主机的8080端口与容器的80端口关联, 从而访问宿主机8080端口就等价于访问容器的80端口.
 
-
-
-
 - [关于Docker目录挂载的总结](https://www.cnblogs.com/ivictor/p/4834864.html)
-
-
 
 
 ### 查看空间占用情况
 
 Docker的容器在运行过程中可能需要存储数据, 进而在磁盘上创建数据卷, 可以使用`docker system df -v`查看docker所有相关组件的空间占用情况
-
 
 ```
 root@iZ:~# docker system df -v
