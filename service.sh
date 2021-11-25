@@ -13,7 +13,8 @@ function update() {
 
 
 if [ "$1"x == "backup"x ]; then
-  backup
+  # 博客由于在Github存在备份, 因此不再手动备份
+  # backup
 elif [ "$1"x == "update"x ]; then
   update
 else
