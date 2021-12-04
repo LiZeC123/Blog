@@ -1,8 +1,4 @@
-function backup() {
-  echo "Zip Blog..."
-  zip -r Blog.zip . -x "node_modules/*" -x  "public/*" -x ".git/*" > /dev/null
-  echo "Done."
-}
+#! /bin/bash
 
 function update() {
   git pull
@@ -14,7 +10,7 @@ function update() {
 
 if [ "$1"x == "backup"x ]; then
   # 博客由于在Github存在备份, 因此不再手动备份
-  # backup
+  :
 elif [ "$1"x == "update"x ]; then
   update
 else
