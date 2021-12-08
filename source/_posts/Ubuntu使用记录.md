@@ -97,6 +97,18 @@ sudo du -sh /var/cache/apt/archives/
 sudo apt clean
 ```
 
+APT更换国内镜像源
+-------------------------
+
+```
+cp -a /etc/apt/sources.list /etc/apt/sources.list.bak 
+wget -O /etc/apt/sources.list http://mirrors.cloud.tencent.com/repo/ubuntu20_sources.list
+apt-get clean all && apt-get update
+```
+
+- [Linux-Ubuntu20更换apt源](https://blog.csdn.net/timonium/article/details/115540622)
+
+
 
 扩展可用空间
 -------------------------
@@ -361,7 +373,13 @@ writable = yes
 
 > 如果使用VIM, 注意复制的时候开头的字母是否完整的复制. 此服务不检查配置文件语法结构是否正确
 
-- [Ubuntu 18.04安装Samba服务器及配置](linuxidc.com/Linux/2018-11/155466.htm)
+最后重启服务, 启用配置
+
+```
+sudo service smbd restart
+```
+
+- [Ubuntu 18.04安装Samba服务器及配置](https://www.linuxidc.com/Linux/2018-11/155466.htm)
 
 > 如果客户端连接遇到问题, 可以参考如下的解决方案
 
@@ -383,8 +401,19 @@ git config --global https.proxy 'socks5://127.0.0.1:1080'
 
 ### Docker
 
-Docker的代理分为两类, 一类是docker指令在拉取镜像过程中使用的代理, 配置可以参考[HTTP/HTTPS proxy](https://docs.docker.com/config/daemon/systemd/#httphttps-proxy). 一类是容器运行过程中使用的代理, 可以参考[Configure the Docker client](https://docs.docker.com/network/proxy/#configure-the-docker-client). 配置文件可以参考如下的内容:
 
+
+
+Docker的代理分为两类, 一类是docker指令在拉取镜像过程中使用的代理, 配置可以参考[Configure the Docker client](https://docs.docker.com/network/proxy/#configure-the-docker-client). 
+
+首先创建配置文件
+
+```
+mkdir ~/.docker
+vim ~/.docker/config.json
+```
+
+输入如下的配置
 ```
 {
  "proxies":
@@ -397,7 +426,13 @@ Docker的代理分为两类, 一类是docker指令在拉取镜像过程中使用
    }
  }
 }
+```
 
+------------------------
+
+一类是容器运行过程中使用的代理, 可以参考[HTTP/HTTPS proxy](https://docs.docker.com/config/daemon/systemd/#httphttps-proxy). 配置文件可以参考如下的内容:
+
+```
 [Service]
 Environment="HTTP_PROXY=socks5://127.0.0.1:1080"
 Environment="HTTPS_PROXY=socks5://127.0.0.1:1080"
@@ -412,6 +447,14 @@ pip install -i https://pypi.tuna.tsinghua.edu.cn/simple some-package
 ```
 
 - [ubuntu更换安装源和pip镜像源](https://blog.csdn.net/wssywh/article/details/79216437)
+
+
+Openwrt路由器配置Hosts
+-----------------------
+
+- [Openwrt路由自带hosts功能](https://www.5yun.org/21010.html)
+
+
 
 编译线程有关程序
 -------------------------
