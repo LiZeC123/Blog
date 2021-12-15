@@ -30,8 +30,8 @@ menu:
     title: Slides
     url: /slides/
     target: false
-  sticky-note:
-    title: Note
+  database:
+    title: Knowledge
     url: /note/
     target: false
   user:
