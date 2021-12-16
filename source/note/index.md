@@ -1,6 +1,6 @@
 ---
 title: 个人知识库
-date: 2017-09-01 09:01:00
+date: 2021-12-16 08:00:00
 ---
 
 
@@ -27,7 +27,8 @@ date: 2017-09-01 09:01:00
 
 ### 文学
 
-内容施工中...
+- [科幻小说](科幻小说.html)
+- [侦探小说]()
 
 ### 数学
 
@@ -37,7 +38,7 @@ date: 2017-09-01 09:01:00
 
 内容施工中...
 
-### 速查表
+### 指令速查表
 
 - [CheatSheet4LinuxCommand.pdf](CheatSheet/CheatSheet4LinuxCommand.pdf)
 - [CheatSheet4Matplotlib.pdf](CheatSheet/CheatSheet4Matplotlib.pdf)
