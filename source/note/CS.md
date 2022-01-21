@@ -4,6 +4,11 @@ date: 2021-12-16 08:00:00
 ---
 
 
+VSCODE修改默认终端
+--------------------
+
+按下`Ctrl+P`打开功能搜索栏，输入`Terminal: Select Default Profile`，然后选择自己需要的终端。
+
 
 Sqlite显示表头
 -----------------
@@ -14,7 +19,6 @@ Sqlite显示表头
 .head on
 .mode column
 ```
-
 
 
 CPU如何实现时间片切换
