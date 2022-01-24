@@ -5,6 +5,25 @@ date: 2021-12-16 08:00:00
 
 
 
+安全管理器
+--------------
+
+如果阅读JDK中的代码，会发现很多地方都会出现类似的代码
+```java
+SecurityManager sec = System.getSecurityManager();
+if (sec != null) {
+    sec.checkPermission(SET_LOG_PERMISSION);
+}
+```
+
+其中SecurityManager是Java内置的安全管理器，其主要功能是对一些需要权限的操作进行检查。如果有过Android开发经历，那么对于这种权限系统肯定不会陌生。
+
+但由于目前的Java生态已经和当年的模式有很大的区别，所以现在已经很少使用此功能了。见到这部分代码直接忽略即可。
+
+- [The Java Security Manager](https://www.jianshu.com/p/54339e09ef35)
+- [java安全管理器SecurityManager介绍](https://blog.csdn.net/shadow_zed/article/details/106614452)
+
+
 关于Java开发的一些思考
 ----------------------
 
@@ -19,7 +38,9 @@ SPI机制
 
 SPI机制即Service Provider Interface, 是服务提供方根据现有接口提供服务实现的一种机制. 典型应用是JDBC驱动, 即无论具体使用哪一种数据库, 客户端代码都只使用JDBC的接口进行交互, 而各个数据库厂商根据接口提供相应的驱动实现类.
 
-SPI提供了一种运行时加载具体实现类的方式. 本质上来说就是根据JAR包中提供的类名, 在运行时动态的加载指定的实现类. 这一套逻辑完全可以自己用代码实现.
+例如在`mysql-connector-java-8.0.15.jar`包中的META-INF文件夹下有一个`services/java.sql.Driver`文件，其中指定了一个类名`com.mysql.cj.jdbc.Driver`，而这个类实际上实现的就是将自己注册到DriverManager的功能。通过Java的SPI机制即可实现客户端不使用任何操作的情况下添加新的Drive实现的目的
+
+SPI提供了一种运行时加载具体实现类的方式. 本质上来说就是根据JAR包中提供的类名, 在运行时动态的加载指定的实现类. 因此这一套逻辑完全可以自己用代码实现，Java只是提供了一组封装好的接口而已.
 
 - [JDBC驱动加载机制详解以及spi机制](https://blog.csdn.net/qq_38712932/article/details/82987865)
 
