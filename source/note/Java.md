@@ -3,7 +3,19 @@ title: Java相关知识
 date: 2021-12-16 08:00:00
 ---
 
-
+- [安全管理器](#安全管理器)
+- [关于Java开发的一些思考](#关于java开发的一些思考)
+- [SPI机制](#spi机制)
+- [检测线程死锁](#检测线程死锁)
+- [一些Java对象的名称](#一些java对象的名称)
+- [序列化ID](#序列化id)
+- [手动检查Null](#手动检查null)
+- [JDK](#jdk)
+  - [JDK 新特性介绍](#jdk-新特性介绍)
+- [JDK集合类归纳](#jdk集合类归纳)
+- [JVM常用参数](#jvm常用参数)
+- [Java删除文件](#java删除文件)
+- [Apache fileupload 无法提取参数](#apache-fileupload-无法提取参数)
 
 安全管理器
 --------------
@@ -147,7 +159,8 @@ Java HotSpot(TM) 64-Bit Server VM 18.9 (build 11.0.4+10-LTS, mixed mode)
 
 
 
-## Java删除文件
+Java删除文件
+-----------------
 
 曾经有过使用Java删除文件的经历, 但是偶尔会遇到删除失败. 即使用`file.delete()`函数时, 返回false. 因为这个函数并不抛异常, 所以并不清楚是什么原因导致了这一问题. 如果查看`file.delete()`的源代码, 可以发现这个函数的注释上写了如下的语句:
 ``` Java
@@ -166,7 +179,9 @@ Java HotSpot(TM) 64-Bit Server VM 18.9 (build 11.0.4+10-LTS, mixed mode)
 值得一提的是, 同样的代码, 在Linux平台上, 似乎并不会因为文件流没有关闭就导致文件无法被删除. 但是因为Linux平台上使用的编译器和JVM与Windows平台不同, 因此也不能确定这一差异是编译器导致的还是JVM或者操作系统导致的. 如果下次有机会, 可能会进一步探索一下其中的差异. 
 
 
-## Apache fileupload 无法提取参数
+Apache fileupload 无法提取参数
+----------------------------------
+
 之前使用了Apache的fildupload实现了文件上传功能, 后来发现通过表单传递的参数无法通过`request.getParameter()`获得. 通过查阅[Apache CommonIO文档](https://commons.apache.org/proper/commons-fileupload/using.html)可知, 使用以下方法获得参数
 
 ``` java
