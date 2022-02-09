@@ -2,8 +2,8 @@
 
 function update() {
   git pull
-  docker-compose down
   docker pull ghcr.io/lizec123/blog:latest
+  docker-compose down
   docker-compose up -d
 }
 
