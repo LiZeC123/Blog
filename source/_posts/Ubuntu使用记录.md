@@ -10,6 +10,36 @@ cover_picture:  images/ubuntu.jpg
 
 本文包含我在日常使用Ubuntu系统中遇到的一些问题的记录, 没有什么特定的顺序和联系, 不定期更新.
 
+- [Ubuntu下如何挂载U盘](#ubuntu下如何挂载u盘)
+- [ubuntu开机自动挂载新硬盘](#ubuntu开机自动挂载新硬盘)
+- [清理软件安装缓存](#清理软件安装缓存)
+- [APT更换国内镜像源](#apt更换国内镜像源)
+- [扩展可用空间](#扩展可用空间)
+- [查看文件夹空间占用情况](#查看文件夹空间占用情况)
+- [开机执行程序](#开机执行程序)
+- [设置定时任务](#设置定时任务)
+  - [Crontab语法解析](#crontab语法解析)
+  - [不执行原因排查](#不执行原因排查)
+- [双系统设置默认启动项](#双系统设置默认启动项)
+- [添加搜索路径](#添加搜索路径)
+- [MySQL中文乱码](#mysql中文乱码)
+- [查看已安装软件位置](#查看已安装软件位置)
+- [创建桌面快捷方式](#创建桌面快捷方式)
+- [Linux系统目录结构](#linux系统目录结构)
+- [Ubuntu管理多版本Java](#ubuntu管理多版本java)
+- [Zsh与oh-my-zsh](#zsh与oh-my-zsh)
+- [curl指令](#curl指令)
+- [配置Samba服务](#配置samba服务)
+- [配置代理服务](#配置代理服务)
+  - [Ubuntu全局代理](#ubuntu全局代理)
+  - [Atp](#atp)
+  - [Git](#git)
+  - [Docker](#docker)
+  - [pip](#pip)
+- [Openwrt路由器配置Hosts](#openwrt路由器配置hosts)
+- [编译线程有关程序](#编译线程有关程序)
+- [编译32位程序](#编译32位程序)
+
 
 Ubuntu下如何挂载U盘
 -------------------------
@@ -144,7 +174,8 @@ du -lh --max-depth=1
 - 找到 `/etc/re.local`
 - 在此文件中写入需要的命令
 
-**注意**: 在18.04中,可以在Tweak中直接设置开启启动程序
+- 在18.04中,可以在Tweak中直接设置开启启动程序
+- 在20.04中，搜索startup可以在设置中添加启动指令
 
 
 设置定时任务
@@ -392,6 +423,23 @@ sudo service smbd restart
 
 对于部分常用软件, 可以通过配置代理的方式加速
 
+### Ubuntu全局代理
+
+在桌面版的Ubuntu系统中，可以在网络选项下找到代理配置，可以设置为手动配置。
+
+此处的配置对于大部分软件而言都是全局生效的，但对于apt等命令行工具无效。
+
+
+### Atp
+
+Atp可配置临时使用一次代理， 指令为
+
+```
+sudo apt-get -o Acquire::http::proxy="socks5h://127.0.0.1:1080/" update
+```
+
+- [临时使用socks代理apt-get的方法](https://www.jianshu.com/p/bc4d7b758503)
+
 ### Git
 
 ```
@@ -400,8 +448,6 @@ git config --global https.proxy 'socks5://127.0.0.1:1080'
 ```
 
 ### Docker
-
-
 
 
 Docker的代理分为两类, 一类是docker指令在拉取镜像过程中使用的代理, 配置可以参考[Configure the Docker client](https://docs.docker.com/network/proxy/#configure-the-docker-client). 
