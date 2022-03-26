@@ -10,6 +10,7 @@ cover_picture:  images/ubuntu.jpg
 
 本文包含我在日常使用Ubuntu系统中遇到的一些问题的记录, 没有什么特定的顺序和联系, 不定期更新.
 
+
 - [Ubuntu下如何挂载U盘](#ubuntu下如何挂载u盘)
 - [ubuntu开机自动挂载新硬盘](#ubuntu开机自动挂载新硬盘)
 - [清理软件安装缓存](#清理软件安装缓存)
@@ -39,7 +40,7 @@ cover_picture:  images/ubuntu.jpg
 - [Openwrt路由器配置Hosts](#openwrt路由器配置hosts)
 - [编译线程有关程序](#编译线程有关程序)
 - [编译32位程序](#编译32位程序)
-
+- [ubuntu隐藏顶部标题栏](#ubuntu隐藏顶部标题栏)
 
 Ubuntu下如何挂载U盘
 -------------------------
@@ -520,3 +521,14 @@ sudo apt install build-essential module-assistant gcc-multilib g++-multilib
 ```
 gcc -m32 hello.c
 ```
+
+ubuntu隐藏顶部标题栏
+-------------------
+
+```
+sudo apt install gnome-shell-extension-autohidetopbar 
+```
+
+在搜索页面中打开Extension，选择`Hide Top Bar`即可
+
+- [Hide Top Bar in Ubuntu 20.04](https://www.youtube.com/watch?v=6rTE8N_aUWQ)
