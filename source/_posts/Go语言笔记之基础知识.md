@@ -91,7 +91,7 @@ func main() {
 
 ### 添加测试
 
-在当前模块下创建以`_test.go`结尾的文件来表面一个文件是测试文件. 在测试文件中可以进行任意形式的测试, 例如
+在当前模块下创建以`_test.go`结尾的文件来表明一个文件是测试文件. 在测试文件中可以进行任意形式的测试, 例如
 
 ```go
 import (
@@ -165,55 +165,6 @@ go mod edit -replace=example.com/greetings=../greetings
 ```
 replace example.com/greetings => ../greetings
 ```
-
-
-错误处理
-----------
-
-错误处理分为两个部分, 即如何抛出错误和如何处理错误.  因为Go语言的函数支持返回多个值, 因此如果一个函数需要抛出错误, 一般具有如下的格式
-
-```go
-// 导入errors模块
-import (
-    "errors"
-    "fmt"
-)
-
-
-// 返回值包含正常的输出和错误信息
-func Hello(name string) (string, error) {
-
-    if name == "" {
-        // 如果出现错误, 返回错误信息
-        return "", errors.New("Empty Name")
-    }
-
-    message := fmt.Sprintf("Hi, %v. Welcome!", name)
-
-    // 如果没有错误, 错误信息位置返回nil
-    return message, nil
-}
-```
-
-
-当调用这种函数时, 一般具有如下的格式
-
-```go
-func main() {
-    // 调用时接受返回值和错误信息
-    message, err := greating.Hello("")
-    // 检查是否有错误
-    if err != nil {
-        // 有错误执行错误分支
-        log.Fatal(err)
-    }
-    // 没有错误执行正常分支
-    fmt.Println(message)
-}
-```
-
-> 以上为Go语言中标准的错误抛出和处理方案
-
 
 模块和包
 -------------
@@ -326,6 +277,55 @@ func main() {
 > 对于需要关闭的资源, 在开启后紧跟一个defer引导的关闭语句就可以确保不会忘记关闭资源
 
 
+
+错误处理
+----------
+
+错误处理分为两个部分, 即如何抛出错误和如何处理错误.  因为Go语言的函数支持返回多个值, 因此如果一个函数需要抛出错误, 一般具有如下的格式
+
+```go
+// 导入errors模块
+import (
+    "errors"
+    "fmt"
+)
+
+
+// 返回值包含正常的输出和错误信息
+func Hello(name string) (string, error) {
+
+    if name == "" {
+        // 如果出现错误, 返回错误信息
+        return "", errors.New("Empty Name")
+    }
+
+    message := fmt.Sprintf("Hi, %v. Welcome!", name)
+
+    // 如果没有错误, 错误信息位置返回nil
+    return message, nil
+}
+```
+
+
+当调用这种函数时, 一般具有如下的格式
+
+```go
+func main() {
+    // 调用时接受返回值和错误信息
+    message, err := greating.Hello("")
+    // 检查是否有错误
+    if err != nil {
+        // 有错误执行错误分支
+        log.Fatal(err)
+    }
+    // 没有错误执行正常分支
+    fmt.Println(message)
+}
+```
+
+> 以上为Go语言中标准的错误抛出和处理方案
+
+
 函数
 -------------
 
@@ -335,8 +335,6 @@ func functionName(param1 type1, param2 type2) (ret1 type1, ret2 type2) {
     // function code
 }
 ```
-
-
 
 
 结构体
@@ -527,7 +525,10 @@ func main() {
 }
 ```
 
-**注意：**  绑定在值类型的方法和绑定在指针类型上的方法属于不同的集合, 因此在对**接口**赋值时, 需要保证对象具有的方法完全一致. 由于Abs方法绑定在*Vertex类型, 因此只能将Vertex类型取地址后复制给Abser接口. 
+> **注意：**  绑定在值类型的方法和绑定在指针类型上的方法属于不同的集合, 因此在对**接口**赋值时, 需要保证对象具有的方法完全一致. 由于Abs方法绑定在*Vertex类型, 因此只能将Vertex类型取地址后复制给Abser接口. 
+
+> **注意：**  值对象仅拥有绑定在值类型上的方法, 指针对象同时拥有值类型和指针类型上绑定的方法
+
 
 
 ### 鸭子类型
