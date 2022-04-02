@@ -117,12 +117,25 @@ numA = append(numA, 2,3,4,5)// Pointer=0xc00000e400 len=7 cap=8 slice=[6 7 1 2 3
 func Slice(x any, less func(i, j int) bool)
 ```
 
+对于复杂的数据结构，可以通过实现sort包中定义的三个接口实现排序，可参考下面的文章
+
+- [Go 中的三种排序方法](https://learnku.com/articles/38269)
+
 
 ### 零值可用
 
 切片作为一种引用类型, 其零值是nil. 但与Java的集合类型不同的是，由于Go语言的设计哲学强调零值可用，因此直接对零值进行添加或循环操作并不会导致空指针异常。
 
 > 但是合理的初始化容量对于提高程序性能依然有很大的帮助
+
+
+### 第三方增强库
+
+由于Go的切片提供的方法非常少，因此使用起来远没有Java和Python中顺手，为此可以使用一些第三方库增强切片的功能。
+
+- [feyeleanor/slices](https://github.com/feyeleanor/slices)
+
+这个库对于所有的基本类型和一般类型提供了大量简便方法，例如插入，删除，查找，替换和常见的谓词操作。
 
 
 ### 切片与内存泄露

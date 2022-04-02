@@ -83,25 +83,6 @@ Go语言的特性使得结构体指针可以和结构体变量一样的语法来
 如果调用的时候忘记了取地址，虽然函数的代码中可以做运行时检查，但这基本导致Go语言的强类型系统报废了。这绝对是一个设计缺陷。
 
 
-排序
-------------
-
-对于简单的结构体数组，可以使用`sort.slice`方法，例如
-
-```go
-sort.Slice(planets, func(i, j int) bool {
-  return planets[i].Axis < planets[j].Axis
-})
-```
-
-- [What is the shortest way to simply sort an array of structs by (arbitrary) field names?](https://stackoverflow.com/questions/28999735/what-is-the-shortest-way-to-simply-sort-an-array-of-structs-by-arbitrary-field)
-
-对于复杂的数据结构，可以通过实现sort包中定义的三个接口实现排序，可参考下面的文章
-
-- [Go 中的三种排序方法](https://learnku.com/articles/38269)
-
-
-
 字符串与数组转换
 --------------------
 
