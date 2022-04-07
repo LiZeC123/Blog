@@ -501,3 +501,20 @@ sudo apt install gnome-shell-extension-autohidetopbar
 在搜索页面中打开Extension，选择`Hide Top Bar`即可
 
 - [Hide Top Bar in Ubuntu 20.04](https://www.youtube.com/watch?v=6rTE8N_aUWQ)
+
+
+ubuntu安装基于wine的软件
+------------------------
+
+访问[zq1997/deepin-wine](https://github.com/zq1997/deepin-wine)，按照教程添加第三方库后即可按照指令安装Windows平台的软件。
+
+- [可安装软件列表](https://deepin-wine.i-m.dev/)
+
+
+ubuntu隐藏wine状态栏
+---------------------
+
+访问[此链接](https://extensions.gnome.org/extension/1674/topiconsfix/)安装指定的插件，即可将独立窗口的`Wine System Tray`移动到右上的状态栏之中。
+
+> 由于该网站通过在网页上点击的方式安装系统插件，因此需要先给浏览器安装一个通信插件才能正常使用该功能
+
