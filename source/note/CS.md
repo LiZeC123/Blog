@@ -6,8 +6,7 @@ date: 2021-12-16 08:00:00
 
 目录 <!-- omit in toc -->
 ---------------------
-- [VSCODE Markdonw插件](#vscode-markdonw插件)
-- [VSCODE修改默认终端](#vscode修改默认终端)
+- [安装node](#安装node)
 - [Sqlite显示表头](#sqlite显示表头)
 - [CPU如何实现时间片切换](#cpu如何实现时间片切换)
 - [ELF文件加载过程](#elf文件加载过程)
@@ -16,17 +15,17 @@ date: 2021-12-16 08:00:00
 - [POSIX接口](#posix接口)
 
 
+安装node
+----------------
 
-VSCODE Markdonw插件
---------------------
+使用snap工具可以直接安装最新的长期支持版node，指令为
 
-`Markdown All in One`插件提供了绑定快捷键，生成目录，格式化，自动补全等大量简化Markdown的功能，真是相见恨晚啊。
+```
+sudo snap install node --classic
+```
 
+- [Node | Snap Store](https://snapcraft.io/node)
 
-VSCODE修改默认终端
---------------------
-
-按下`Ctrl+P`打开功能搜索栏，输入`Terminal: Select Default Profile`，然后选择自己需要的终端。
 
 
 Sqlite显示表头

@@ -20,7 +20,7 @@ date: 2021-12-16 08:00:00
 
 - [计算机领域一般性知识](CS.html)
 - [Java相关知识](Java.html)
-- [Go相关知识](Go.html)
+- [Go相关知识](GO.html)
 - [MyBatis相关知识](MyBatis.html)
 
 ### 历史
