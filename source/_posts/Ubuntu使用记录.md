@@ -11,6 +11,24 @@ cover_picture:  images/ubuntu.jpg
 本文包含我在日常使用Ubuntu系统中遇到的一些问题的记录, 没有什么特定的顺序和联系, 不定期更新.
 
 
+
+安装node
+----------------
+
+使用snap工具可以直接安装最新的长期支持版node，指令为
+
+```
+sudo snap install node --classic
+```
+
+- [Node | Snap Store](https://snapcraft.io/node)
+
+> snap是Ubuntu公司提出的一种包管理系统，可以安装大部分的开源软件和部分的非开源软件，无法使用apt安装的软件都可以考虑使用snap安装
+
+
+
+
+
 Ubuntu下如何挂载U盘
 -------------------------
 1. 使用  `sudo fdisk -l` 命令查看U盘的位置
@@ -491,8 +509,11 @@ sudo apt install build-essential module-assistant gcc-multilib g++-multilib
 gcc -m32 hello.c
 ```
 
-ubuntu隐藏顶部标题栏
--------------------
+
+ubuntu图像界面优化
+--------------------
+
+### ubuntu隐藏顶部标题栏
 
 ```
 sudo apt install gnome-shell-extension-autohidetopbar 
@@ -503,18 +524,18 @@ sudo apt install gnome-shell-extension-autohidetopbar
 - [Hide Top Bar in Ubuntu 20.04](https://www.youtube.com/watch?v=6rTE8N_aUWQ)
 
 
+### ubuntu隐藏wine状态栏
+
+
+访问[此链接](https://extensions.gnome.org/extension/1674/topiconsfix/)安装指定的插件，即可将独立窗口的`Wine System Tray`移动到右上的状态栏之中。
+
+> 由于该网站通过在网页上点击的方式安装系统插件，因此需要先给浏览器安装一个通信插件才能正常使用该功能
+
+
+
 ubuntu安装基于wine的软件
 ------------------------
 
 访问[zq1997/deepin-wine](https://github.com/zq1997/deepin-wine)，按照教程添加第三方库后即可按照指令安装Windows平台的软件。
 
 - [可安装软件列表](https://deepin-wine.i-m.dev/)
-
-
-ubuntu隐藏wine状态栏
----------------------
-
-访问[此链接](https://extensions.gnome.org/extension/1674/topiconsfix/)安装指定的插件，即可将独立窗口的`Wine System Tray`移动到右上的状态栏之中。
-
-> 由于该网站通过在网页上点击的方式安装系统插件，因此需要先给浏览器安装一个通信插件才能正常使用该功能
-

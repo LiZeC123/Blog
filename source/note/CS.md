@@ -6,25 +6,27 @@ date: 2021-12-16 08:00:00
 
 目录 <!-- omit in toc -->
 ---------------------
-- [安装node](#安装node)
+- [Bash常用快捷功能](#bash常用快捷功能)
 - [Sqlite显示表头](#sqlite显示表头)
 - [CPU如何实现时间片切换](#cpu如何实现时间片切换)
 - [ELF文件加载过程](#elf文件加载过程)
 - [前端校验和后端校验](#前端校验和后端校验)
 - [x86-64 Core体系结构历史](#x86-64-core体系结构历史)
 - [POSIX接口](#posix接口)
+- [ll各列的含义](#ll各列的含义)
+- [安装fish](#安装fish)
 
 
-安装node
-----------------
+Bash常用快捷功能
+--------------------
 
-使用snap工具可以直接安装最新的长期支持版node，指令为
 
-```
-sudo snap install node --classic
-```
+| 指令     | 解释                            | 说明                                      |
+| -------- | ------------------------------- | ----------------------------------------- |
+| `cd -`   | 回到上一次停留的目录            |
+| `!<num>` | 快速执行history里的某个指定命令 | `!743`                                    |
+| `!!`     | 指代上一个命令                  | `sudo !!`  以管理员权限重新执行上一条指令 |
 
-- [Node | Snap Store](https://snapcraft.io/node)
 
 
 
@@ -52,7 +54,7 @@ ELF文件加载过程
 
 从ELF文件的结构来看，似乎有很多不同的段，似乎如果要执行ELF文件，还需要进行解析过程。但需要注意到ELF的两个常见的格式，即可重定位目标文件和可执行目标文件。对于可重定位目标文件，由于需要重定位，因此有很多辅助的信息表。但是对于可执行目标文件，少了很多辅助段。
 
-而且代码中的.text段和.data段时间上也是相邻的，分别将这两个段加载到内存之中即可构建进程在内存中的状态。整个过程中只需要简单的解析每个段所在的位置即可，不需要进行复杂的分析过程。
+而且代码中的.text段和.data段实际上是相邻的，分别将这两个段加载到内存之中即可构建进程在内存中的状态。整个过程中只需要简单的解析每个段所在的位置即可，不需要进行复杂的分析过程。
 
 当然，这个解析过程肯定还是需要加载器进行处理的，并不是硬件直接完成。
 
@@ -85,3 +87,47 @@ POSIX接口
 POSIX是 Portable Operating System Interface for uniX的缩写, 即可移植操作系统接口. 在POSIX接口提出以前, 存在很多不同的操作系统, 这些操作系统提供的接口也都不尽相同, 因此对程序开发带来了很大的困难.
 
 POSIX标准通常由C语言的库实现, 例如glibc和musl等. 在C语言层面通过调用POSIX接口实现在不同的操作系统上转换为合适的系统调用.
+
+
+ll各列的含义
+-----------------
+
+```
+drwxrwxr-x   9 lizec lizec 4.0K 4月   7 10:10 ./
+drwxrwxr-x   7 lizec lizec 4.0K 4月   3 17:45 ../
+drwxrwxr-x   8 lizec lizec 4.0K 4月   7 18:31 .git/
+-rw-rw-r--   1 lizec lizec 1.1K 3月  26 19:24 LICENSE
+drwxrwxr-x 230 lizec lizec  12K 4月   7 10:10 node_modules/
+drwxrwxr-x   2 lizec lizec 4.0K 3月  26 19:24 scaffolds/
+-rwxrwxr-x   1 lizec lizec  496 3月  26 19:24 service.sh*
+drwxrwxr-x  11 lizec lizec 4.0K 3月  26 19:24 source/
+drwxrwxr-x   3 lizec lizec 4.0K 3月  26 19:24 themes/
+```
+
+第一列表示文件权限，可以分为四个部分，其中第一部分包含一个字母，之后的三个部分每个部分包含3个字母。第一个字母表示文件的类型，`d`表示文件夹，`-`表示普通文件。后续的三个部分分别表示此文件的用户，同组的用户以及其他用于对该文件的权限。
+
+第二列表示链接数量。对于文件夹表示其中的一级子目录的数量，对于文件表示链接的数量。
+
+后续几列分别表示文件的所有者，所有者所在的组，文件的大小，修改时间以及相应的文件名。
+
+- [ls -l 每一列的含义](https://blog.csdn.net/sinat_36219858/article/details/83721448)
+
+
+
+安装fish
+--------------
+
+安装并切换默认shel
+
+```
+sudo apt install fish
+sudo chsh -s /usr/bin/fish
+```
+
+- [Linux Ubuntu 安装 Fish Shell 教程以及配置和使用方法](https://cloud.tencent.com/developer/article/1709295)
+
+
+fish提供自动补全功能，使用`→`接受整个补全结果，使用`Alt+→`接受补全结果中的一个单词。使用`Alt+s`再上一条指令前补充sudo指令。
+
+
+- [Fish Tutorial](https://fishshell.com/docs/current/tutorial.html)
