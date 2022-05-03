@@ -15,12 +15,15 @@ cover_picture:  images/git.jpg
 Git的基本使用
 ------------------
 
-### 用户初始化
+### 初始化
 ```
-$ git config --global user.name "Your Name"
-$ git config --global user.email "email@example.com"
+git config --global user.name "Your Name"
+git config --global user.email "email@example.com"
+git config --global core.editor vim
 ```
-上述两条指令用于指定用户名和邮箱, 这些信息会显示在之后的提交信息之中, --global表明上述配置为全局有效.  完成上述配置以后才能使用Git
+前两条指令用于指定用户名和邮箱, 这些信息会显示在之后的提交信息之中, --global表明上述配置为全局有效. 完成上述配置以后才能使用Git.
+
+第三条指令将git默认的编辑器设置为vim.
 
 ### 基础指令
 

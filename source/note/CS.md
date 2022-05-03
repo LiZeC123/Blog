@@ -15,6 +15,7 @@ date: 2021-12-16 08:00:00
 - [POSIX接口](#posix接口)
 - [ll各列的含义](#ll各列的含义)
 - [安装fish](#安装fish)
+  - [使fish支持conda](#使fish支持conda)
 
 
 Bash常用快捷功能
@@ -131,3 +132,14 @@ fish提供自动补全功能，使用`→`接受整个补全结果，使用`Alt+
 
 
 - [Fish Tutorial](https://fishshell.com/docs/current/tutorial.html)
+
+
+### 使fish支持conda
+
+在bash环境中执行
+
+```
+conda init fish
+```
+
+然后重新开shell即可实现conda环境的切换
