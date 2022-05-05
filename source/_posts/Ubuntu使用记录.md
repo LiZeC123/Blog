@@ -510,7 +510,7 @@ gcc -m32 hello.c
 ```
 
 
-ubuntu图像界面优化
+ubuntu桌面版优化
 --------------------
 
 ### ubuntu隐藏顶部标题栏
@@ -526,16 +526,20 @@ sudo apt install gnome-shell-extension-autohidetopbar
 
 ### ubuntu隐藏wine状态栏
 
-
 访问[此链接](https://extensions.gnome.org/extension/1674/topiconsfix/)安装指定的插件，即可将独立窗口的`Wine System Tray`移动到右上的状态栏之中。
 
 > 由于该网站通过在网页上点击的方式安装系统插件，因此需要先给浏览器安装一个通信插件才能正常使用该功能
 
 
-
-ubuntu安装基于wine的软件
-------------------------
+### ubuntu安装基于wine的软件
 
 访问[zq1997/deepin-wine](https://github.com/zq1997/deepin-wine)，按照教程添加第三方库后即可按照指令安装Windows平台的软件。
 
 - [可安装软件列表](https://deepin-wine.i-m.dev/)
+
+
+### 将CapsLK替换为Esc
+
+搜索`tweaks`打开配置页面，选择`Keyboard & Mouse`选项卡，点击`Additional Layout Options`，再弹出的窗口中选择`Caps Lock Behavior`选项，并选择`Make Caps Lock an additional Esc`
+
+> 其他键位相关的配置也可以在这里修改，相比与前几年，ubuntu的配置简单了很多了
