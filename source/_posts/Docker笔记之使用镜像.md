@@ -137,6 +137,16 @@ sudo docker exec -it <containerID> /bin/bash
 
 - [进入docker容器的四种方法](https://blog.csdn.net/skh2015java/article/details/80229930)
 
+### 查看日志
+
+当容器运行情况不符合预期时, 可能需要查看容器内输出的日志, 此时可以执行u如下指令持续的输出容器内的日志
+
+```
+docker logs -f {{container_name}}
+```
+
+> 使用`tldr docker-logs`可以查看更多常见用法
+
 ### 保存容器
 
 可以使用docker commit指令将容器保存为镜像. 
