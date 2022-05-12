@@ -15,7 +15,7 @@ cover_picture:  images/ubuntu.jpg
 安装node
 ----------------
 
-使用snap工具可以直接安装最新的长期支持版node，指令为
+使用snap工具可以直接安装最新的长期支持版node, 指令为
 
 ```
 sudo snap install node --classic
@@ -23,7 +23,7 @@ sudo snap install node --classic
 
 - [Node | Snap Store](https://snapcraft.io/node)
 
-> snap是Ubuntu公司提出的一种包管理系统，可以安装大部分的开源软件和部分的非开源软件，无法使用apt安装的软件都可以考虑使用snap安装
+> snap是Ubuntu公司提出的一种包管理系统, 可以安装大部分的开源软件和部分的非开源软件, 无法使用apt安装的软件都可以考虑使用snap安装
 
 
 
@@ -88,13 +88,15 @@ UUID=FA1CAC411CABF733   /home/lizec/share/E ntfs defaults 0 1
 
 3. 验证配置
 
-执行以下指令检查配置是否正确, 不正确的配置可能导致无法正常启动
+执行以下指令检查配置是否正确, 不正确的配置将导致系统无法正常启动
 
 ```
 sudo mount -a
 ```
 
 确认无误后重启系统即可使配置生效
+
+> 注意: 如果以后挂载信息发生变动, 一定要删除相关的配置, 否则将因为挂载失败导致系统无法启动
 
 - [ubuntu开机自动挂载新硬盘](https://blog.csdn.net/iAm333/article/details/17224115)
 
@@ -128,13 +130,6 @@ apt-get clean all && apt-get update
 
 
 
-扩展可用空间
--------------------------
-```
-$ sudo fs_resize
-WARNING: Do you want to resize "/dev/mmcblk0p2" (y/N)?  y
-```
-
 查看文件夹空间占用情况
 -------------------------
 
@@ -159,11 +154,9 @@ du -lh --max-depth=1
 
 开机执行程序
 -------------------------
-- 找到 `/etc/re.local`
-- 在此文件中写入需要的命令
-
 - 在18.04中,可以在Tweak中直接设置开启启动程序
-- 在20.04中，搜索startup可以在设置中添加启动指令
+- 在20.04中, 搜索startup可以在设置中添加启动指令
+- 非桌面版系统可以使用crontab设置开启执行的脚本
 
 
 设置定时任务
@@ -175,37 +168,48 @@ du -lh --max-depth=1
 0 3 * * * /root/Application/TimeMachine.sh daily
 ```
 
-> 注意: 全部位置都要使用绝对路径,并且手动执行一次脚本，确认权限和路径没有问题
+> 注意: 全部位置都要使用绝对路径,并且手动执行一次脚本, 确认权限和路径没有问题
 
 ### Crontab语法解析
 
-在Crontab的文件中，每一行表示一个要执行的指令，每一行都具有如下的格式
+在Crontab的文件中, 每一行表示一个要执行的指令, 每一行都具有如下的格式
 
 ```
 * * * * * /path/to/script.sh
 ```
 
-前面的5个`*`的位置分别表示分钟，小时，天，月，和星期。如果是数字就是具体的时刻，如果是`*`则表示所有，例如
+前面的5个`*`的位置分别表示分钟, 小时, 天, 月, 和星期. 如果是数字就是具体的时刻, 如果是`*`则表示所有, 例如
 
 ```
 0 3 * * *  ==> 每天3点0分执行一次
-* 3 * * *  ==> 每天3点0分到3点59分的时间段内，每分钟执行一次
+* 3 * * *  ==> 每天3点0分到3点59分的时间段内, 每分钟执行一次
 ```
 
-更多配置方式， 可以参考下面的文章
+--------------
+
+
+此外, Crontab还支持一些特殊的语法, 例如下面的指令表示每次系统重启后先休眠300秒, 然后写入当前的时间到指定文件之中.
+
+```
+@reboot sleep 300 && date >> ~/date.txt
+```
+
+> 注意: 确保脚本能正常结束, 否则应该加入`&`符号使脚本在后台执行
+
+更多配置方式,  可以参考下面的文章
 
 - [Crontab in Linux with 20 Useful Examples to Schedule Jobs](https://tecadmin.net/crontab-in-linux-with-20-examples-of-cron-schedule/)
-
+- [Crontab Reboot: How to Execute a Job Automatically at Boot](https://phoenixnap.com/kb/crontab-reboot)
 
 ### 不执行原因排查
 
-首先在根目录手动执行一次脚本，确定脚本的权限和路径设置都是正确的。 如果脚本可以手动执行，但配置就是不生效，可以将脚本的输出重定向到日志文件， 例如
+首先在根目录手动执行一次脚本, 确定脚本的权限和路径设置都是正确的. 如果脚本可以手动执行, 但配置就是不生效, 可以将脚本的输出重定向到日志文件, 例如
 
 ```
 * * * * * /root/Application/TimeMachine.sh daily >> /root/TM.log 2>&1
 ```
 
-之后可以在日志中查看是否有报错。
+之后可以在日志中查看是否有报错. 
 
 
 双系统设置默认启动项
@@ -298,7 +302,24 @@ Comment[en_US]=yEd Graph Editor                 #comment which appears as a tool
 
 - [如何在Linux的桌面上创建快捷方式或启动器](https://linux.cn/article-2289-1.html)
 
+清除/dev/loop设备
+--------------------
 
+这些设备来自snap系统, 可以使用如下的指令清理未使用的设备
+
+```
+sudo apt-get purge snapd
+```
+
+
+- [这些多出来的/dev/loop是什么东西，全部占用100%](https://forum.ubuntu.org.cn/viewtopic.php?t=487421)
+
+
+Ubuntu server扩展lvm空间
+-------------------------
+
+
+- [Linux /dev/mapper/ubuntu--vg-ubuntu--lv 磁盘空间不足的问题_阿甘的博客](https://www.cxymm.net/article/qq_39718408/118699328)
 
 
 
@@ -332,11 +353,6 @@ There are 3 choices for the alternative java (providing /usr/bin/java).
 ```
 
 输入相应的编号就可以切换java的默认版本. 同理还可以切换`javac`, `javadoc`等命令的版本.
-
-
-Zsh与oh-my-zsh
-------------------
-- [Ubuntu 16.04下安装zsh和oh-my-zsh](https://www.cnblogs.com/EasonJim/p/7863099.html)
 
 
 
@@ -413,14 +429,14 @@ sudo service smbd restart
 
 ### Ubuntu全局代理
 
-在桌面版的Ubuntu系统中，可以在网络选项下找到代理配置，可以设置为手动配置。
+在桌面版的Ubuntu系统中, 可以在网络选项下找到代理配置, 可以设置为手动配置. 
 
-此处的配置对于大部分软件而言都是全局生效的，但对于apt等命令行工具无效。
+此处的配置对于大部分软件而言都是全局生效的, 但对于apt等命令行工具无效. 
 
 
 ### APT
 
-APT可配置临时使用一次代理， 指令为
+APT可配置临时使用一次代理,  指令为
 
 ```
 sudo apt-get -o Acquire::http::proxy="socks5h://127.0.0.1:1080/" update
@@ -472,6 +488,8 @@ Environment="HTTP_PROXY=socks5://127.0.0.1:1080"
 Environment="HTTPS_PROXY=socks5://127.0.0.1:1080"
 ```
 
+> 关于Docker镜像仓库的配置, 可以参考笔记[Docker笔记之使用镜像](https://lizec.top/2020/06/19/Docker%E7%AC%94%E8%AE%B0%E4%B9%8B%E4%BD%BF%E7%94%A8%E9%95%9C%E5%83%8F/#%E9%85%8D%E7%BD%AE%E5%9B%BD%E5%86%85%E5%8A%A0%E9%80%9F%E5%99%A8)
+
 ### pip
 
 pip可以临时指定使用的镜像, 例如
@@ -510,6 +528,37 @@ gcc -m32 hello.c
 ```
 
 
+
+安装fish
+--------------
+
+安装并切换默认shel
+
+```
+sudo apt install fish
+sudo chsh -s /usr/bin/fish
+```
+
+- [Linux Ubuntu 安装 Fish Shell 教程以及配置和使用方法](https://cloud.tencent.com/developer/article/1709295)
+
+
+fish提供自动补全功能, 使用`→`接受整个补全结果, 使用`Alt+→`接受补全结果中的一个单词. 使用`Alt+s`再上一条指令前补充sudo指令. 
+
+
+- [Fish Tutorial](https://fishshell.com/docs/current/tutorial.html)
+
+
+### 使fish支持conda
+
+在bash环境中执行
+
+```
+conda init fish
+```
+
+然后重新开shell即可实现conda环境的切换
+
+
 ubuntu桌面版优化
 --------------------
 
@@ -519,27 +568,27 @@ ubuntu桌面版优化
 sudo apt install gnome-shell-extension-autohidetopbar 
 ```
 
-在搜索页面中打开Extension，选择`Hide Top Bar`即可
+在搜索页面中打开Extension, 选择`Hide Top Bar`即可
 
 - [Hide Top Bar in Ubuntu 20.04](https://www.youtube.com/watch?v=6rTE8N_aUWQ)
 
 
 ### ubuntu隐藏wine状态栏
 
-访问[此链接](https://extensions.gnome.org/extension/1674/topiconsfix/)安装指定的插件，即可将独立窗口的`Wine System Tray`移动到右上的状态栏之中。
+访问[此链接](https://extensions.gnome.org/extension/1674/topiconsfix/)安装指定的插件, 即可将独立窗口的`Wine System Tray`移动到右上的状态栏之中. 
 
-> 由于该网站通过在网页上点击的方式安装系统插件，因此需要先给浏览器安装一个通信插件才能正常使用该功能
+> 由于该网站通过在网页上点击的方式安装系统插件, 因此需要先给浏览器安装一个通信插件才能正常使用该功能
 
 
 ### ubuntu安装基于wine的软件
 
-访问[zq1997/deepin-wine](https://github.com/zq1997/deepin-wine)，按照教程添加第三方库后即可按照指令安装Windows平台的软件。
+访问[zq1997/deepin-wine](https://github.com/zq1997/deepin-wine), 按照教程添加第三方库后即可按照指令安装Windows平台的软件. 
 
 - [可安装软件列表](https://deepin-wine.i-m.dev/)
 
 
 ### 将CapsLK替换为Esc
 
-搜索`tweaks`打开配置页面，选择`Keyboard & Mouse`选项卡，点击`Additional Layout Options`，再弹出的窗口中选择`Caps Lock Behavior`选项，并选择`Make Caps Lock an additional Esc`
+搜索`tweaks`打开配置页面, 选择`Keyboard & Mouse`选项卡, 点击`Additional Layout Options`, 再弹出的窗口中选择`Caps Lock Behavior`选项, 并选择`Make Caps Lock an additional Esc`
 
-> 其他键位相关的配置也可以在这里修改，相比与前几年，ubuntu的配置简单了很多了
+> 其他键位相关的配置也可以在这里修改, 相比与前几年, ubuntu的配置简单了很多了

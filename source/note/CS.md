@@ -14,8 +14,6 @@ date: 2021-12-16 08:00:00
 - [x86-64 Core体系结构历史](#x86-64-core体系结构历史)
 - [POSIX接口](#posix接口)
 - [ll各列的含义](#ll各列的含义)
-- [安装fish](#安装fish)
-  - [使fish支持conda](#使fish支持conda)
 
 
 Bash常用快捷功能
@@ -113,33 +111,3 @@ drwxrwxr-x   3 lizec lizec 4.0K 3月  26 19:24 themes/
 
 - [ls -l 每一列的含义](https://blog.csdn.net/sinat_36219858/article/details/83721448)
 
-
-
-安装fish
---------------
-
-安装并切换默认shel
-
-```
-sudo apt install fish
-sudo chsh -s /usr/bin/fish
-```
-
-- [Linux Ubuntu 安装 Fish Shell 教程以及配置和使用方法](https://cloud.tencent.com/developer/article/1709295)
-
-
-fish提供自动补全功能，使用`→`接受整个补全结果，使用`Alt+→`接受补全结果中的一个单词。使用`Alt+s`再上一条指令前补充sudo指令。
-
-
-- [Fish Tutorial](https://fishshell.com/docs/current/tutorial.html)
-
-
-### 使fish支持conda
-
-在bash环境中执行
-
-```
-conda init fish
-```
-
-然后重新开shell即可实现conda环境的切换
