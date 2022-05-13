@@ -592,3 +592,20 @@ sudo apt install gnome-shell-extension-autohidetopbar
 搜索`tweaks`打开配置页面, 选择`Keyboard & Mouse`选项卡, 点击`Additional Layout Options`, 再弹出的窗口中选择`Caps Lock Behavior`选项, 并选择`Make Caps Lock an additional Esc`
 
 > 其他键位相关的配置也可以在这里修改, 相比与前几年, ubuntu的配置简单了很多了
+
+
+### 从文件安装软件
+
+和Windows平台一样，Ubuntu也可以从文件安装软件。Ubuntu平台默认的安装包格式是`deb`格式，对于该格式的文件，可以直接双击打开安装页面。
+
+对于其他Linux平台的安装包（例如`rpm`格式），可以通过`alien`命令转换为`deb`格式， 例如
+
+```
+sudo apt install alien
+sudo alien --scripts ＊.rpm
+```
+
+之后会生成同名的`deb`包，双击安装即可
+
+
+- [ubuntu16 安装RPM软件包](https://blog.csdn.net/wojiushiwoba/article/details/62046750)
