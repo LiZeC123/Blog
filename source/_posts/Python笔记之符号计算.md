@@ -5,8 +5,8 @@ categories: Python笔记
 tags:
     - Python
 cover_picture: images/python.jpg
+math: True
 ---
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default"></script>
 
 
 在学习机器学习等内容时, 我们经常遇到需要公式推导的情景. 但实际上我们往往只需要理解其中的概念, 具体的计算过程并不重要. 因此如果符号推导过程可以由计算机完成, 则可以节省很多时间, 从而把精力集中到最核心的部分. 
