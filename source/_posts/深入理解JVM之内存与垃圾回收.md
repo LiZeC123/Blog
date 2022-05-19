@@ -6,7 +6,7 @@ tags:
     - Java
     - JVM
 cover_picture: images/JVM.png
-math: True
+math: true
 ---
 
 

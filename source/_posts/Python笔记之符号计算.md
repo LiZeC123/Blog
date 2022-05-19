@@ -5,7 +5,7 @@ categories: Python笔记
 tags:
     - Python
 cover_picture: images/python.jpg
-math: True
+math: true
 ---
 
 

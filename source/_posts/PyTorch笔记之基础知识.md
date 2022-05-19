@@ -6,7 +6,7 @@ tags:
     - Python
     - PyTorch
 cover_picture: images/pytorch.png
-math: True
+math: true
 ---
 
 

@@ -5,10 +5,8 @@ categories: LaTeX
 tags:
   - LaTeX
 cover_picture: images/latex.PNG
+math: true
 ---
-
-
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default"></script>
 
 
 在日常写文章的过程中,经常会遇到需要使用公式的情况, 在以前我都是尽量使用文字描述, 但这毕竟不能从本质解决问题, 因此我决定学习如何在Markdown中使用公式. 经过一番搜索, 发现要加入公式还是比较简单的. 本文介绍如何在Markdown中使用LaTeX公式, 并且基于此简单介绍LaTeX的数学公式语法. 学会了如何使用公式以后,Markdown基本上就可以完全替代Word了.

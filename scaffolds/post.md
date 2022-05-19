@@ -4,7 +4,7 @@ date: {{ date }}
 categories:
 tags:
 cover_picture:
-math: False
+math: false
 ---
 
 
