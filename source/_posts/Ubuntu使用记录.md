@@ -329,7 +329,7 @@ Linux系统目录结构
 - [Linux 系统的/usr目录](https://www.cnblogs.com/ftl1012/p/9278578.html)
 
 
-Ubuntu管理多版本Java
+Ubuntu管理多版本软件
 -----------------------
 
 Ubuntu可以直接使用apt安装多个版本的Java, 多个版本的Java并不会直接产生冲突. 
@@ -354,7 +354,7 @@ There are 3 choices for the alternative java (providing /usr/bin/java).
 
 输入相应的编号就可以切换java的默认版本. 同理还可以切换`javac`, `javadoc`等命令的版本.
 
-
+> 除了Java和Python等软件外，还可以自己添加管理项目， 可参考[update-alternatives使用详解](https://www.jianshu.com/p/4d27fa2dce86)
 
 curl指令
 --------------
@@ -592,3 +592,50 @@ sudo apt install gnome-shell-extension-autohidetopbar
 搜索`tweaks`打开配置页面, 选择`Keyboard & Mouse`选项卡, 点击`Additional Layout Options`, 再弹出的窗口中选择`Caps Lock Behavior`选项, 并选择`Make Caps Lock an additional Esc`
 
 > 其他键位相关的配置也可以在这里修改, 相比与前几年, ubuntu的配置简单了很多了
+
+
+### 从文件安装软件
+
+和Windows平台一样，Ubuntu也可以从文件安装软件。Ubuntu平台默认的安装包格式是`deb`格式，对于该格式的文件，可以直接双击打开安装页面。
+
+对于其他Linux平台的安装包（例如`rpm`格式），可以通过`alien`命令转换为`deb`格式， 例如
+
+```
+sudo apt install alien
+sudo alien --scripts ＊.rpm
+```
+
+之后会生成同名的`deb`包，双击安装即可
+
+
+- [ubuntu16 安装RPM软件包](https://blog.csdn.net/wojiushiwoba/article/details/62046750)
+
+### 查询头文件对应的依赖
+
+使用源码编译时，可能因为缺少相关的依赖，导致编译出错。此时可以通过如下指令查询头文件对应的依赖包名称
+
+```bash
+# 安装工具
+sudo apt install apt-file
+sudo apt-file update
+
+# 查询头文件 X11/Xlib.h  对应的依赖包
+apt-file search X11/Xlib.h 
+```
+
+执行上述命令会出现如下的搜索结果
+
+```
+ivtools-dev: /usr/include/IV-X11/Xlib.h   
+libghc-x11-dev: /usr/lib/haskell-packages/ghc/lib/x86_64-linux-ghc-8.6.5/X11-1.9-Fmq4QbYpsd5OMgvJkPFaT/Graphics/X11/Xlib.hi
+libhugs-x11-bundled: /usr/lib/hugs/packages/X11/Graphics/X11/Xlib.hs
+libnx-x11-dev: /usr/include/x86_64-linux-gnu/nx-X11/Xlib.h
+libx11-dev: /usr/include/X11/Xlib.h
+python-pycparser: /usr/share/python-pycparser/fake_libc_include/X11/Xlib.h
+python3-pycparser: /usr/share/python3-pycparser/fake_libc_include/X11/Xlib.h
+```
+
+经过分析，安装`libx11-dev`即可解决依赖问题
+
+> 注意configure指令可能会根据依赖的情况设置编译变量，因此安装对应依赖后需要重新执行configure指令
+
