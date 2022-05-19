@@ -1,5 +1,5 @@
 <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js"></script>
+<script src="https://lib.baomitu.com/jquery/3.2.1/jquery.min.js"></script>
 <script>
   var mihoConfig = {
       root: "<%=config.url%>",
@@ -14,7 +14,7 @@
 <%- js('js/main') %>
 
 <% if (theme.open_bg_particle){ %>
-  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <script src="https://lib.baomitu.com/particles.js/2.0.0/particles.min.js"></script>
   <div id="particles"></div>
   <%- js('js/particles') %>
 <% } %>
@@ -41,8 +41,8 @@
 <% } %>
 
 <% if (theme.open_animation){ %>
-  <%- css('https://cdn.jsdelivr.net/npm/animate.css@3.5.0/animate.min.css') %>
-  <script src="https://cdn.jsdelivr.net/npm/scrollreveal@3.0.5/dist/scrollreveal.min.js"></script>
+  <%- css('https://lib.baomitu.com/animate.css/3.5.0/animate.min.css') %>
+  <script src="https://lib.baomitu.com/scrollReveal.js/3.0.5/scrollreveal.min.js"></script>
   <%- js('js/animate') %>
 <% } %>
 <% if (! is_home()){ %>
@@ -53,7 +53,7 @@
 <% } %>
 
 <% if (theme.graphviz.enable) { %>
-  <script src='https://cdn.jsdelivr.net/npm/viz.js@1.7.1/viz.js'></script>
+  <script src='https://lib.baomitu.com/viz.js/1.7.1/viz.js'></script>
   <script>
     String.prototype.replaceAll = function(search, replacement) {
       var target = this;
