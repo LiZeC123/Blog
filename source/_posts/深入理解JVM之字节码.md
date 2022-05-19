@@ -7,7 +7,7 @@ tags:
     - JVM
 cover_picture: images/JVM.png
 ---
-<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default"></script> -->
+
 
 
 本文主要介绍Java虚拟机的字节码相关的内容. 由于Java字节码的独特设计, 使得大部分指令仅需要一个字节即可表示, 这也是其被称为字节码的原因. 

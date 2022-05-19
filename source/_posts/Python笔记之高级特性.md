@@ -6,7 +6,7 @@ tags:
     - Python
 cover_picture: images/python.jpg
 ---
-<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default"></script> -->
+
 
 本文介绍Python语言中相对比较高级的一些特性, 包括列表解析, 生成器, 函数式编程,装饰器,类型注解等.
 

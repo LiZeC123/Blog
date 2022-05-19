@@ -6,7 +6,7 @@ tags:
     - Go
 cover_picture: images/go.png
 ---
-<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default"></script> -->
+
 
 
 本文主要介绍GO的标准库中一些最常用的重要模块. 由于Go并不是我的第一门语言, 所以本文将对照C, Java, Python等语言, ...

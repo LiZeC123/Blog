@@ -7,7 +7,7 @@ tags:
     - Excel
 cover_picture: images/python.jpg
 ---
-<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default"></script> -->
+
 
 
 本文介绍Python数据转换相关的库, 主要包括如何使用Python读写Excel文件和数据库. 本文中, 读取Excel的库为`openpyxl`

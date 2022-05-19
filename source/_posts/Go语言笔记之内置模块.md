@@ -6,7 +6,7 @@ tags:
     - Go
 cover_picture: images/go.png
 ---
-<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default"></script> -->
+
 
 
 本文介绍Go语言中常见的数据结构的基本使用, 包括定长数组, 变长数组, 哈希表等结构

@@ -7,7 +7,7 @@ tags:
     - Java
 cover_picture: images/maven.jpg
 ---
-<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default"></script> -->
+
 
 
 本文介绍Maven的依赖相关的内容, 包括如何获取依赖, 版本一致性控制等内容.

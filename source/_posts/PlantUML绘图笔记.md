@@ -6,7 +6,7 @@ tags:
 	- UML
 cover_picture:
 ---
-<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default"></script> -->
+
 
 
 PlantUML是一个开源项目, 提供了用代码绘制时序图, 类图, 对象图等功能. 由于代码编辑更加便利, 因此在博客和文档中都非常适合使用PlantUML来插入对应的图片. PlantUML的[官方文档](https://plantuml.com/zh/)上对每种图的特性都进行了详细的描述. 在必要的时候, 也可以通过[在线服务器1](http://www.plantuml.com/plantuml/uml/SyfFKj2rKt3CoKnELR1Io4ZDoSa70000)和[在线服务器2](https://www.planttext.com/)直接导出对应的图片.

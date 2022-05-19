@@ -7,7 +7,7 @@ tags:
     - 单元测试
 cover_picture: images/unit.png
 ---
-<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default"></script> -->
+
 
 本文介绍Java的单元测试中经常使用的Junit和JMock库的主要API和使用方法. 阅读本文前需要对Maven有基本的了解, 如果对其不了解, 可以阅读 [Maven笔记之基本概念](https://lizec.top/2019/07/09/Maven%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/) .
 

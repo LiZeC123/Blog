@@ -7,7 +7,7 @@ tags:
     - 数据库
 cover_picture: images/sql.jpg
 ---
-<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default"></script> -->
+
 
 
 由于日常开发过程中不经常使用SQL, 对于其中的一些高级语法比较容易遗忘. 因此本文简要介绍了SQL的各种语法, 用于快速回顾有关的知识. 关于详细的数据库理论, 可以阅读[数据库系统原理](http://lizec.top/2017/12/20/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86/)的有关章节. 

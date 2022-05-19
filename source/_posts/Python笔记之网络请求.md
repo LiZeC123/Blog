@@ -6,7 +6,7 @@ tags:
     - Python
 cover_picture: images/python.jpg
 ---
-<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default"></script> -->
+
 
 
 由于Python的脚本特性, 使得Python特别适合开发网络请求的小脚本. 

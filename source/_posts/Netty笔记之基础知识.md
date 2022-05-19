@@ -5,7 +5,7 @@ categories:
 tags:
 cover_picture:
 ---
-<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default"></script> -->
+
 
 Netty是一个基于Java的高性能的, 异步事件驱动的网络通信框架, 其对Java的NIO进行了封装并提供简单易用的API. Netty本身是一个Jar包, 可以通过Maven进行管理.
 

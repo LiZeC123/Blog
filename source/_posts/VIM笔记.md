@@ -6,7 +6,7 @@ tags:
     - VIM
 cover_picture:
 ---
-<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default"></script> -->
+
 
 
 由于最近经常需要在服务器端简单修改一些配置文件, 因此有必要了解一下VIM的基本操作. 此外, 目前的主流IDE基本都提供了VIM的键位映射, 虽然这些键位映射的模式并不能等同于VIM, 但大部分基本操作都是支持的. 因此掌握了VIM的基本操作还是能够在其他IDE上提高代码的编辑速度.

@@ -6,7 +6,7 @@ tags:
     - Java
 cover_picture: images/java.jpg
 ---
-<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default"></script> -->
+
 
 
 本文介绍JDK中提供了一系列辅助工具的使用方法, 包括打包程序jar, 监控程序Visual VM等.

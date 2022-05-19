@@ -6,7 +6,7 @@ tags:
   - LaTeX
 cover_picture: images/latex.PNG
 ---
-<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default"></script> -->
+
 
 
 以前的文章已经介绍过如何使用LaTeX语法在Markdown中输入数学公式, 但输入数学公式只是LaTeX的一个基本功能, LaTeX的本质是一个排版工具. 本文将正式的介绍LaTeX的语法, 以及如何使用LaTeX进行学术写作.

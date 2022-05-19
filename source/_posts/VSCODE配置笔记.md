@@ -5,7 +5,7 @@ categories:
 tags:
 cover_picture:
 ---
-<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default"></script> -->
+
 
 
 VSCODE总体上来说是开箱可用的，不过部分插件和配置还是需要略做修改才能带来更好的体验。关于VSCODE的配置记录如下。

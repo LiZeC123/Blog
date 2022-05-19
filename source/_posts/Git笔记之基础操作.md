@@ -6,7 +6,7 @@ tags:
     - Git
 cover_picture:  images/git.jpg
 ---
-<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default"></script> -->
+
 
 
 本文介绍GIT的基础知识, 包括GIT的初始化, 基本的指令, 基本原理, 以及GIT标签和GIT别名. 本文从GIT的原理出发, 重点分析了各种情况下的代码撤回操作.

@@ -6,7 +6,7 @@ tags:
     - Shell
 cover_picture:
 ---
-<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default"></script> -->
+
 
 
 在使用Linux系统的过程中, 经常会用到shell, 本文介绍shell编程. 本文按照创建一个Shell脚本的顺序,依次介绍各个环节涉及的知识.

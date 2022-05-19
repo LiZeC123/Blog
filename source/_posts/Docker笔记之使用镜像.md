@@ -6,7 +6,7 @@ tags:
     - Docker
 cover_picture: images/docker.jpg
 ---
-<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default"></script> -->
+
 
 
 Docker可以视为一种轻量级的虚拟机, 可以将应用程序和其依赖环境进行打包, 从而在新平台上直接部署. 由于Docker将程序的依赖全部打包到一起, 因此极大的简化了部署操作, 提高了软件部署的效率.

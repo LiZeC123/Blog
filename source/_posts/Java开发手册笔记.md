@@ -7,7 +7,7 @@ tags:
 cover_picture: images/java.jpg
 ---
 
-<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default"></script> -->
+
 
 
 本文是对阿里巴巴的`Java开发手册`的笔记, 对其中的一些平时没有注意的细节进行记录, 并对一些内容补充细节和自己的理解.

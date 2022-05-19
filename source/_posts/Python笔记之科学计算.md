@@ -6,7 +6,7 @@ tags:
     - Python
 cover_picture: images/python.jpg
 ---
-<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default"></script> -->
+
 
 
 本文介绍Python科学计算中经常使用的一些第三方库, 包括数据计算模块numpy, 科学计算模块scipy, 数据处理模块pandas, 绘图模块matplotlib等. 上述这些模块都是其他更高级模块的基础模块, 是使用Python进行科学计算的核心内容.

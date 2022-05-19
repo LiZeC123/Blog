@@ -7,7 +7,7 @@ tags:
     - Java
 cover_picture: images/maven.jpg
 ---
-<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default"></script> -->
+
 
 
 构建一个Java项目, 通常需要下载依赖, 复制jar到类路径, 编译项目, 运行项目测试用例, 打包项目, 将项目部署到服务器等操作.  Maven是一个自动完成上述工作的工具, 从而减少项目构建过程的复杂度. 本文介绍如何通过Maven管理Java项目.

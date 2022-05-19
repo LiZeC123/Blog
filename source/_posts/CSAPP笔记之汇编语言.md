@@ -6,7 +6,7 @@ tags:
 cover_picture: images/CSAPP.jpg
 ---
 
-<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default"></script> -->
+
 
 
 ### 指令后缀

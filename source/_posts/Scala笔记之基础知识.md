@@ -6,7 +6,7 @@ tags:
     - Scala
 cover_picture: images/scala.png
 ---
-<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default"></script> -->
+
 
 Scala语言运行在JVM上, 因此Scala可以认为在一定程度上与Java是兼容的, Scala可以自由的使用Java所有的类.
 

@@ -7,7 +7,7 @@ tags:
 cover_picture: images/python.jpg
 ---
 
-<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default"></script> -->
+
 
 本文对Python语言进行一个简单的回顾, 对Python中各种语法进行了简单的介绍, 并且对帮助系统进行了测试, 从而保证在阅读Python代码时不至于遇到无法理解的语法. 在本文的最后, 介绍了Python中模块的有关内容, 以便于后续安装和使用第三方的模块.
 

@@ -7,7 +7,7 @@ tags:
     - PyTorch
 cover_picture: images/pytorch.png
 ---
-<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default"></script> -->
+
 
 
 本文介绍PyTorch的文本处理库TorchText. 在自然语言相关的任务中, 训练模型的第一步就是对文本数据进行预处理. 通常文本数据的预处理包括: (1) 从磁盘加载文本数据并分词; (2) 将单词映射为数字, 将句子映射成数字的列表; (3) 将数据转化为分批次的数据. 本文的主要内容是TorchText的基本概念以及上述预处理过程的TorchText实现方法.

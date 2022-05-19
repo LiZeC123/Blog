@@ -6,7 +6,7 @@ tags:
     - Java
 cover_picture: images/java.jpg
 ---
-<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default"></script> -->
+
 
 本文介绍一些零散的Java特性, 虽然这些知识都比较零散, 但是合理使用可以有效的简化程序的逻辑, 降低开发难度.
 

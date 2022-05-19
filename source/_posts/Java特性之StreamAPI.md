@@ -7,7 +7,7 @@ tags:
     - StreamAPI
 cover_picture: images/java.jpg
 ---
-<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default"></script> -->
+
 
 
 Stream是Java8中处理集合的关键抽象概念. 使用Stream API, 编译器可以针对性的使用并行操作来对运算进行加速, 同时使用这些API也能让我们从处理低层次循环中脱离出来, 从更高层次思考问题.

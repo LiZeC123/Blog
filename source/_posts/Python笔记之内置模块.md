@@ -6,7 +6,7 @@ tags:
     - Python
 cover_picture: images/python.jpg
 ---
-<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default"></script> -->
+
 
 
 本文介绍Python常用的内置模块, 包括全部的内建函数(builtins), 以及文件操作, 系统功能,进程调度和绘图等模块的基本内容.

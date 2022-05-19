@@ -6,7 +6,7 @@ tags:
     - Java
 cover_picture: images/java.jpg
 ---
-<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default"></script> -->
+
 
 
 从Java 1.4之后, Java引入了新的Java I/O 库来替代原有的File类, 到了Java 8, Java又引入了新的Base64编码和解码库, 使用新的API可以避免原来Java文件的复杂操作, 简化代码逻辑. 此外, 在Java 8中, 还引入了另外的一组时间API来替代原有的设计, 使用新的时间API能更简单的处理时间的相关问题.

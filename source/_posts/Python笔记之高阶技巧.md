@@ -6,7 +6,7 @@ tags:
     - Python
 cover_picture: images/python.jpg
 ---
-<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default"></script> -->
+
 
 
 本文主要介绍一些Python中的高级技巧, 从而使我们的代码更加pythonic. 本文的主要内容来自《Python Cookbook》3rd Edition, 可以访问[python3-cookbook](https://python3-cookbook.readthedocs.io/zh_CN/latest/preface.html)查看中文翻译版本.

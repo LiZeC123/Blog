@@ -7,7 +7,7 @@ tags:
     - 多线程
 cover_picture: images/java.jpg
 ---
-<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default"></script> -->
+
 
 
 本文介绍Java中关于多线程的类库, 包括各种类的实现原理和使用方法, 关于多线程的基础知识, 可以阅读[Java多线程之基础知识](http://lizec.top/2018/11/21/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B9%8B%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/).
