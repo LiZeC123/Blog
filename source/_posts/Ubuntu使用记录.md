@@ -433,6 +433,8 @@ sudo service smbd restart
 
 此处的配置对于大部分软件而言都是全局生效的, 但对于apt等命令行工具无效. 
 
+> Firefox对于Socks5的支持不太好, 有时候代理软件没问题, 但是Firefox就是用不了
+
 
 ### APT
 
@@ -536,8 +538,10 @@ gcc -m32 hello.c
 
 ```
 sudo apt install fish
-sudo chsh -s /usr/bin/fish
+chsh -s /usr/bin/fish
 ```
+
+> 注意不要以root身份执行chsh, 否则该操作仅对root用户生效
 
 - [Linux Ubuntu 安装 Fish Shell 教程以及配置和使用方法](https://cloud.tencent.com/developer/article/1709295)
 
@@ -562,9 +566,19 @@ conda init fish
 ubuntu桌面版优化
 --------------------
 
-### 选择系统版本
+### 注意事项
 
-不建议选择过于新的系统, 例如在2022年5月选择22.04版本. 由于新版本中各种软件都比较新, 而第三方软件不一定同步完成了更新, 可能导致依赖的版本太高而无法安装. 每个长期支持版都有7年的支持时间, 因此选择一个发布至少1年的长期支持版更为稳妥.
+1. 不建议选择过于新的系统, 选择发布至少一年的版本比较稳妥.
+2. 直接使用迅雷下载镜像文件, 从网页下载到2GB时会卡住.
+3. 安装时语言选择中文, 从而确保安装了对应的输入法, 否则在英文操作系统上安装输入法将消耗大量时间.
+4. 不要安装第三方驱动, 尤其是显卡驱动. 否则容易出现版本不匹配导致无法启动图像界面.
+5. 不要选最小安装, 全部使用默认值即可, 附带的软件一般最后都会用上, 提前安装好可以节省后续的时间.
+6. 尽量使用命令行安装和卸载软件, 至少能看到错误信息. 不到最后, 不要使用图像界面安装.
+7. 不要强制卸载任何软件, 否则可能导致依赖关系破坏, 直接影响这个apt系统.
+
+每个长期支持版都可以使用7年, 不必可以追求最新版. 而且由于最新版的系统中基础软件版本较高, 可能导致无法安装第三方软件. 例如fish对于Python最高版本有要求, 过高的Python版本将导致无法安装fish.
+
+从图像界面安装程序虽然比较简单, 但如果出现错误无法查看错误信息, 如果界面卡住也无法得知具体的进度情况. 强制终止容易出现错误, 进而破坏整个安装系统.
 
 ### ubuntu隐藏顶部标题栏
 
@@ -572,7 +586,7 @@ ubuntu桌面版优化
 sudo apt install gnome-shell-extension-autohidetopbar 
 ```
 
-在搜索页面中打开Extension, 选择`Hide Top Bar`即可
+注销当前用户后, 重新登录并在搜索页面中打开Extension, 选择`Hide Top Bar`即可
 
 - [Hide Top Bar in Ubuntu 20.04](https://www.youtube.com/watch?v=6rTE8N_aUWQ)
 
@@ -613,6 +627,8 @@ sudo alien --scripts ＊.rpm
 
 
 - [ubuntu16 安装RPM软件包](https://blog.csdn.net/wojiushiwoba/article/details/62046750)
+
+> 不建议以这种方式安装软件, 容易导致依赖管理出现错误
 
 ### 查询头文件对应的依赖
 
