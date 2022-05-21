@@ -659,3 +659,21 @@ python3-pycparser: /usr/share/python3-pycparser/fake_libc_include/X11/Xlib.h
 
 > 注意configure指令可能会根据依赖的情况设置编译变量，因此安装对应依赖后需要重新执行configure指令
 
+### 配置X11转发
+
+使用X11转发功能, 可以使得其他设备查看Ubuntu系统上的窗口, 进而实现可视化的操作. 虽然基于X11转发的性能不太行, 不如专门的远程桌面, 但相较于专门开启图形化界面进行操作, 这种和SSH紧密结合且仅传输一个窗口的模式对于开发还是非常的方便.
+
+> 运行Chrome很卡, 但运行bochs绰绰有余
+
+实现X11转发需要两个条件:
+
+1. 本地存在相应的软件, 能够渲染从服务器传输过来的数据
+2. 本地使用的SSH软件支持X11转发
+
+针对第一点, 可以安装[vcxsrv](https://sourceforge.net/projects/vcxsrv/), 针对第二点, 不同的软件有不同的配置方法, 可以参考
+
+- [Xshell启用X11转发](https://www.xshellcn.com/xsh_column/jiaocheng-x11zf.html)
+- [Vscode Remote启用X11转发](https://yunusmuhammad007.medium.com/jetson-nano-vs-code-x11-forwarding-over-ssh-d97fd2290973)
+
+其他参考资料:
+- [X11 forwarding，Windows与Linux结合的最佳开发环境](https://zhuanlan.zhihu.com/p/66075449)
