@@ -562,6 +562,18 @@ conda init fish
 
 然后重新开shell即可实现conda环境的切换
 
+### 服务器版开始X11支持
+
+执行如下指令安装需要的模块
+
+```
+sudo apt install xorg xauth openbox xserver-xorg-legacy
+```
+
+之后可以输入`xclock`测试配置是否正确
+
+- [Linux安装X11实现GUI](https://blog.csdn.net/lly1122334/article/details/122649364)
+
 
 ubuntu桌面版优化
 --------------------
