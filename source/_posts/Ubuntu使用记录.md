@@ -575,6 +575,22 @@ sudo apt install xorg xauth openbox xserver-xorg-legacy
 - [Linux安装X11实现GUI](https://blog.csdn.net/lly1122334/article/details/122649364)
 
 
+> **注意:** 安装X11界面后, 同时会开启自动休眠策略, 为了避免服务器自动关机, 同时需要进行如下的设置
+
+```
+sudo systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
+```
+
+- [记UbuntuServer自动关机问题的排查和解决](https://www.jianshu.com/p/6653b4ac1d11)
+
+
+### 设置时区
+
+```
+sudo timedatectl set-timezone Asia/Shanghai
+```
+
+
 ubuntu桌面版优化
 --------------------
 
