@@ -562,6 +562,12 @@ conda init fish
 
 然后重新开shell即可实现conda环境的切换
 
+### 添加环境变量
+
+常规的对PATH变量的修改对fish无效, 如果需要添加新的路径到PATH变量中, 可以执行
+
+echo "set PATH /home/lizec/.local/bin $PATH" >>  ~/.config/fish/config.fish
+
 ### 服务器版开始X11支持
 
 执行如下指令安装需要的模块
