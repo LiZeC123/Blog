@@ -27,6 +27,45 @@ sudo snap install node --classic
 
 
 
+安装OneDrive客户端
+---------------------
+
+对于Ubuntu系统，可以安装OneDrive客户端实现Ubuntu与Windows的文件同步。 安装过程执行如下的代码
+
+```bash
+# 安装OneDrive客户端需要的依赖
+sudo apt install libcurl4-openssl-dev
+sudo apt install libsqlite3-dev
+sudo snap install --classic dmd
+
+# 编译OneDrive客户端
+cd ~/Application
+git clone https://github.com/skilion/onedrive.git
+cd onedrive
+make
+sudo make install
+```
+
+安装完成后执行`onedrive`开启程序进行第一次配置，此时会输出一个onedrive的登陆URL，通过该URL登陆即可对客户端授权登陆。
+
+之后会自动开始同步操作，第一次同步操作结束后会自动退出。 **一定要等待程序同步完所有文件后再开始后续的配置**。
+
+-----------------------------
+
+使用如下的指令配置开机自启动
+
+```
+systemctl --user enable onedrive
+systemctl --user start onedrive
+```
+
+之后可以使用如下的指令查看运行日志
+
+```
+journalctl --user-unit onedrive -f
+```
+
+
 
 
 Ubuntu下如何挂载U盘
@@ -568,7 +607,7 @@ conda init fish
 
 echo "set PATH /home/lizec/.local/bin $PATH" >>  ~/.config/fish/config.fish
 
-### 服务器版开始X11支持
+### 服务器版开启X11支持
 
 执行如下指令安装需要的模块
 
