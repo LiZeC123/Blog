@@ -50,10 +50,12 @@ Information about running processes.
 
 在Shell脚本的第一行需要指定执行此脚本的解释器, 通常可以指定为
 ``` shell
-#!/bin/bash
+#! /bin/bash
 ```
 
-bash是`Bourne Again Shell`, 是很多Linux系统的默认脚本解释器. 
+bash是`Bourne Again Shell`, 是很多Linux系统的默认脚本解释器. 常见的解析器包括`bash`, `sh`, `fish`, `zsh`等. 不同的解释器语法规则存在差异, 因此虽然bash多数情况下是默认的选择, 但为了避免不必要的麻烦, 还是应该在每个脚本开头的位置都指明需要使用的解释器类型.
+
+> 对于很多极简的docker镜像, 其中甚至仅包含`sh`, 此时最好将解释器类型指定为`#! /bin/sh`
 
 
 创建变量
@@ -231,13 +233,13 @@ funWithParam 1 2 3 4 5 6 7 8 9 34 73
 设置可执行权限
 -----------------------
 
-给上一步创建的脚本赋予执行权限, 此操作可以在图像界面上通过右键设置熟悉来完成, 也可以在Shell中执行如下的指令
+在运行脚本前需要对其赋予可执行权限, 例如对于脚本`shell.sh`, 可以执行如下指令授予其可执行权限.
 
 ```
 $ chmod +x shell.sh
 ```
 
-注意shell.sh是需要设置的文件的文件名
+> 对于图像界面可以通过右键设置来赋予可执行权限
 
 
 添加到搜索目录
@@ -250,7 +252,7 @@ lizec@ideapad:~$ echo $PATH
 /home/lizec/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
 ```
 
-将脚本添加到任意一个显示的目录中即可
+将脚本添加到上面的任意一个目录中即可
 
 ------------------
 
