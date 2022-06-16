@@ -27,6 +27,45 @@ sudo snap install node --classic
 
 
 
+安装OneDrive客户端
+---------------------
+
+对于Ubuntu系统，可以安装OneDrive客户端实现Ubuntu与Windows的文件同步。 安装过程执行如下的代码
+
+```bash
+# 安装OneDrive客户端需要的依赖
+sudo apt install libcurl4-openssl-dev
+sudo apt install libsqlite3-dev
+sudo snap install --classic dmd
+
+# 编译OneDrive客户端
+cd ~/Application
+git clone https://github.com/skilion/onedrive.git
+cd onedrive
+make
+sudo make install
+```
+
+安装完成后执行`onedrive`开启程序进行第一次配置，此时会输出一个onedrive的登陆URL，通过该URL登陆即可对客户端授权登陆。
+
+之后会自动开始同步操作，第一次同步操作结束后会自动退出。 **一定要等待程序同步完所有文件后再开始后续的配置**。
+
+-----------------------------
+
+使用如下的指令配置开机自启动
+
+```
+systemctl --user enable onedrive
+systemctl --user start onedrive
+```
+
+之后可以使用如下的指令查看运行日志
+
+```
+journalctl --user-unit onedrive -f
+```
+
+
 
 
 Ubuntu下如何挂载U盘
@@ -568,7 +607,7 @@ conda init fish
 
 echo "set PATH /home/lizec/.local/bin $PATH" >>  ~/.config/fish/config.fish
 
-### 服务器版开始X11支持
+### 服务器版开启X11支持
 
 执行如下指令安装需要的模块
 
@@ -613,6 +652,15 @@ ubuntu桌面版优化
 每个长期支持版都可以使用7年, 不必可以追求最新版. 而且由于最新版的系统中基础软件版本较高, 可能导致无法安装第三方软件. 例如fish对于Python最高版本有要求, 过高的Python版本将导致无法安装fish.
 
 从图形界面安装程序虽然比较简单, 但如果出现错误无法查看错误信息, 如果界面卡住也无法得知具体的进度情况. 强制终止容易出现错误, 进而破坏整个安装系统.
+
+### 安装搜狗输入法
+
+> **注意:** 安装系统时语言必须选择中文, 以免产生不必要的麻烦
+
+搜狗输入法目前已经支持到Ubuntu20.04, 按照如下的教程安装即可. 更高版本的系统可能会安装失败.
+
+- [Ubuntu搜狗输入法安装指南](https://pinyin.sogou.com/linux/guide)
+
 
 ### ubuntu隐藏顶部标题栏
 
