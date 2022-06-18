@@ -11,6 +11,30 @@ cover_picture:  images/ubuntu.jpg
 本文包含我在日常使用Ubuntu系统中遇到的一些问题的记录, 没有什么特定的顺序和联系, 不定期更新.
 
 
+SSH仅允许局域网密码登录
+-----------------------------
+
+如果希望处于外网的用户只能使用秘钥登录, 而处于局域网的用户依然可以使用密码登录, 则可以进行如下的配置. 编辑`/etc/ssh/sshd_config`文件, 添加如下的内容
+
+```
+#禁用密码验证
+PasswordAuthentication no
+#启用密钥验证
+RSAAuthentication yes
+PubkeyAuthentication yes
+
+# 局域网IP允许密码验证
+Match Address 10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
+    PasswordAuthentication yes
+Match all
+```
+
+
+- [linux ssh使用秘钥登录并禁用密码登录](https://blog.csdn.net/qq_32506245/article/details/81355497)
+- [Only allow password authentication to SSH server from internal network](https://serverfault.com/questions/406839/only-allow-password-authentication-to-ssh-server-from-internal-network)
+- [OpenSSH: How to end a match block](https://unix.stackexchange.com/questions/67334/openssh-how-to-end-a-match-block)
+
+
 
 安装node
 ----------------
