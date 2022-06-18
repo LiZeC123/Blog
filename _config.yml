@@ -98,6 +98,14 @@ include:
 exclude:
 ignore:
 
+# hexo-generator-searchdb的配置
+# https://github.com/next-theme/hexo-generator-searchdb
+search:
+  path: search.json
+  field: post
+  content: true
+  format: raw
+
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
