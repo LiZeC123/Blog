@@ -783,3 +783,14 @@ python3-pycparser: /usr/share/python3-pycparser/fake_libc_include/X11/Xlib.h
 
 其他参考资料:
 - [X11 forwarding，Windows与Linux结合的最佳开发环境](https://zhuanlan.zhihu.com/p/66075449)
+
+
+### EPUB阅读器
+
+如果在阅读的同时还需要对大量电子书进行管理, 则直接安装`Calibre`并可以配合`Calibre-Web`使用.
+
+如果单纯需要阅读EPUB格式的电子书, 则可以安装`FBReader`, 该软件可以通过snap安装, 即
+
+```
+snap install fbreader
+```
