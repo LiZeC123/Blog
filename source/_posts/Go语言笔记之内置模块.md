@@ -447,3 +447,10 @@ var data []byte = []byte(str)
 
 str = string(data[:])
 ```
+
+
+参考资料与扩展阅读
+-------------------------
+
+
+- [《Go语言标准库》The Golang Standard Library by Example](https://books.studygolang.com/The-Golang-Standard-Library-by-Example/)
