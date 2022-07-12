@@ -121,3 +121,27 @@ ps: 以下项目star数均大于100，且会定期检查项目的url，剔除无
 
 
 
+Go值得关注的开源项目
+---------------------------
+
+### Go语言小工具
+
+- 解析崩溃报告的小工具: [GitHub - maruel/panicparse: Crash your app in style (Golang)](https://github.com/maruel/panicparse)
+- 监控TCP流量的工具: [GitHub - kevwan/tproxy: A cli tool to proxy and analyze TCP connections.](https://github.com/kevwan/tproxy)
+- Watch指令的替代品: [GitHub - sachaos/viddy: 👀 A modern watch command. Time machine and pager etc.](https://github.com/sachaos/viddy)
+- 压力测试工具: [GitHub - ddosify/ddosify: High-performance load testing tool, written in Golang. For distributed and Geo-targeted load testing: Ddosify Cloud - https://ddosify.com 🚀](https://github.com/ddosify/ddosify)
+
+
+### Go语言相关库
+
+- 函数式编程库: [GitHub - samber/mo: 🦄  Monads and popular FP abstractions, powered by Go 1.18+ Generics (Option, Result, Either...)](https://github.com/samber/mo)
+- 数据结构库: [GitHub - line/garr: Collection of high performance, thread-safe, lock-free go data structures](https://github.com/line/garr)
+- 缓存库: [GitHub - muesli/cache2go: Concurrency-safe Go caching library with expiration capabilities and access counters](https://github.com/muesli/cache2go)
+
+### Go项目
+
+- 全文检索工具: [GitHub - newpanjing/gofound: GoFound GoLang Full text search go语言全文检索引擎，毫秒级查询。 使用使用http接口调用，集成Admin管理界面，任何系统都可以使用。](https://github.com/newpanjing/gofound)
+- SFTP服务: [GitHub - drakkan/sftpgo: Fully featured and highly configurable SFTP server with optional HTTP/S, FTP/S and WebDAV support - S3, Google Cloud Storage, Azure Blob](https://github.com/drakkan/sftpgo)
+
+
+

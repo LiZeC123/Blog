@@ -441,12 +441,62 @@ func Itoa(i int) string
 
 ### 字符串与字节数组的转换
 
+对于字符串和字节数组的转化, Go提供了标准操作, 代码如下
+
 ```go
 var str string = "test"
 var data []byte = []byte(str)
 
 str = string(data[:])
 ```
+
+由于字符串不可变, 因此在转换过程中需要对内容进行一次拷贝.
+
+----------------------------------------
+
+对于极端需要性能的场景, 存在如下的转换方法.
+
+```go
+func String2Bytes(s string) []byte {
+	sh := (*reflect.StringHeader)(unsafe.Pointer(&s))
+	bh := reflect.SliceHeader{
+		Data: sh.Data,
+		Len: sh.Len,
+		Cap: sh.Len,
+	}
+	return *(*[]byte)(unsafe.Pointer(&bh))
+}
+
+func Byte2String(b []byte) string {
+	return *(*string)(unsafe.Pointer(&b))
+}
+```
+
+由于调用了unsafe方法, 因此代码存在安全问题, 通常情况下都不应该使用该方法进行转换.
+
+------------------------------------------
+
+此外, 对于Gin项目中, 使用了如下的方式进行转换
+
+```go
+func StringToBytes(s string) []byte {
+ return *(*[]byte)(unsafe.Pointer(
+  &struct {
+   string
+   Cap int
+  }{s, len(s)},
+ ))
+}
+
+func BytesToString(b []byte) string {
+ return *(*string)(unsafe.Pointer(&b))
+}
+```
+
+上述代码抛弃了reflect库的API, 因此兼容性可能会更好一点. 但是代码依然假定了Go底层的实现结构, 如果Go内部实现发生变化将导致上述代码无法执行.
+
+- [你真的懂string与[]byte的转换了吗](https://mp.weixin.qq.com/s?__biz=MzAxMTA4Njc0OQ==&mid=2651442152&idx=2&sn=e0c6b49d6792366de56337ef2b5d25c7&chksm=80bb151ab7cc9c0c5855061554f86df7264912b069e4e8dc39133dd6841ca2cbac99624cc91d&scene=21#wechat_redirect)
+- [你所知道的 string 和 []byte 转换方法可能是错的](https://mp.weixin.qq.com/s/T--shUtArU-asFthtR7waA)
 
 
 参考资料与扩展阅读
