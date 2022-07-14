@@ -32,7 +32,7 @@ menu:
     target: false
   database:
     title: Knowledge
-    url: /note/
+    url: /categories/个人知识库/
     target: false
   user:
     title: About
