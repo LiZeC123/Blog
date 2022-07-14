@@ -1,13 +1,14 @@
 ---
-title: JavaWeb之JavaScript
-date: 2018-06-21 20:22:17
-categories: JavaWeb
+title: Web开发笔记之JavaScript基础
+math: false
+date: 2022-07-14 13:02:25
+categories: web
 tags:
-    - Javascript
-cover_picture: images/js.png
+    - web
+    - javascript
+cover_picture: images/web.jpg
 ---
 
-很早以前就尝试学习js, 不过用于当时的时机还不成熟, 因此始终没有真正的学会js. 现在终于有机会可以再次系统的学习一次, 因此将js学习过程中的笔记记录在此.
 
 由于已经学习过Java和Python等编程语言, 因此本文不是一个面向初学者的笔记. 在笔记中往往只会记录js特有的语言特性, 而与大部分语言相同的共性内容会直接忽略.
 
