@@ -10,7 +10,7 @@ cover_picture: images/python.jpg
 
 
 
-本文介绍Python数据转换相关的库, 主要包括如何使用Python读写Excel文件和数据库. 本文中, 读取Excel的库为`openpyxl`
+本文介绍Python数据转换相关的库, 主要包括如何使用Python读写Excel文件(使用`openpyxl`库)和数据库. 写入Excel文件的好处是便于后续的处理和传播, 同时相较于操作CSV文件, 直接操作Excel文件可以避免特殊字符产生的问题.
 
 
 打开和保存Excel文件
@@ -22,11 +22,18 @@ wb1 = Workbook()                    # 直接在内存中创建一个Excel文件
 wb2 = load_workbook('test.xlsx')    # 读取一个已经存在的Excel文件
 ```
 
-无论是哪种方法创建的Excel, 其中至少包含一个Sheet. 可以使用如下的方法获得默认Sheet
+无论是哪种方法创建的Excel, 其中至少包含一个Sheet. 可以使用如下的方法获得操作Sheet
 
 ```py
+# 获得默认的Sheet, 每个Excel都默认包含Sheet1
 ws = wb.active
 ws = wb['Sheet1']
+
+# 创建新的Sheet
+ws = wb. create_sheet(name)
+
+#删除Sheet
+del wb[name]
 ```
 
 最终, 可以调用`wb.save(<name>)`保存文件.
