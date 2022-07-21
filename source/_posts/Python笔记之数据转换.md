@@ -29,8 +29,11 @@ wb2 = load_workbook('test.xlsx')    # 读取一个已经存在的Excel文件
 ws = wb.active
 ws = wb['Sheet1']
 
-# 创建新的Sheet
+# 创建新的Sheet并插入到sheet列表的末尾
 ws = wb. create_sheet(name)
+
+# 创建新的Sheet并插入到sheet列表的开头
+ws2 = wb.create_sheet("Mysheet", 0) 
 
 #删除Sheet
 del wb[name]
@@ -105,8 +108,10 @@ ws.append([1,2,3])
 也可以直接对Cell进行赋值来添加数据.
 
 
-其他事项
----------------------
+参考资料
+---------------
 
-1. 如果只是写入Excel, 那么可以考虑用pandas进行处理, 然后直接用其API保存为Excel文件
+- [官方教程](https://openpyxl.readthedocs.io/en/stable/tutorial.html)
+
+
 

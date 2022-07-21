@@ -212,3 +212,34 @@ httpRequest.send('url='+URL);
 ```
 
 - [MDN: XMLHttpRequest](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest)
+
+
+
+NPM基本使用
+-----------------
+
+### 基本指令
+
+TODO: 常用命令学习
+
+
+
+### package.json文件
+
+TODO: 依赖于开发依赖
+
+对于一个给定的版本号`x.y.z`, `^`表示可以更新`y`和`z`到最新版, `~`表示可以更新`z`到最新版
+
+
+### 使用模块
+
+在启用webpack打包之前, 只能根据位置位置在HTML中引用对应的文件. 启用webpack后, 可以使用ES6的`require`语法或`import`语法
+
+```js
+const $ = require('jquery')
+
+
+```
+
+webpack原理与使用
+---------------

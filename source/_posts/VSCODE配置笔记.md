@@ -27,3 +27,11 @@ VSCODE修改默认终端
 --------------------
 
 按下`Ctrl+P`打开功能搜索栏，输入`Terminal: Select Default Profile`，然后选择自己需要的终端。
+
+
+启用从终端开启Code
+----------------------
+
+对于Mac系统, 可以按下`command+shift+p `打开指令面板后, 输入`Install Code command in PATH`的一部分开启该功能.
+
+- [mac 下命令行启动vscode打开指定文件夹](https://blog.csdn.net/qq_31460257/article/details/81592812)
