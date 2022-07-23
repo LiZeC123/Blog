@@ -147,7 +147,13 @@ VIM使用`:substitute`指令进行搜索和替换, 这一指令通常简写为`:
 IDEA使用VIM
 ---------------
 
-IDEA提供了插件ideaVim来引入VIM的键位, 可以直接在插件市场下载对应的插件. 安装完成后在IDE的右下角有一个VIM的图标,点击这个图片可以快速启用和关闭插件. 同样地, 需要写个配置文件来做相关的设置. 点击VIM图标可以打开配置文件, 输入如下内容:
+IDEA系列的IDE均提供了VIM插件, 可以通过配置该插件实现使用VIM的效果. 首先需要安装如下的插件
+
+- ideaVIM: 提供VIM的核心功能
+- IdeaVimExtension: 
+
+
+提供了插件ideaVim来引入VIM的键位, 可以直接在插件市场下载对应的插件. 安装完成后在IDE的右下角有一个VIM的图标,点击这个图片可以快速启用和关闭插件. 同样地, 需要写个配置文件来做相关的设置. 点击VIM图标可以打开配置文件, 输入如下内容:
 
 ```
 " 显示当前模式
@@ -266,7 +272,7 @@ set easymotion
 " open terminal window   ---------- alt + F12
 ```
 
-配置文件来自博客: [ideavim 配置说明](https://www.ravenxrz.ink/archives/9cf25d6b.html). 
+配置文件来自博客: [ideavim 配置说明](https://ravenblog.vercel.app/archives/9cf25d6b.html). 
 
 
 VIM基础配置
