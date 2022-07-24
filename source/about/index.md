@@ -8,37 +8,39 @@ date: 2017-09-01 09:01:00
 关于博客
 -----------
 
-- 本博客采用Hexo技术构建, 主题基础为[MiHo](https://github.com/wongminho/hexo-theme-miho), 部分样式进行了轻微的调整
+- 本博客采用Hexo技术构建, 主题基础为[MiHo](https://github.com/wongminho/hexo-theme-miho), 并根据自身需求对部分样式进行了轻微的调整.
 
 - ~~评论区采用[Gitalk](https://github.com/gitalk/gitalk)实现, 评论相当于在Github上发布issue.~~
-- 考虑到安全性, 如果需要评论请直接前往本项目的Github页面[发Issus](https://github.com/LiZeC123/Blog/issues)
+- 考虑到安全性, 如果需要评论请直接前往本项目的Github页面[发Issus](https://github.com/LiZeC123/Blog/issues).
 
-- 博客的内容围绕计算机技术和论文展开, 以后也可能涉及其他领域的内容
+- 博客的内容围绕计算机技术和论文展开, 以后也可能涉及其他领域的内容.
 
-- 转载文章不需要经过我同意, 只需要注明作者和原文地址即可
+- 转载文章不需要经过我同意, 只需要注明作者和原文地址即可.
 
-
+**学习是场不停歇的旅途, 我们要一直向前进啊~**
 
 关于博主
 -----------
 
-- 计算机硕士学位, 但物理学才是真爱, 正在自学量子力学(~~不自量力中~~)
+- 计算机硕士学位, 研究方向为机器学习和自然语言处理. 欢迎和我交流计算机, 人工智能相关的话题.
 
-- 熟悉Java和Python, 正在学习Go语言和前端知识
+- 物理学才是真爱, 正在自学量子力学(~~不自量力中~~), 虽然要学的内容还有很多, 但我的目标确实是星辰大海.
 
-- 偶尔会看看量子计算机, 虽然根本看不懂
+- 熟悉Java和Python, 也会一点C/C++/C#和Lisp, 正在学习Go语言和前端知识.
 
-- 不喝肥宅快乐水, 希望有一天能有肥宅快乐兽
+- 手写过编译器, 尝试过自制操作系统, 浏览器内核正在规划中.
+
+- 开发了一个自己用的[待办事项管理系统](https://github.com/LiZeC123/SmartTodo), 正在尝试将人工智能技术引入到[复习管理系统](https://github.com/LiZeC123/SmartReview).
+
+- 最喜欢的游戏是[Spelunky](https://store.steampowered.com/app/239350/Spelunky/)和[Spelunky 2](https://store.steampowered.com/app/418530/Spelunky_2/), 优秀的rougelite类游戏充分展示了游戏在算法上的魅力.
+
+- 不喝肥宅快乐水, 希望有一天能有肥宅快乐兽.
 
 
 友情链接
 ------------
 
-**欢迎评论区留言, 交换友链**
-
 - [wenhaohao的博客](https://whh.plus/)
 - [mathor's blog](https://wmathor.com/)
 
----------------
-
-**学习是场不停歇的旅途, 我们要一直向前进啊~**
+**欢迎前往[友链交换区](https://github.com/LiZeC123/Blog/issues/14)留言, 交换友链**
