@@ -143,6 +143,7 @@
         searchWrap.css('top','50%');
         searchWrap.css('marginTop','-80px');
         searchWrap.css('opacity','1');
+        document.getElementById("keywords").focus();
     });
     $('.search-close').click(function(){
         searchWrap.css('top','0');
