@@ -199,6 +199,13 @@ JS操作DOM
 - [DOM对象的一些常用属性和方法](https://www.jianshu.com/p/7a13f33dab48)
 
 
+### 文本框获得焦点
+
+```js
+document.getElementById("test").focus();
+```
+
+
 JS发送请求
 -------------
 

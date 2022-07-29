@@ -32,7 +32,7 @@ HTML基本结构
 ```
 
 
-`<meta charset="UTF-8">`指定了当前的文件编码为UTF-8编码. 显然将编码指定为这个值时, 该文件本身也应该使用UTF-8编码. `<meta http-equiv="X-UA-Compatible" content="IE=edge">`是关于IE浏览器的兼容性设置, 如果不考虑IE的兼容性, 可以不写. `<meta name="viewport" content="width=device-width, initial-scale=1.0">`是网页兼容移动端的重要设置.
+`<meta charset="UTF-8">`指定了当前的文件编码为UTF-8编码. 显然将编码指定为这个值时, 该文件本身也应该使用UTF-8编码. `<meta http-equiv="X-UA-Compatible" content="IE=edge">`是关于IE浏览器的兼容性设置, 如果不考虑IE的兼容性, 可以不写. `<meta name="viewport" content="width=device-width, initial-scale=1.0">`是网页兼容移动端的重要设置, 启用该设置后浏览器才会按照移动端的规则对页面进行渲染, 否则无论页面是否适配移动端, 都会按照PC端的风格进行渲染.
 
 - [HTML Meta中添加X-UA-Compatible和IE=Edge,chrome=1有什么作用？](https://blog.csdn.net/u012118993/article/details/57083804)
 - [meta name="viewport" content="width=device-width,initial-scale=1.0" 究竟什么意思](https://blog.csdn.net/qq_42039281/article/details/83281074)
