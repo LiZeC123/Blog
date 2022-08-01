@@ -10,11 +10,13 @@ cover_picture: images/redis.png
 
 
 
-Ubuntu安装和配置Redis
+安装和配置Redis
 --------------------
 
 - [ubuntu 18.04 安装 Redis](https://wangxin1248.github.io/linux/2018/07/ubuntu18.04-install-redis.html)
+- [mac安装redis-cli](https://blog.csdn.net/w5688414/article/details/102692919)
 
+> mac平台可以直接使用brew安装redis, 客户端需要参考上述链接进行安装
 
 
 Redis功能速览
