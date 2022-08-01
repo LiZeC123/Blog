@@ -205,6 +205,17 @@ JS操作DOM
 document.getElementById("test").focus();
 ```
 
+### 读写剪切板
+
+```js
+navigator.clipboard.writeText(this.message).then(() => {
+    this.showAlert = true
+    setTimeout(() => this.showAlert = false, 500);
+})
+```
+
+- [Clipboard API](https://developer.mozilla.org/en-US/docs/Web/API/Clipboard/write)
+
 
 JS发送请求
 -------------
