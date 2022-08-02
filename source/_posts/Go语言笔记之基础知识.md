@@ -139,41 +139,6 @@ import (
 不同的包之间存在依赖关系, Go语言保证最底层的依赖中的init函数最先被调用, 且无论一个包被依赖多少次, 其init函数仅被调用一次.
 
 
-
-### 添加测试
-
-在当前模块下创建以`_test.go`结尾的文件来表明一个文件是测试文件. 在测试文件中可以进行任意形式的测试, 例如
-
-```go
-import (
-    "testing"
-    "regexp"
-)
-
-// TestHelloName calls greetings.Hello with a name, checking
-// for a valid return value.
-func TestHelloName(t *testing.T) {
-    name := "Gladys"
-    want := regexp.MustCompile(`\b`+name+`\b`)
-    msg, err := Hello("Gladys")
-    if !want.MatchString(msg) || err != nil {
-        t.Fatalf(`Hello("Gladys") = %q, %v, want match for %#q, nil`, msg, err, want)
-    }
-}
-
-// TestHelloEmpty calls greetings.Hello with an empty string,
-// checking for an error.
-func TestHelloEmpty(t *testing.T) {
-    msg, err := Hello("")
-    if msg != "" || err == nil {
-        t.Fatalf(`Hello("") = %q, %v, want "", error`, msg, err)
-    }
-}
-```
-
-最后使用`go test -v`即可运行测试并查看测试结果.
-
-
 ### 编译应用程序
 
 
@@ -645,3 +610,56 @@ func main() {
 ```go
 type Any interface {}
 ```
+
+
+
+Go语言测试框架
+------------
+
+
+
+在当前模块下创建以`_test.go`结尾的文件来表明一个文件是测试文件. 在测试文件中可以进行任意形式的测试, 通常可以将测试分为三种类型
+
+
+类型       | 格式要求         | 含义
+----------|----------------|--------------
+基本测试    | 函数名前缀为Test | 常规的单元测试
+基准测试    | 函数名前缀为Benchmark | 测试函数的性能
+示例测试    |函数名前缀为Example    | 为文档提供示例
+
+
+常见的测试代码如下所示
+
+```go
+import (
+    "testing"
+    "regexp"
+)
+
+
+// 测试函数的参数为*testing.T, 该参数提供了一些方法用于决策测试是否通过
+func TestHelloName(t *testing.T) {    
+    name := "Gladys"
+    want := regexp.MustCompile(`\b`+name+`\b`)
+    msg, err := Hello("Gladys")
+    if !want.MatchString(msg) || err != nil {
+        t.Fatalf(`Hello("Gladys") = %q, %v, want match for %#q, nil`, msg, err, want)
+    }
+}
+
+// 基准测试的参数为*testing.B, 方提供的法与*testing.T基本相同
+func BenchmarkSplit(b *testing.B) {
+    time.Sleep(5 * time.Second) // 假设需要做一些耗时的无关操作
+
+    b.ResetTimer()              // 重置计时器
+	for i := 0; i < b.N; i++ {
+        // b.N是一个特殊的变量, Go会自动设置该变量的取值, 使得被测试的函数执行足够长的时间
+		strings.Split("沙河有沙又有河", "沙")
+	}
+}
+```
+
+最后使用`go test -v`即可运行测试并查看测试结果.
+
+
+- [Go语言基础之单元测试](https://www.liwenzhou.com/posts/Go/unit-test/#autoid-2-5-0)
