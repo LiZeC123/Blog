@@ -81,7 +81,7 @@ print(reduce(operator.add, a))
 `openpyxl`提供了两个迭代器`ws.iter_rows`, `ws.iter_cols`和两个属性`ws.rows`, `ws,columns`, 可以分别按行和按列遍历整个表格, 例如
 
 ```py
->>> for row in ws.iter_rows(min_row=1, max_col=3, max_row=2):
+>>> for row in ws.iter_rows(min_row=1, max_row=2,  min_col=1, max_col=3):
 ...    for cell in row:
 ...        print(cell)
 <Cell Sheet1.A1>
@@ -93,6 +93,8 @@ print(reduce(operator.add, a))
 ```
 
 如果只需要值(默认返回Cell, 需要手动取值), 可以对迭代器指定一个参数`values_only=True`, 或者直接遍历属性`ws.values`
+
+> 注意: iter_row的四个参数都需要明确指定, 否则openpyxl仅使用默认值, 而不是根据文件实际使用的范围进行设置. 所有的索引都是从1开始计数.
 
 
 添加数据
