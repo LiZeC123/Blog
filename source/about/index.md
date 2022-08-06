@@ -28,7 +28,7 @@ date: 2017-09-01 09:01:00
 
 - 熟悉Java和Python, 也会一点C/C++/C#和Lisp, 正在学习Go语言和前端知识.
 
-- 手写过编译器, 尝试过自制操作系统, 浏览器内核正在规划中.
+- 手写过[编译器](https://github.com/LiZeC123/LSC), 尝试过[自制操作系统](https://github.com/LiZeC123/LOS), 浏览器内核正在规划中.
 
 - 开发了一个自己用的[待办事项管理系统](https://github.com/LiZeC123/SmartTodo), 正在尝试将人工智能技术引入到[复习管理系统](https://github.com/LiZeC123/SmartReview).
 

@@ -7,7 +7,7 @@ tags:
 cover_picture: images/go.png
 ---
 
-本文介绍Go语言最常用的模块, 包括基础的数据结构(数组, 切片, 哈希表), 基本的IO操作和字符串操作相关的内容. 由于Go并不是我的第一门语言, 所以本文将对照C, Java, Python等语言已有的语法进行对比. 对于其他语言中已有的内容, 可能会比较简略地带过.
+本文介绍Go语言最常用的模块, 包括基础的数据结构(数组, 切片, 哈希表), 基本的IO操作, 字符串操作, 并发控制和反射相关的内容. 由于Go并不是我的第一门语言, 所以本文将对照C, Java, Python等语言已有的语法进行对比. 对于其他语言中已有的内容, 会比较简略地带过.
 
 数组
 -----------------
@@ -312,13 +312,6 @@ type WriterAt interface {
 IO常见操作
 ---------------
 
-ioutil包定义了很多常用的IO操作方法, 具体可以分为文件操作, 接口封装, ... 等.
-
-
-几个比较常用的函数, 包括读取全部数据, 读写文件, 读写目录等, 具体函数前面如下:
-
-
-
 ### 读取整个文件
 
 对于读取或者写入全部的数据, ioutil包提供了如下的方法
@@ -497,6 +490,64 @@ func BytesToString(b []byte) string {
 
 - [你真的懂string与[]byte的转换了吗](https://mp.weixin.qq.com/s?__biz=MzAxMTA4Njc0OQ==&mid=2651442152&idx=2&sn=e0c6b49d6792366de56337ef2b5d25c7&chksm=80bb151ab7cc9c0c5855061554f86df7264912b069e4e8dc39133dd6841ca2cbac99624cc91d&scene=21#wechat_redirect)
 - [你所知道的 string 和 []byte 转换方法可能是错的](https://mp.weixin.qq.com/s/T--shUtArU-asFthtR7waA)
+
+
+
+并发控制包
+----------------
+
+
+
+
+
+- [Go语言圣经 并发控制](https://gopl-zh.codeyu.com/ch9/ch9.html)
+
+
+反射操作包
+---------------
+
+反射操作包的核心是两个函数`reflect.TypeOf`和`reflect.ValueOf`, 两个函数都可以接受任意的变量, 分别返回变量的类型和变量实际的值. 例如
+
+```go
+mm := make(map[string]string, 23)
+t := reflect.TypeOf(mm)
+v := reflect.ValueOf(mm)
+fmt.Println(t)              // map[string]string
+fmt.Println(v)              // map[]
+```
+
+似乎看起来`reflect.ValueOf`这种获得变量的值的操作并没有意义, 因为直接访问变量也能获得变量的值. 但需要注意到, 使用反射场景的时候, 给定的参数通常是表示任意类型的`interface{}`, 虽然其中存储了变量实际的值, 但空接口并不提供获得底层值的方法. 以下代码演示了如何根据`reflect.Value`获得变量实际的值
+
+```go
+// formatAtom formats a value without inspecting its internal structure.
+func formatAtom(v reflect.Value) string {
+    switch v.Kind() {
+    case reflect.Invalid:
+        return "invalid"
+    case reflect.Int, reflect.Int8, reflect.Int16,
+        reflect.Int32, reflect.Int64:
+        return strconv.FormatInt(v.Int(), 10)
+    case reflect.Uint, reflect.Uint8, reflect.Uint16,
+        reflect.Uint32, reflect.Uint64, reflect.Uintptr:
+        return strconv.FormatUint(v.Uint(), 10)
+    // ...floating-point and complex cases omitted for brevity...
+    case reflect.Bool:
+        return strconv.FormatBool(v.Bool())
+    case reflect.String:
+        return strconv.Quote(v.String())
+    case reflect.Chan, reflect.Func, reflect.Ptr, reflect.Slice, reflect.Map:
+        return v.Type().String() + " 0x" +
+            strconv.FormatUint(uint64(v.Pointer()), 16)
+    default: // reflect.Array, reflect.Struct, reflect.Interface
+        return v.Type().String() + " value"
+    }
+}
+```
+
+> 反射存在运行时产生painc, 性能低下等问题, 因此通常情况下不要使用反射
+
+- [Go语言圣经 反射](https://gopl-zh.codeyu.com/ch12/ch12.html)
+
 
 
 参考资料与扩展阅读
