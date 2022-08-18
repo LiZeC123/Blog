@@ -158,11 +158,6 @@ func main() {
 ```
 
 
-### 并发控制
-
-由于Go启用协程的代价非常低, 因此很容易在代码中引入多个协程并发的执行任务, 此时也会面临类似Java中的并发控制问题, Go提供了`sync.WaitGroup`等工具帮助完成协程之间的同步问题.
-
-
 ### 多路复用
 
 使用select语句可以使协程在多个条件上等待, 直到其中一个条件能够执行时, 执行相应的语句. 如果同时有多个条件可以执行, 则Go随机选择一个条件分支执行. 
@@ -195,3 +190,87 @@ func main() {
 }
 
 ```
+
+
+
+并发控制包
+----------------
+
+
+### 基础锁组件
+
+go的`sync`包提供了`Mutex`类, 实现了基本的**不可重入的**排它锁. 具体方法包括
+
+```go
+func (m *Mutex) Lock()
+func (m *Mutex) TryLock() bool
+func (m *Mutex) Unlock()
+```
+
+提供的接口比较简单, 与其他语言中的使用方法基本一致. 为了保证正确的释放锁, 通常在获取锁后立刻使用defer语句释放锁.
+
+> 由于Go的作者认为如果代码需要重入锁, 则表面代码存在耦合问题, 因此Go中并不提供任何可重入锁
+
+-----------
+
+相应的, go也提供了`RWMutex`类, 实现了**不可重入的**, **类似于公平锁**的读写锁. 具体方法包括
+
+```go
+func (rw *RWMutex) Lock()
+func (rw *RWMutex) RLock()
+func (rw *RWMutex) RUnlock()
+func (rw *RWMutex) TryLock() bool
+func (rw *RWMutex) TryRLock() bool
+func (rw *RWMutex) Unlock()
+```
+
+> `RWMutex`类实现了类似公平锁的特性, 如果一个协程尝试获取写锁, 则其他协程无法再获得读锁, 即使按照读写锁性质可以获得读锁.
+
+
+### WaitGroup
+
+WaitGroup用于在多个线程之间同步, 与Java中的`CounterDown`类效果类似, 具体方法包括
+
+```go
+func (wg *WaitGroup) Add(delta int)
+func (wg *WaitGroup) Done()
+func (wg *WaitGroup) Wait()
+```
+
+### Once
+
+Once类可以保证其中提交的方法无论在多少个线程中执行, 都只会执行一次,
+
+```go
+func main() {
+	var once sync.Once
+	onceBody := func() {
+		fmt.Println("Only once")
+	}
+	done := make(chan bool)
+	for i := 0; i < 10; i++ {
+		go func() {
+			once.Do(onceBody)
+			done <- true
+		}()
+	}
+	for i := 0; i < 10; i++ {
+		<-done
+	}
+}
+```
+
+### Map
+
+go提供了可以并发使用的`Map`类, 但由于不支持泛型, 官方建议在大部分场景优先考虑使用加锁的普通map对象. 只有如下的几个场景中可以考虑优先使用`Map`类.
+
+- 存在一个key写入后基本只有读取操作的场景
+- 存在大量协程读写互不相交的一组key的场景
+
+上述两个场景下使用`Map`类能够一定程度的减少手动加`Mutex`锁或`RWMutex`锁产生的冲突.
+
+
+### 扩展阅读
+
+- [Go Documentation of sync](https://pkg.go.dev/sync)
+- [Go语言如何实现可重入锁？](https://segmentfault.com/a/1190000040092635)
