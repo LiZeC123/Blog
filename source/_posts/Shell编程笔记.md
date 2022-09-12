@@ -16,9 +16,7 @@ cover_picture:
 帮助系统
 ---------------
 
-如果当前存在一个Shell环境, 那么获得一个指令的用法的第一方案是使用man指令进行查询, 绝对能比任何其他搜索方法更快的获得搜索结果.
-
-如果可以安装第三方软件, 那么首先安装`tldr`(Too long, don't read). 此指令可以给出各种常见的指令组合的文档, 例如
+如果当前存在一个Shell环境, 那么可以通过安装第三方软件`tldr`(Too long, don't read)快速查询指令的常用方法, 例如
 
 ```
 root@iZ:~# tldr ps
@@ -44,6 +42,8 @@ Information about running processes.
    ps -o ppid= -p {{pid}}
 ```
 
+> 再也不用记指令参数了, 也比当场Google不知道快到那里去了
+
 
 指定脚本解释器
 -----------------------
@@ -55,7 +55,7 @@ Information about running processes.
 
 bash是`Bourne Again Shell`, 是很多Linux系统的默认脚本解释器. 常见的解析器包括`bash`, `sh`, `fish`, `zsh`等. 不同的解释器语法规则存在差异, 因此虽然bash多数情况下是默认的选择, 但为了避免不必要的麻烦, 还是应该在每个脚本开头的位置都指明需要使用的解释器类型.
 
-> 对于很多极简的docker镜像, 其中甚至仅包含`sh`, 此时最好将解释器类型指定为`#! /bin/sh`
+> 对于很多极简的docker镜像, 其中甚至仅包含`sh`, 此时应该将解释器类型指定为`#! /bin/sh`
 
 
 创建变量

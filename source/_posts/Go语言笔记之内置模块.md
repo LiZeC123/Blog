@@ -395,6 +395,14 @@ Go的格式化系统与C基本一致, 对于文件, 标准输入输出和字符�
 | 0        | 使用0填充空位                  |
 
 
+字符串
+--------------
+
+Go本身并不暴露string的底层结构, 但可以认为Go语言中的字符串与C的实现类似, 是一个指向实际数据的指针. 和大部分语言一样, string也是不可变的, 传递string变量也不会产生拷贝开销.
+
+- [GO 中 string 的实现原理](https://segmentfault.com/a/1190000040203636)
+
+
 字符串操作包
 ---------------
 
@@ -540,16 +548,44 @@ func formatAtom(v reflect.Value) string {
 - [Go语言圣经 反射](https://gopl-zh.codeyu.com/ch12/ch12.html)
 
 
+interface结构原理
+---------------------
+
+在泛型或反射场景中经常使用interface{}表示任意类型的变量, 但是由于Go语言对interface{}的实现, interface{}实际上并不与C中的void*或者Java中的Object等价. 
+
+针对一个接口是否定义了方法, 接口变量可能有两种实现. 包含方法的iface和不包含方法的eface. 以eface为例, 对应的实例变量的结构可以视为
+```go
+type eface struct {
+	_type *_type
+	data  unsafe.Pointer
+}
+```
+
+其中_type存储了实际变量的类型, data存储了实际变量的值, 例如对于如下的代码
+
+```go
+
+var num *int = nil
+var face interface{} = num
+```
+
+对num和face进行nil判断会得到不同的结果. 其本质原因就是face变量并非一个指向num的指针, 而是具有自己的内存结构, 虽然data部分为nil, 但_type部分存储了num的类型.
+
+> interface{}常用于反射, 因此显然其中也需要存储原始指向的变量的类型.
+
+显然, face变量与num变量的内存结构是不同的, 因此赋值操作也不是简单的内存拷贝, 而是需要根据变量的类型合适的设置face的值. 与C/Java中等号永远是简单赋值操作不同, Go有点类似C++, 在不同的场景下等号会进行适当的重载.
+
+
+- [深入研究 Go interface 底层实现](https://halfrost.com/go_interface/)
+
+
 Context包
 -------------
 
 go语言中的Context对象主要用户协程之间的上下文信息传递以及并发控制. context通过内嵌父context的方式记录依赖关系, 有点类似Lisp的cons结构. 
 
 
-
 - [小白也能看懂的context包详解：从入门到精通](https://segmentfault.com/a/1190000040917752)
-
-
 
 
 
