@@ -579,14 +579,6 @@ var face interface{} = num
 - [深入研究 Go interface 底层实现](https://halfrost.com/go_interface/)
 
 
-Context包
--------------
-
-go语言中的Context对象主要用户协程之间的上下文信息传递以及并发控制. context通过内嵌父context的方式记录依赖关系, 有点类似Lisp的cons结构. 
-
-
-- [小白也能看懂的context包详解：从入门到精通](https://segmentfault.com/a/1190000040917752)
-
 
 
 参考资料与扩展阅读

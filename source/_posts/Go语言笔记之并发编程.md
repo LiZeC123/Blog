@@ -9,14 +9,25 @@ cover_picture: images/go.png
 
 
 
+设计哲学
+------------------
+
+
+
+
+当两个或多个操作必须按正确的顺序执行，而程序并未保证这个顺序，就会发生竞争条件. 通过假设设置协程到执行协程需要很长时间, 有助于分析程序中可能存在的竞争条件.
+
+临界区: 程序中需要独占访问共享资源的部分
+内存同步: 
+有一个专有名词，叫｜陆界区
+
+使用通信未共享内存，而不是通过共享内存未通信. 大部分问题都可以通过传统的锁或者GO的通道解决, 选择最好描述和最简单的那个方.
 
 
 协程
 ------------
 
-协程是Go的运行时管理的一种轻量级的线程. 不同于Python语言中协程之间完全通过自主切换实现调度的单线程模式, Go的协程更像一种轻量级的线程. 在代码中不需要调用特殊的API就可以直接启用协程.
-
-使用go关键字即可使一个函数在协程上运行, 例如
+协程是Go的运行时管理的一种轻量级的线程.  使用go关键字即可使一个函数在协程上运行, 例如
 
 ```go
 func say(s string) {
@@ -31,6 +42,20 @@ func main() {
     say("hello")
 }
 ```
+
+不同于Python语言中协程之间完全通过自主切换实现调度的单线程模式, Go的协程与Go运行时深度继承, 在自己的代码中不需要进行任何额外的操作, 运行时会观察协程的执行状态, 自动地进行切换. 因此Go的协程更像一种轻量级的线程.
+
+> 协程非常的轻量, 1GB内存即可启用将近4万个空协程
+
+
+
+
+
+
+
+
+
+
 
 
 通道
@@ -158,9 +183,10 @@ func main() {
 ```
 
 
-### 多路复用
+多路复用
+-------------
 
-使用select语句可以使协程在多个条件上等待, 直到其中一个条件能够执行时, 执行相应的语句. 如果同时有多个条件可以执行, 则Go随机选择一个条件分支执行. 
+使用select语句可以使协程在多个条件上等待, 直到其中一个条件能够执行时, 执行相应的语句. 
 
 
 ```go
@@ -191,6 +217,17 @@ func main() {
 
 ```
 
+在执行select语句时
+- 如果多个通道均可以执行, 则随机选择一个条件分支执行
+- 如果没有任何分支可以执行, 则select语句进入阻塞状态, 直到其中的某一个分支可执行
+- 如果存在default分支, 则其他分支不满足条件时自动执行default分支
+
+> 给select语句添加一个`time.After`分支, 可以简单地实现超时控制.
+
+
+
+如果同时有多个条件可以执行, 则Go
+
 
 
 并发控制包
@@ -209,7 +246,7 @@ func (m *Mutex) Unlock()
 
 提供的接口比较简单, 与其他语言中的使用方法基本一致. 为了保证正确的释放锁, 通常在获取锁后立刻使用defer语句释放锁.
 
-> 由于Go的作者认为如果代码需要重入锁, 则表面代码存在耦合问题, 因此Go中并不提供任何可重入锁
+> 由于Go的作者认为如果代码需要重入锁, 则表明代码存在耦合问题, 因此Go中并不提供任何可重入锁
 
 -----------
 
@@ -236,6 +273,9 @@ func (wg *WaitGroup) Add(delta int)
 func (wg *WaitGroup) Done()
 func (wg *WaitGroup) Wait()
 ```
+
+> WaitGroup适合不需要关注并发结果, 仅需要等待其他协程执行完毕的场景. 如果需要关注协程执行的结果, 此时更适合使用通道和select语句.
+
 
 ### Once
 
@@ -274,3 +314,50 @@ go提供了可以并发使用的`Map`类, 但由于不支持泛型, 官方建议
 
 - [Go Documentation of sync](https://pkg.go.dev/sync)
 - [Go语言如何实现可重入锁？](https://segmentfault.com/a/1190000040092635)
+
+
+Context包
+-------------
+
+go语言中的Context对象主要用户协程之间的上下文信息传递以及并发控制. Context是一个接口类型, 定义了四个方法
+
+
+```go
+type Context interface {
+	// 返回这个任务的截止时间, 如果没有设置截止时间, 则ok返回false
+	Deadline() (deadline time.Time, ok bool)
+
+	// Done方法返回一个通道, 如果当前任务需要被取消, 则该通道被关闭, 通常按照如下的方式使用
+	//  // Stream generates values with DoSomething and sends them to out
+	//  // until DoSomething returns an error or ctx.Done is closed.
+	//  func Stream(ctx context.Context, out chan<- Value) error {
+	//  	for {
+	//  		v, err := DoSomething(ctx)
+	//  		if err != nil {
+	//  			return err
+	//  		}
+	//  		select {
+	//  		case <-ctx.Done():
+	//  			return ctx.Err()
+	//  		case out <- v:
+	//  		}
+	//  	}
+	//  }
+	//
+	// See https://blog.golang.org/pipelines for more examples of how to use
+	// a Done channel for cancellation.
+	Done() <-chan struct{}
+
+	// 如果任务被取消,返回取消的具体原因. 否则始终返回nil
+	Err() error
+
+	Value(key interface{}) interface{}
+}
+```
+
+context通过内嵌父context的方式记录依赖关系, 有点类似Lisp的cons结构. 例如WithDeadline方法在给定的context对象基础上返回新的context, 使得达到截止时间时关闭done通道.
+
+
+
+
+- [小白也能看懂的context包详解：从入门到精通](https://segmentfault.com/a/1190000040917752)
