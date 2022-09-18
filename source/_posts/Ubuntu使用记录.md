@@ -518,13 +518,13 @@ git config --global https.proxy 'socks5://127.0.0.1:1080'
 
 上述设置仅对使用HTTP方式访问的项目有效, 对于以SSH方式访问的项目, 可以对SSH添加代理配置, 编辑`~/.ssh/config`文件, 输入以下内容
 
+对于Linux, 使用如下的配置
 ```
-ProxyCommand nc -v -x 127.0.0.1:1080 %h %p
-
 Host github.com
   User git
   Port 22
   Hostname github.com
+  ProxyCommand nc -v -x 127.0.0.1:1080 %h %p
   IdentityFile "~/.ssh/id_rsa"
   TCPKeepAlive yes
 
@@ -532,6 +532,27 @@ Host ssh.github.com
   User git
   Port 443
   Hostname ssh.github.com
+  ProxyCommand nc -v -x 127.0.0.1:1080 %h %p
+  IdentityFile "~/.ssh/id_rsa"
+  TCPKeepAlive yes
+```
+
+对于windows, 使用如下的配置
+
+```
+Host github.com
+  User git
+  Port 22
+  Hostname github.com
+  ProxyCommand connect -S 127.0.0.1:1080 -a none %h %p
+  IdentityFile "~/.ssh/id_rsa"
+  TCPKeepAlive yes
+
+Host ssh.github.com
+  User git
+  Port 443
+  Hostname ssh.github.com
+  ProxyCommand connect -S 127.0.0.1:1080 -a none %h %p
   IdentityFile "~/.ssh/id_rsa"
   TCPKeepAlive yes
 ```
