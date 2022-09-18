@@ -516,6 +516,31 @@ git config --global http.proxy 'socks5://127.0.0.1:1080'
 git config --global https.proxy 'socks5://127.0.0.1:1080'
 ```
 
+上述设置仅对使用HTTP方式访问的项目有效, 对于以SSH方式访问的项目, 可以对SSH添加代理配置, 编辑`~/.ssh/config`文件, 输入以下内容
+
+```
+ProxyCommand nc -v -x 127.0.0.1:1080 %h %p
+
+Host github.com
+  User git
+  Port 22
+  Hostname github.com
+  IdentityFile "~/.ssh/id_rsa"
+  TCPKeepAlive yes
+
+Host ssh.github.com
+  User git
+  Port 443
+  Hostname ssh.github.com
+  IdentityFile "~/.ssh/id_rsa"
+  TCPKeepAlive yes
+```
+
+之后可以使用`ssh -T git@github.com`测试连接是否生效.
+
+- [设置代理解决github被墙](https://zhuanlan.zhihu.com/p/481574024)
+
+
 ### Docker
 
 
