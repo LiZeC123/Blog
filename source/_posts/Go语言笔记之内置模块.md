@@ -500,6 +500,12 @@ func BytesToString(b []byte) string {
 - [你所知道的 string 和 []byte 转换方法可能是错的](https://mp.weixin.qq.com/s/T--shUtArU-asFthtR7waA)
 
 
+时间包
+---------------
+
+程序中应使用 Time 类型值来保存和传递时间. 使用Before, After和Equal等方法进行比较和运算. 使用Sub方法可以获取两个时间的差值, 生成一个Duration对象.
+
+
 
 
 反射操作包
