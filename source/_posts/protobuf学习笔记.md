@@ -16,15 +16,8 @@ protobuf是一种将结构化数据序列化的机制, 可用于内部设备通�
 
 
 
-protobuf修饰词
+protobuf简介
 ----------------
-
-### 修饰词
-
-- required: a well-formed message must have exactly one of this field.
-- optional: a well-formed message can have zero or one of this field (but not more than one).
-- repeated: this field can be repeated any number of times (including zero) in a well-formed message. The order of the repeated values will be preserved.
-
 
 ### 类型
 
@@ -41,8 +34,22 @@ protobuf修饰词
 protobuf对数字存储进行了优化，一个数字越小则存储长度越短。由于计算机使用补码表示负数，因此通常情况下负数将使用多个字节表示。为了优化这种情况，sint类型使用交叉的方式表示，绝对值较小的负数依然可以获得较短的存储长度。
 
 - [官方文档](https://developers.google.com/protocol-buffers/docs/overview)
-- [Protobuf通信协议详解：代码演示、详细原理介绍等CPP加油站](https://zhuanlan.zhihu.com/p/141415216)
+- [Protobuf通信协议详解：代码演示、详细原理介绍等](https://zhuanlan.zhihu.com/p/141415216)
 - [proto2格式说明](https://developers.google.com/protocol-buffers/docs/proto)
 - [proto3格式说明](https://developers.google.com/protocol-buffers/docs/proto3)
 
 
+
+protobuf命名冲突解决方案
+------------------------
+
+对于PB的namespace, 规范要求每个PB都是全局唯一的. 如果设计不合理就会导致PB名称冲突, 对于高版本的依赖库, Go语言在启动时会直接painc, 导致系统无法启动. 
+
+对于上述问题, 可以通过降级依赖版本临时解决:
+
+```go
+replace (
+	github.com/golang/protobuf => github.com/golang/protobuf v1.4.3
+	google.golang.org/protobuf => google.golang.org/protobuf v1.25.0
+)
+```
