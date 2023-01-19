@@ -763,6 +763,12 @@ sudo apt install gnome-shell-extension-autohidetopbar
 
 > 其他键位相关的配置也可以在这里修改, 相比与前几年, ubuntu的配置简单了很多了
 
+### 使用Mac键位
+
+对于我的键盘, 在Mac布局下Cmd建的位置, 对应的是Win键, 因此只需要将Ctrl键覆盖Win键即可解决大部分最难受的快捷键. 配置方法与将CapsLK替换为Esc相同
+
+- [linux如何设置mac快捷键,在Ubuntu上使用macOS的快捷键](https://blog.csdn.net/weixin_39608457/article/details/116909438)
+
 
 ### 从文件安装软件
 
