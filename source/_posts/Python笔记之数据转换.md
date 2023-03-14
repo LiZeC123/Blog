@@ -13,33 +13,61 @@ cover_picture: images/python.jpg
 本文介绍Python数据转换相关的库, 主要包括如何使用Python读写Excel文件(使用`openpyxl`库)和数据库. 写入Excel文件的好处是便于后续的处理和传播, 同时相较于操作CSV文件, 直接操作Excel文件可以避免特殊字符产生的问题.
 
 
-打开和保存Excel文件
-------------------
 
-``` py
-from openpyxl import Workbook
-wb1 = Workbook()                    # 直接在内存中创建一个Excel文件
-wb2 = load_workbook('test.xlsx')    # 读取一个已经存在的Excel文件
-```
+读取文件
+-----------------
 
-无论是哪种方法创建的Excel, 其中至少包含一个Sheet. 可以使用如下的方法获得操作Sheet
 
 ```py
+from openpyxl import Workbook, load_workbook
+wb = load_workbook('test.xlsx')    # 读取一个已经存在的Excel文件
+
 # 获得默认的Sheet, 每个Excel都默认包含Sheet1
 ws = wb.active
+# 或者手动指定sheet名称
 ws = wb['Sheet1']
 
-# 创建新的Sheet并插入到sheet列表的末尾
-ws = wb. create_sheet(name)
+# 遍历表格中指定区域的内容, 行列均从1开始计数
+for row in ws.iter_rows(min_row=1, max_row=2,  min_col=1, max_col=3):
+    for cell in row:
+        print(cell)
+```
 
+`openpyxl`提供了两个迭代器`ws.iter_rows`, `ws.iter_cols`和两个属性`ws.rows`, `ws,columns`, 可以分别按行和按列遍历整个表格
+
+如果只需要值(默认返回Cell, 需要手动取值), 可以对迭代器指定一个参数`values_only=True`, 或者直接遍历属性`ws.values`
+
+
+写入数据
+-----------------
+
+```py
+from openpyxl import Workbook
+wb = Workbook()                    # 直接在内存中创建一个Excel文件
+# 获得默认的Sheet, 每个Excel都默认包含Sheet1
+ws = wb.active
 # 创建新的Sheet并插入到sheet列表的开头
-ws2 = wb.create_sheet("Mysheet", 0) 
+ws = wb.create_sheet("Mysheet", 0) 
 
+# 按行在末尾添加数据
+ws.append([1,2,3])
+
+# 直接对指定的位置写入数据
+ws['A10'] = 233
+
+# 保存文件
+wb.save("act.xlsx")
+```
+
+
+其他操作
+------------------
+
+```py
 #删除Sheet
 del wb[name]
 ```
 
-最终, 可以调用`wb.save(<name>)`保存文件.
 
 
 访问Excel的数据
@@ -49,9 +77,9 @@ del wb[name]
 
 要求        | 示例          | 要求       | 示例
 -----------|---------------|------------|-----------------------
-获得某一行  | `ws[10]`      | 获得某一列  | `ws['C']`
-获得某些行  | `ws[5:10]`    | 获得某些列  | `ws['A:C']`
-获得任意数据| `ws[A1:C5]`
+获得某一行  | `ws['10']`      | 获得某一列  | `ws['C']`
+获得某些行  | `ws['5:10']`    | 获得某些列  | `ws['A:C']`
+获得任意数据| `ws['A1:C5']`
 
 
 无论是获得一个矩形区域的数据, 还是单行数据, 或者一个单元的数据, 使用这种风格获得的数据的返回值都是一个二维的Tuple. 例如
@@ -74,40 +102,6 @@ print(reduce(operator.add, a))
 
 如果是取出一行或者一列, 那么直接取出返回值的第0个元素即可.
 
-
-按行按列遍历
----------------
-
-`openpyxl`提供了两个迭代器`ws.iter_rows`, `ws.iter_cols`和两个属性`ws.rows`, `ws,columns`, 可以分别按行和按列遍历整个表格, 例如
-
-```py
->>> for row in ws.iter_rows(min_row=1, max_row=2,  min_col=1, max_col=3):
-...    for cell in row:
-...        print(cell)
-<Cell Sheet1.A1>
-<Cell Sheet1.B1>
-<Cell Sheet1.C1>
-<Cell Sheet1.A2>
-<Cell Sheet1.B2>
-<Cell Sheet1.C2>
-```
-
-如果只需要值(默认返回Cell, 需要手动取值), 可以对迭代器指定一个参数`values_only=True`, 或者直接遍历属性`ws.values`
-
-> 注意: iter_row的四个参数都需要明确指定, 否则openpyxl仅使用默认值, 而不是根据文件实际使用的范围进行设置. 所有的索引都是从1开始计数.
-
-
-添加数据
----------------------
-
-
-如果是规则的按行添加数据, 可以直接使用`ws.append`在表格的末尾加入一行数据. 例如
-
-```py
-ws.append([1,2,3])
-```
-
-也可以直接对Cell进行赋值来添加数据.
 
 
 参考资料
