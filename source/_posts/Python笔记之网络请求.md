@@ -26,6 +26,14 @@ r = requests.get("http://www.baidu.com")
 
 > 访问[这里](https://gist.github.com/LiZeC123/80d95703ae81cc111fa063c4fdd5a815)查看一个完整的Requests使用举例
 
+### 快速生成代码
+
+在使用Python发送网络请求的场景中, 有相当大的概率是通过Chrome浏览器的控制台获取某个链接, 然后将请求的信息转写为Python代码. 这一操作非常的机械, 可以考虑按照如下的步骤自动生成
+
+1. 在对应的请求上选择复制为cURL代码
+2. 通过[此网站](https://curlconvert.trumanwl.com/python)自动将cURL代码转换为对应的Python代码
+
+> 此方案能自动填充cookie等信息, 减少重复的开发工作. 非常适合只用一次的场景.
 
 ### 五个常用属性
 
