@@ -147,22 +147,22 @@ go get github.com/feyeleanor/slices
 
 ```go
 import (
-	"fmt"
-	"github.com/feyeleanor/slices"
+    "fmt"
+    "github.com/feyeleanor/slices"
 )
 
 func ps(arr []int) {
-	fmt.Printf("Point=%p, Len=%v Cap=%v Value=%v\n", arr, len(arr), cap(arr), arr)
+    fmt.Printf("Point=%p, Len=%v Cap=%v Value=%v\n", arr, len(arr), cap(arr), arr)
 }
 
 func main() {
-	iss := make(slices.ISlice, 5, 8)
+    iss := make(slices.ISlice, 5, 8)
 
-	for i := 0; i < 5; i++ {
-		iss[i] = i
-	}
+    for i := 0; i < 5; i++ {
+        iss[i] = i
+    }
 
-	iss.Insert(2, 55)
+    iss.Insert(2, 55)
 }
 
 ```
@@ -254,12 +254,12 @@ IO操作
 ```go
 type Reader interface {
     // 从切片p中读取len(p)个字节的数据, 返回实际读取到的字节数以及可能的错误
-	Read(p []byte) (n int, err error)
+    Read(p []byte) (n int, err error)
 }
 
 type Writer interface {
     // 向切片p写入len(p)个字节的数据, 返回实际写入的字节数以及可能的错误
-	Write(p []byte) (n int, err error)
+    Write(p []byte) (n int, err error)
 }
 ```
 
@@ -289,22 +289,22 @@ type Writer interface {
 ```go
 type ReaderFrom interface {
     // 从指定的Reader中读取全部数据
-	ReadFrom(r Reader) (n int64, err error)
+    ReadFrom(r Reader) (n int64, err error)
 }
 
 type WriterTo interface {
     // 向指定的Writer写入全部数据
-	WriteTo(w Writer) (n int64, err error)
+    WriteTo(w Writer) (n int64, err error)
 }
 
 type ReaderAt interface {
     // 从底层数据偏移off位置读取len(p)字节到p之中
-	ReadAt(p []byte, off int64) (n int, err error)
+    ReadAt(p []byte, off int64) (n int, err error)
 }
 
 type WriterAt interface {
     // 从底层数据偏移off位置, 将p中len(p)字节输入写入
-	WriteAt(p []byte, off int64) (n int, err error)
+    WriteAt(p []byte, off int64) (n int, err error)
 }
 ```
 
@@ -461,17 +461,17 @@ str = string(data[:])
 
 ```go
 func String2Bytes(s string) []byte {
-	sh := (*reflect.StringHeader)(unsafe.Pointer(&s))
-	bh := reflect.SliceHeader{
-		Data: sh.Data,
-		Len: sh.Len,
-		Cap: sh.Len,
-	}
-	return *(*[]byte)(unsafe.Pointer(&bh))
+    sh := (*reflect.StringHeader)(unsafe.Pointer(&s))
+    bh := reflect.SliceHeader{
+        Data: sh.Data,
+        Len: sh.Len,
+        Cap: sh.Len,
+    }
+    return *(*[]byte)(unsafe.Pointer(&bh))
 }
 
 func Byte2String(b []byte) string {
-	return *(*string)(unsafe.Pointer(&b))
+    return *(*string)(unsafe.Pointer(&b))
 }
 ```
 
@@ -564,8 +564,8 @@ interface结构原理
 针对一个接口是否定义了方法, 接口变量可能有两种实现. 包含方法的iface和不包含方法的eface. 以eface为例, 对应的实例变量的结构可以视为
 ```go
 type eface struct {
-	_type *_type
-	data  unsafe.Pointer
+    _type *_type
+    data  unsafe.Pointer
 }
 ```
 

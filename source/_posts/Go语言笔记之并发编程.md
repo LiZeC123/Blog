@@ -84,26 +84,26 @@ x := <- ch
 
 ```go
 func main() {
-	nums := make(chan int)
-	square := make(chan int)
+    nums := make(chan int)
+    square := make(chan int)
 
-	go func() {
-		for i := 0; i < 10; i++ {
-			nums <- i
-		}
-	}()
+    go func() {
+        for i := 0; i < 10; i++ {
+            nums <- i
+        }
+    }()
 
-	go func() {
-		for {
-			x := <-nums
-			square <- x * x
-		}
-	}()
+    go func() {
+        for {
+            x := <-nums
+            square <- x * x
+        }
+    }()
 
-	for {
-		x := <-square
-		fmt.Println(x)
-	}
+    for {
+        x := <-square
+        fmt.Println(x)
+    }
 }
 ```
 
@@ -111,28 +111,28 @@ func main() {
 
 ```go
 func main() {
-	nums := make(chan int)
-	square := make(chan int)
+    nums := make(chan int)
+    square := make(chan int)
 
-	go func() {
-		for i := 0; i < 10; i++ {
-			nums <- i
-		}
-		close(nums)     // 使用close关闭通道
-	}()
+    go func() {
+        for i := 0; i < 10; i++ {
+            nums <- i
+        }
+        close(nums)     // 使用close关闭通道
+    }()
 
-	go func() {
-		for x := range nums {   // 使用range关键字遍历, 通道关闭后自动结束循环
-			square <- x * x
-		}
-		close(square)
-	}()
+    go func() {
+        for x := range nums {   // 使用range关键字遍历, 通道关闭后自动结束循环
+            square <- x * x
+        }
+        close(square)
+    }()
 
-	for x := range square {
-		fmt.Println(x)
-	}
+    for x := range square {
+        fmt.Println(x)
+    }
 
-	return
+    return
 }
 ```
 
@@ -272,23 +272,23 @@ func (wg *WaitGroup) Wait()
 package main
 
 import (
-	"fmt"
-	"sync"
+    "fmt"
+    "sync"
 )
 
 func main() {
-	var wg sync.WaitGroup
-	numGoroutines := 30
+    var wg sync.WaitGroup
+    numGoroutines := 30
 
-	wg.Add(numGoroutines)
-	for i := 0; i < numGoroutines; i++ {
-		go func(id int) {
-			defer wg.Done()
-			fmt.Println("Goroutine id:", id)
-		}(i)
-	}
+    wg.Add(numGoroutines)
+    for i := 0; i < numGoroutines; i++ {
+        go func(id int) {
+            defer wg.Done()
+            fmt.Println("Goroutine id:", id)
+        }(i)
+    }
 
-	wg.Wait()
+    wg.Wait()
 }
 ```
 
@@ -302,20 +302,20 @@ Once类可以保证其中提交的方法无论在多少个线程中执行, 都�
 
 ```go
 func main() {
-	var once sync.Once
-	onceBody := func() {
-		fmt.Println("Only once")
-	}
-	done := make(chan bool)
-	for i := 0; i < 10; i++ {
-		go func() {
-			once.Do(onceBody)
-			done <- true
-		}()
-	}
-	for i := 0; i < 10; i++ {
-		<-done
-	}
+    var once sync.Once
+    onceBody := func() {
+        fmt.Println("Only once")
+    }
+    done := make(chan bool)
+    for i := 0; i < 10; i++ {
+        go func() {
+            once.Do(onceBody)
+            done <- true
+        }()
+    }
+    for i := 0; i < 10; i++ {
+        <-done
+    }
 }
 ```
 
@@ -343,34 +343,34 @@ go语言中的Context对象主要用户协程之间的上下文信息传递以�
 
 ```go
 type Context interface {
-	// 返回这个任务的截止时间, 如果没有设置截止时间, 则ok返回false
-	Deadline() (deadline time.Time, ok bool)
+    // 返回这个任务的截止时间, 如果没有设置截止时间, 则ok返回false
+    Deadline() (deadline time.Time, ok bool)
 
-	// Done方法返回一个通道, 如果当前任务需要被取消, 则该通道被关闭, 通常按照如下的方式使用
-	//  // Stream generates values with DoSomething and sends them to out
-	//  // until DoSomething returns an error or ctx.Done is closed.
-	//  func Stream(ctx context.Context, out chan<- Value) error {
-	//  	for {
-	//  		v, err := DoSomething(ctx)
-	//  		if err != nil {
-	//  			return err
-	//  		}
-	//  		select {
-	//  		case <-ctx.Done():
-	//  			return ctx.Err()
-	//  		case out <- v:
-	//  		}
-	//  	}
-	//  }
-	//
-	// See https://blog.golang.org/pipelines for more examples of how to use
-	// a Done channel for cancellation.
-	Done() <-chan struct{}
+    // Done方法返回一个通道, 如果当前任务需要被取消, 则该通道被关闭, 通常按照如下的方式使用
+    //  // Stream generates values with DoSomething and sends them to out
+    //  // until DoSomething returns an error or ctx.Done is closed.
+    //  func Stream(ctx context.Context, out chan<- Value) error {
+    //      for {
+    //          v, err := DoSomething(ctx)
+    //          if err != nil {
+    //              return err
+    //          }
+    //          select {
+    //          case <-ctx.Done():
+    //              return ctx.Err()
+    //          case out <- v:
+    //          }
+    //      }
+    //  }
+    //
+    // See https://blog.golang.org/pipelines for more examples of how to use
+    // a Done channel for cancellation.
+    Done() <-chan struct{}
 
-	// 如果任务被取消,返回取消的具体原因. 否则始终返回nil
-	Err() error
+    // 如果任务被取消,返回取消的具体原因. 否则始终返回nil
+    Err() error
 
-	Value(key interface{}) interface{}
+    Value(key interface{}) interface{}
 }
 ```
 

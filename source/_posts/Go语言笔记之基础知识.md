@@ -121,13 +121,13 @@ Go的包名称不必和目录名称一致(但建议保持一致), 只需要保�
 
 ``` go
 import (
-	"log"                                       // 导入标准库的包
+    "log"                                       // 导入标准库的包
 
-	"github.com/LiZeC123/SmartReview/app/kb"    // 导入本项目的包
-	"github.com/LiZeC123/SmartReview/app/user"
-	"gorm.io/driver/sqlite"                     // 导入第三方项目的包
-	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
+    "github.com/LiZeC123/SmartReview/app/kb"    // 导入本项目的包
+    "github.com/LiZeC123/SmartReview/app/user"
+    "gorm.io/driver/sqlite"                     // 导入第三方项目的包
+    "gorm.io/gorm"
+    "gorm.io/gorm/logger"
 )
 
 ```
@@ -343,19 +343,19 @@ func main() {
 
 ```go
 startedAt := time.Now()
-	defer fmt.Println(time.Since(startedAt))
-	
-	time.Sleep(time.Second)
+    defer fmt.Println(time.Since(startedAt))
+    
+    time.Sleep(time.Second)
 ```
 
 因此对于上述代码, 并不会实现计算时间的功能. 如果需要解决上述问题, 则应该使用闭包
 
 ```go
 func main() {
-	startedAt := time.Now()
-	defer func() { fmt.Println(time.Since(startedAt)) }()
-	
-	time.Sleep(time.Second)
+    startedAt := time.Now()
+    defer func() { fmt.Println(time.Since(startedAt)) }()
+    
+    time.Sleep(time.Second)
 }
 ```
 
@@ -478,8 +478,8 @@ func NewFile(fd int, name string) *File {
 
 ```go
 type MyNumber struct {
-	int
-	float32
+    int
+    float32
 }
 
 number := MyNumber{
@@ -496,21 +496,21 @@ number := MyNumber{
 ```go
 
 type Honor struct {
-	Title string
-	GetTime time.Time
+    Title string
+    GetTime time.Time
 }
 
 type Chef struct {
-	Name string
-	Age int
-	Honor
-	Trainee *Chef
+    Name string
+    Age int
+    Honor
+    Trainee *Chef
 }
 
 func main() {
-	chef := Chef{Name: "LiZeC", Age: 3, Honor:Honor{}, Trainee: nil}
+    chef := Chef{Name: "LiZeC", Age: 3, Honor:Honor{}, Trainee: nil}
     chef.Honor.GetTime = time.Now()     // 通过Horror间接访问 
-	chef.Title = "Honor Test"           // 直接访问
+    chef.Title = "Honor Test"           // 直接访问
 }
 ```
 
@@ -585,17 +585,17 @@ type Abser interface {
 
 ```go
 type Vertex struct {
-	X float64
-	Y float64
+    X float64
+    Y float64
 }
 
 func (v *Vertex) Abs() float64 {
-	return math.Sqrt(v.X*v.X + v.Y*v.Y)
+    return math.Sqrt(v.X*v.X + v.Y*v.Y)
 }
 
 func main() {
-	var abser Abser
-	abser = &Vertex{}
+    var abser Abser
+    abser = &Vertex{}
 }
 ```
 
@@ -673,15 +673,15 @@ type File interface {
 
 ```go
 type UpperWriter struct {
-	io.Writer
+    io.Writer
 }
 
 func (p *UpperWriter) Write(data []byte) (n int, err error) {
-	return p.Writer.Write(bytes.ToUpper(data))
+    return p.Writer.Write(bytes.ToUpper(data))
 }
 
 func main() {
- 	fmt.Fprintln(&UpperWriter{Writer:os.Stdout}, "Hello World");
+     fmt.Fprintln(&UpperWriter{Writer:os.Stdout}, "Hello World");
 }
 ```
 
@@ -743,10 +743,10 @@ func BenchmarkSplit(b *testing.B) {
     time.Sleep(5 * time.Second) // 假设需要做一些耗时的无关操作
 
     b.ResetTimer()              // 重置计时器
-	for i := 0; i < b.N; i++ {
+    for i := 0; i < b.N; i++ {
         // b.N是一个特殊的变量, Go会自动设置该变量的取值, 使得被测试的函数执行足够长的时间
-		strings.Split("沙河有沙又有河", "沙")
-	}
+        strings.Split("沙河有沙又有河", "沙")
+    }
 }
 ```
 
