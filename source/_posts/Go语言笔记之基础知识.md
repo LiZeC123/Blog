@@ -165,16 +165,18 @@ import (
 
 ----------
 
-对于自己使用的模块, 如果不想走发布流程, 也可以通过编辑`go.mod`文件来修改Go语言查找模块的方式, 从而即使不发布模块也能够被其他模块引用. 指令为
+对于某一个模块, 如果被其他模块依赖, 当当前的修改仍然处于开发阶段, 无法发布正式的版本号, 此时可以使用引用commit-id的方式进行依赖. 例如
+
+对于一个正式发布的依赖, 使用如下的方式安装
 
 ```
-go mod edit -replace=example.com/greetings=../greetings
+go get github.com/LiZeC123/SmartReview@v1.0.0
 ```
 
-这条指令的含义非常简单, 即如果需要查找`example.com/greetings`模块, 就访问`../greetings`路径.  执行上面的指令后, 会在`go.mod`文件中加入如下的一行内容
+而对于某个特定的版本, 可以使用指定commit-id的方式, 
 
 ```
-replace example.com/greetings => ../greetings
+go get github.com/LiZeC123/SmartReview@4d5c2133f
 ```
 
 
@@ -247,8 +249,28 @@ func main() {
 }
 ```
 
+对于可遍历对象(包含array, slice, channel和map), Go语言支持for-range语法, 例如
+
+```go
+func main() {
+	s := []string{"A", "B"}
+	m := map[string]string{
+		"Key1": "Value1",
+		"Key2": "Value2",
+	}
 
 
+	for idx, v := range s {
+		fmt.Println(idx, v)
+	}
+
+	for key, value := range m {
+		fmt.Println(key, value)
+	}
+}
+```
+
+> 注意: 遍历时value是对应元素的拷贝, 不可直接引用value, 否则会导致与循环闭包类似的问题. 例如保存value的地址后, 按照地址访问元素, 几乎肯定是BUG行为.
 
 
 错误处理
@@ -319,6 +341,7 @@ func rectProps(length, width float64) (area, perimeter float64) {
 }
 ```
 
+> 使用返回值变量命名以后, 需要注意是否重复定义了名称类似的变量, 以免最后返回的值不符合预期
 
 defer语句
 ----------------
@@ -342,13 +365,13 @@ func main() {
 被defer修饰的函数调用中, 函数的参数会立即计算, 但函数调用会延后执行. 
 
 ```go
-startedAt := time.Now()
+    startedAt := time.Now()
     defer fmt.Println(time.Since(startedAt))
     
     time.Sleep(time.Second)
 ```
 
-因此对于上述代码, 并不会实现计算时间的功能. 如果需要解决上述问题, 则应该使用闭包
+因此对于上述代码, 并不会实现计算时间的功能. 如果需要解决上述问题, 则应该使用闭包(或者定义一个函数实现对应的逻辑)
 
 ```go
 func main() {
@@ -607,7 +630,7 @@ func main() {
 
 ### 鸭子类型
 
-Go语言的接口是鸭子类型的, 只要实现了对应的方法就可以视为对应的接口. 如果以前学过Java这种强定义的语言, 那么对于Go的这种鸭子类型可能觉得无法接受. 但实际上可以考虑一下, 在类似Spring的开发过程中, Java的接口基本上就是一层毫无意义的抽象. 此时不声明接口似乎更能减少工作量.
+Go语言的接口是鸭子类型的, 只要实现了对应的方法就可以视为对应的接口. 如果以前学过Java这种强定义的语言, 那么对于Go的这种鸭子类型可能觉得无法接受. 但实际上可以考虑一下, 在类似Spring的开发过程中, Java的接口基本上就是一层毫无意义的抽象. 此时不声明接口能减少许多无意义的工作量.
 
 此外, 虽然语法层面上想要确定一个类实现了什么接口有点困难, 但反正写代码都是用IDE, 所以有了IDE的辅助以后, 也没有太大的问题.
 
