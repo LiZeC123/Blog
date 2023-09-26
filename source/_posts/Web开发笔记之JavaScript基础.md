@@ -16,49 +16,42 @@ cover_picture: images/web.jpg
 基础知识
 ------------------------
 
-### 网页中使用js的两种方法
-
-1. 直接嵌入html代码
-``` html
-<script type="text/javascript">
-alert("Hello");
-</script>
-```
-
-2. 从文件导入
-``` html
-<script src = "/static/js/hello.js"></script>
-```
-
 
 ### 基本类型
 
 
 类型      |解释
 ---------|---------------------------------------------------
-变量     | 使用let声明可变变量, 使用const声明不可变变量
+变量     | 使用`let`声明可变变量, 使用`const`声明常量, 不要使用`var`
 数组     | 使用`[`和`]`, 与大部分语言一样, 且数组中元素可以是任意类型
 对象     | 使用大括号包括的键值对
 字符串   | `'`和`"`以及反引号都可以定义字符串
+扩展运算符| 使用`...`展开一个对象的全部属性
 
 ``` js
-var i = 5;                  // 定义变量
-var array = [1, 2, "hello"];  // 定义数组
-var p = {                   // 定义对象
+let i = 5;                  // 定义变量
+const array = [1, 2, "hello"];  // 定义数组
+const p = {                   // 定义对象
     name: "Li", 
     age: 13, 
     tag: ["apple", "book"], 
     info:null
 };
 
-var s = `这是
+let s = `这是
 一个
 多行字符串`
 
 // 字符串模板
-var name = `Li`;
-var hello = `Hello ${name}`;
+let name = `Li`;
+let hello = `Hello ${name}`;
+
+// 扩展运算符
+let z = { a: 3, b: 4 };
+let n = { ...z };
 ```
+
+> 为了避免变量提升导致BUG, 所有变量都应该使用`let`或`const`关键字进行声明.
 
 ### 基础比较
 
@@ -99,8 +92,8 @@ for (var x of s) {
 }
 
 // 遍历Map
-for (var x of m) { 
-    console.log(x[0] + '=' + x[1]); // 1=x 2=y 3=z
+for (var [key, value] of m) { 
+    console.log(key + '=' + value); // 1=x 2=y 3=z
 }
 ```
 
@@ -113,6 +106,37 @@ var m = new Map([["Apple", 1], ["Banana", 2]]);
 m.forEach(function(value, key, map){
     console.log(`value = ${value}, key = ${key}`);
 })
+```
+
+### 对象
+
+ES6语法支持简化对象的定义, 如果直接给一个变量, 则属性名为变量的名字, 属性值为变量的值
+
+```js
+const foo = 'bar';
+const baz = {foo};
+baz // {foo: "bar"}
+
+// 等同于
+const baz = {foo: foo};
+```
+
+对于方法, 也可以同样的简写
+
+```js
+const o = {
+  method() {
+    return "Hello!";
+  }
+};
+
+// 等同于
+
+const o = {
+  method: function() {
+    return "Hello!";
+  }
+};
 ```
 
 
@@ -141,7 +165,8 @@ false
 JS的函数是一等公民, 可以保持到变量之中, 也支持函数闭包. JS的函数定义具有如下的形式
 
 ``` js
-function add(a, b) {
+// 支持默认参数
+function add(a, b=2) {
     return a+b;
 }
 
@@ -149,6 +174,9 @@ function add(a, b) {
 var puls1 = function(a) {
     return a+1;
 };
+
+// 支持箭头函数
+var puls2 = x => x+1;
 ```
 
 > JS函数不强制调用与声明的一致, 多传入的参数会被忽略, 少传入的参数会被置为undefined.
@@ -157,22 +185,20 @@ var puls1 = function(a) {
 变量作用域
 ----------
 
-JS内置了一个window变量, 所有的全局变量实际是作为属性保存到了window变量中. 任何文件中声明的全局变量和函数都都存储在window变量之中, 因此不同文件中的同名函数会冲突. 可以通过手动设置名字空间的方式避免冲突.
+JS内置了一个window变量, 所有的全局变量实际是作为属性保存到了window变量中. 任何文件中声明的全局变量和函数都都存储在window变量之中, 因此不同文件中的同名函数会冲突.
 
-``` js
-let myNameSpace = {};
+> 从ES6开始, 只有使用`var`和`function`定义的变量会视为window的属性, 其他方式创建的对象不再是顶层对象
 
-myNameSpace.foo = function(x) { ... };
-```
 
-> 为了避免变量提升导致BUG, 所有变量都应该使用`let`或`const`关键字进行声明.
 
 
 解构赋值
 -----------------
 
 JS支持解构赋值, 能够将一个结构体的值一次性赋予指定的一组变量. 例如
+
 ``` js
+// 对于数组, 按照位置进行复制
 let [x, [y, z]] = ['hello', ['JavaScript', 'ES6']];
 
 var person = {
@@ -182,13 +208,145 @@ var person = {
         zipcode: '100001'
     }
 };
+// 对于对象, 不要求顺序, 但被赋值的变量必须与源对象的命名完全一致例如name变量
+// 如果变量名不一致, 则需要手动指定key, 例如将address的值复制给内部的两个变量
 var {name, address: {city, zip}} = person;
-// name和city赋予相应的值
-// 由于zip变量再person中不存在, 因此zip值为undefined
-// address是key因此不存在这个变量
 ```
 
-> 与Python不同, JS中的解构赋值必须使用中括号, 例如交换变量应该写为`[b, a] = [a, b]`
+-------------
+
+通过解构复制可以实现一些简易操作, 例如
+
+```js
+// 将某个方法绑定到变量之上
+const { log } = console;
+log('hello') // hello
+
+// 交换两个变量的值
+[b, a] = [a, b]
+
+
+// 函数返回多个值, 或者接受多个值
+function example() {
+  return [1, 2, 3];
+}
+let [a, b, c] = example();
+```
+
+> 参考 [变量的解构赋值](https://es6.ruanyifeng.com/#docs/destructuring)
+
+
+
+模块化
+--------------
+
+JS提供模块化能力, 整体设计与Python类似. 通过`export`导出一个文件内的变量或函数. 通过`import`语句导入其他模块内的变量或函数.
+
+```js
+// 导出变量
+export var firstName = 'Michael';
+
+// 导出函数
+export function multiply(x, y) {
+  return x * y;
+};
+
+// 从其他模块带入
+import { firstName } from './profile.js';
+
+// 导入并重命名
+import { lastName as surname } from './profile.js';
+
+// 导入全部方法, 类似于其他语言中导入包
+import * as circle from './circle';
+```
+
+导入的变量默认是不可变的, 如果需要修改变量的值, 只能让被导入的模块提供一个修改函数. 被导入的变量发生修改时, 其他模块能感知到变量值的变化.
+
+---------------------
+
+除了上述常规的导出和导入以外, JS也支持导出一个默认符号, 其他模块在导入此模块时, 可以给这个默认符号一个任意名, 例如
+
+```js
+export default function () {
+  console.log('foo');
+}
+
+
+// import-default.js
+import customName from './export-default';
+customName(); // 'foo'
+```
+
+> nodejs提供require语句来实现模块加载, 通常情况下不建议使用此语法, 而应该使用JS的标准语法
+
+
+异步编程
+---------------
+
+由于JS的单线程机制, 在实际的代码开发中, 存在大量的异步和回调操作. JS提供了Promise机制来简化异步编程. 许多异步操作都会返回一个Promise对象, 该对象具有两个常用的方法, `then`和`catch`
+
+```js
+this.axios.post("/item/getTitle", data).then(res => document.title = res.data).catch(e => console.log(e));
+```
+
+当异步操作正常执行完毕时, 回调then指定的方法. 如果出现异常, 则回调catch指定的方法.
+
+> 当存在多个异步操作时, 就会嵌套多层回调函数, 导致代码可读性较差
+
+JS提供async关键字和await关键字来解决一次执行多个异步调用的问题. 对于一个返回Promise的函数, 可以使用await关键词同步等待执行结果. 上面的代码可以等价的转换为如下的代码:
+
+```js
+// 只有进行async声明的函数可以使用await函数
+async function m() {
+    try{
+        const res = await this.axios.post("/item/getTitle", data)
+        document.title = res.data
+    } catch (e) {
+        console.log(e)
+    }
+}
+```
+
+上述代码相当于以同步的方式执行了一个异步操作, 从而在进行多次异步操作时不用再层层嵌套回调函数.
+
+
+
+
+
+Web页面中的JS开发
+----------------------
+
+### 网页中使用js的两种方法
+
+1. 直接嵌入html代码
+``` html
+<script type="text/javascript">
+alert("Hello");
+</script>
+```
+
+2. 从文件导入
+``` html
+<script src = "/static/js/hello.js"></script>
+```
+
+对于现代的前端项目, 通常采用框架编译的方式生成JS文件, 而不会直接手写JS文件了.
+
+
+### JS发送请求
+
+
+对于较为复杂的应用, 可以使用第三方库(例如Axios)封装JS的HTTP请求, 对于简单的项目, 可以使用如下的函数
+
+```js
+var httpRequest = new XMLHttpRequest();
+httpRequest.open('POST', '/api/submit', true); //打开连接
+httpRequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");//设置请求头 注：post方式必须设置请求头（在建立连接后设置请求头）
+httpRequest.send('url='+URL);
+```
+
+- [MDN: XMLHttpRequest](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest)
 
 
 
@@ -216,46 +374,3 @@ navigator.clipboard.writeText(this.message).then(() => {
 
 - [Clipboard API](https://developer.mozilla.org/en-US/docs/Web/API/Clipboard/write)
 
-
-JS发送请求
--------------
-
-对于较为复杂的应用, 可以使用第三方库(例如Axios)封装JS的HTTP请求, 对于简单的项目, 可以使用如下的函数
-
-```js
-var httpRequest = new XMLHttpRequest();
-httpRequest.open('POST', '/api/submit', true); //打开连接
-httpRequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");//设置请求头 注：post方式必须设置请求头（在建立连接后设置请求头）
-httpRequest.send('url='+URL);
-```
-
-- [MDN: XMLHttpRequest](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest)
-
-
-
-NPM基本使用
------------------
-
-### 基本指令
-
-TODO: 常用命令学习
-
-
-
-### package.json文件
-
-TODO: 依赖于开发依赖
-
-对于一个给定的版本号`x.y.z`, `^`表示可以更新`y`和`z`到最新版, `~`表示可以更新`z`到最新版
-
-
-### 使用模块
-
-在启用webpack打包之前, 只能根据位置位置在HTML中引用对应的文件. 启用webpack后, 可以使用ES6的`require`语法或`import`语法
-
-```js
-const $ = require('jquery')
-```
-
-webpack原理与使用
----------------
