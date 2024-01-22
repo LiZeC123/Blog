@@ -373,7 +373,7 @@ type Context interface {
 
 context通过内嵌父context的方式记录依赖关系, 有点类似Lisp的cons结构. 例如WithDeadline方法在给定的context对象基础上返回新的context, 使得达到截止时间时关闭done通道.
 
-> Context的设计哲学要求Context不可修改, 不可复制. 因此如果需要修改, 可以通过覆盖的方式实现
+> Context的设计哲学要求Context不可修改, 不可复制. 因此如果需要修改, 仅可通过覆盖的方式实现
 
 
 - [小白也能看懂的context包详解：从入门到精通](https://segmentfault.com/a/1190000040917752)
