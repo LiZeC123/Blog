@@ -4,7 +4,7 @@ date: 2021-07-30 22:53:58
 categories:
 tags:
     - Java
-cover_picture:
+cover_picture: images/java.jpg
 ---
 
 
