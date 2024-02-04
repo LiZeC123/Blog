@@ -10,8 +10,9 @@ cover_picture: images/vscode.jpg
 
 
 
-VsCode由于其跨平台的特性, 已经成为JetBrains全家桶以外, 我使用最多的IDE. 由于VsCode相对轻量的特性, 在写博客, 写Python脚本的场景中, 甚至比JetBrains全家桶更好用. 近期在一些开发过程中, 一直苦于没有合适的IDE支持自定义的语言, 因此我决定尝试开发一个Vscode插件, 实现需要的功能.
+VsCode由于其跨平台的特性, 已经成为JetBrains全家桶以外, 我使用最多的IDE. 由于VsCode相对轻量的特性, 在写博客, 写Python脚本的场景中, 实际上比JetBrains全家桶更好用. 
 
+近期在一些开发过程中, 一直苦于没有合适的IDE支持自定义的语言, 因此我决定尝试开发一个Vscode插件, 实现需要的功能. 通过查阅Vscode的官方文档, 发现VSCODE对于插件的支持非常全面, 想要开发一个基本能用的代码补全插件也非常的简单. 本文主要记录了VSCODE插件开发的一些基本内容.
 
 
 创建插件项目
@@ -45,6 +46,46 @@ yo code
 - [如何开发一款vscode插件 - 知乎](https://zhuanlan.zhihu.com/p/386196218)
 
 
+注册指令
+--------------
+
+使用如下的指令可向VSCODE注册一个命令. 
+
+```js
+	context.subscriptions.push(vscode.commands.registerCommand('expr-kokomi.helpMe', async () => {
+        // 命令实际上就一个函数, 在这个函数中, 使用VSCODE提供的其他API来实现具体的功能.
+	}));
+```
+
+其中第一个参数为指令名称, 需要在配置文件中进行声明, 例如
+
+```
+  "contributes": {
+    "commands": [
+      {
+        "command": "expr-kokomi.helpMe",
+        "title": "Help me, Miss Kokomi",
+        "category": "EK"
+      },
+    ]
+  }
+```
+
+其中`command`就相当于这个指令的ID, 调用这个指令的时候需要使用此名称. `title`是这个指令在VSCODE面板上显示的文字.
+
+> VSCODE通过将插件的功能抽象为指令, 提供了非常强大的扩展能力, 使得插件内调用和插件之间调用变得非常简单.
+
+
+常用API
+-----------
+
+
+API名称                         | 效果
+-------------------------------|------------------------------------------------
+vscode.window.showErrorMessage | 在VSCODE右下弹出一个提示框, 有多种等级
+vscode.window.createTerminal   | 创建一个terminal, 后续可通过发送text执行任意的指令
+
+
 
 发布插件
 --------------
@@ -72,3 +113,4 @@ code --install-extension xx.vsix
 ### 参考资料
 
 - [VSCode 插件开发（三）：插件打包与本地安装](https://www.jianshu.com/p/bb379a628004)
+- [when条件的文档](https://code.visualstudio.com/api/references/when-clause-contexts)
