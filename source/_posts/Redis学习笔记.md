@@ -4,7 +4,7 @@ date: 2021-07-06 08:48:22
 categories:
 tags:
     - Redis
-cover_picture: images/redis.png
+cover_picture: images/redis.jpg
 ---
 
 

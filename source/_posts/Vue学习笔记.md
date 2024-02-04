@@ -5,7 +5,7 @@ categories:
 tags:
     - vue
     - javascript
-cover_picture: 
+cover_picture: images/vue.png
 ---
 
 

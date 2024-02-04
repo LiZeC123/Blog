@@ -4,7 +4,8 @@ math: false
 date: 2023-06-06 12:18:46
 categories:
 tags:
-cover_picture:
+    - Flink
+cover_picture: images/flink.jpg
 ---
 
 

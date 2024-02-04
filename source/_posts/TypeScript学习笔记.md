@@ -5,7 +5,7 @@ date: 2023-09-23 22:18:12
 categories:
 tags:
     - typescript
-cover_picture:
+cover_picture: images/typescript.jpg
 ---
 
 
