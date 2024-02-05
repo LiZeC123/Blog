@@ -10,7 +10,7 @@ cover_picture: images/vue.png
 
 Vue是一款用于构建用户界面的 JavaScript 框架, 相较于几十年前以HTML+CSS+JS的开发方式, Vue提供了一系列的新语法, 使得我们可以声明式地描述最终输出的 HTML 和 JavaScript 状态之间的关系, 并且Vue框架会自动跟踪 JavaScript 状态并在其发生变化时响应式地更新 DOM. 
 
-为了实现上述效果, Vue框架做了大量的底层工作. 但幸运的是, 掌握Vue的基本使用并需要理解底层的实现原理. 除了必要的时候, 本文将不涉及Vue的实现原理, 仅聚焦于Vue的使用.
+为了实现上述效果, Vue框架做了大量的底层工作. 但幸运的是, 掌握Vue的基本使用并不需要理解底层的实现原理. 除了必要的时候, 本文将不涉及Vue的实现原理, 仅聚焦于Vue的使用.
 
 大概2020年就学过了Vue的基本知识, 当时就计划写一个学习笔记, 但由于各种原因, 迟迟没有开始写. 过了几年以后, Vue发生了许多变换, 这下正好可以直接切换到Vue3了. 以前学的内容也可以抛弃掉了. 本文将基于Vue3的语法, 介绍Vue的基本内容.
 
@@ -18,7 +18,7 @@ Vue是一款用于构建用户界面的 JavaScript 框架, 相较于几十年前
 创建项目
 -----------
 
-目前的前端框架基本上都依赖NodeJs, 因此在创建Vue项目前需要按照NodeJs环境. 对于大部分系统, 在官网上下载最新版安装包即可. 准备好安装环境后, 执行如下指令创建一个Vue项目
+目前的前端框架基本上都依赖NodeJs, 因此在创建Vue项目前需要安装NodeJs环境. 对于大部分系统, 在官网上下载最新版安装包即可. 准备好安装环境后, 执行如下指令创建一个Vue项目
 
 ```
 npm create vue@latest
@@ -33,7 +33,7 @@ npm create vue@latest
 
 一个Vue文件代表一个页面上的组件, Vue将HTML代码, JS代码和CSS代码聚集在一个文件之中. 例如
 
-```vue
+```html
 <script setup>
 import { ref, onMounted } from 'vue'
 
@@ -73,7 +73,7 @@ button {
 基础文本插值   | `<span>Message: {{ msg }}</span>`
 绑定属性(普通) | `<div :id="dynamicId"></div>`
 绑定属性(布尔) | `<button :disabled="isButtonDisabled">Button</button>`
-绑定表达式     | `<div :id="`list-${id}`"></div>`
+绑定表达式     | `<div :id="\`list-${id}\`"></div>`
 调用函数       | `<time :title="toTitleDate(date)"`
 
 ### 动态绑定多个属性
@@ -113,7 +113,7 @@ ref函数返回一个带有`value`属性的对象, 该对象就代表了此响�
 reactive作用于对象, 将对象本身变为一个响应式变量.
 
 
-#### reactive()的局限性
+### reactive()的局限性
 
 1. 只能用于对象类型(对象, 数组和集合类型)
 2. **不能直接替换整个对象**
@@ -122,4 +122,226 @@ reactive作用于对象, 将对象本身变为一个响应式变量.
 其中第二点尤为重要, 例如前端收到后端返回的数据后, 如果直接进行替换, 就会导致响应丢失, 产生不符合预期的表现.
 
 
+计算属性
+-----------
 
+计算属性相当于一个带有缓存的函数. 使用`computed`函数创建一个计算属性, 例如
+
+```js
+// 一个计算属性 ref
+const publishedBooksMessage = computed(() => {
+  return author.books.length > 0 ? 'Yes' : 'No'
+})
+```
+
+之后可以当做一个普通的变量来使用. 并且当其引用的响应式变量发生变化时, 该变量会自动重新计算值, 并触发相应的页面变换.
+
+
+
+
+条件渲染
+-----------------
+
+条件渲染涉及两个指令`v-if`和`v-show`, 其中`v-if`的用法和各类语言的`if-else`语句类似, 例如
+
+```html
+<div v-if="type === 'A'">
+  A
+</div>
+<div v-else-if="type === 'B'">
+  B
+</div>
+<div v-else-if="type === 'C'">
+  C
+</div>
+<div v-else>
+  Not A/B/C
+</div>
+```
+
+`v-show`语句相对更简单, 不支持与else的连用, 例如
+
+```html
+<h1 v-show="ok">Hello!</h1>
+```
+
+`v-if`和`v-show`的区别在于, `v-if`会真实的按照条件渲染, 而`v-show`始终会渲染对应的元素, 仅决定该元素是否显示.
+
+
+列表渲染
+------------
+
+列表渲染的格式与JS的ForEach格式类似, 常用的写法有如下两种
+
+```html
+<li v-for="item in items">
+  {{ item.message }}
+</li>
+
+<li v-for="(item, index) in items">
+  {{ parentMessage }} - {{ index }} - {{ item.message }}
+</li>
+```
+
+`v-for`既可以遍历数组, 也可以遍历一个对象, 例如
+
+```html
+<ul>
+  <li v-for="value in myObject">
+    {{ value }}
+  </li>
+</ul>
+```
+
+Vue框架默认使用就地更新的方式刷新数组, 当数组中的元素的顺序发生变化时, 这种特性可能导致不正确的效果表现. 此时应该给每个元素指定一个key, 以便于Vue框架根据key追踪元素的顺序变换
+
+```html
+<div v-for="item in items" :key="item.id">
+  <!-- 内容 -->
+</div>
+```
+
+
+事件处理
+-----------
+
+使用`@`来监听事件. `@`既可以监听原生的事件, 也可以监听组件自定义的事件. 例如
+
+```html
+<button @click="count++">Add 1</button>
+```
+
+> 上述代码既可以直接绑定一个JS表达式, 也可以绑定一个函数, 或者一个箭头函数表达式.
+
+Vue提供了一些按键修饰符, 从而可以快速的绑定某些按键事件, 例如
+
+```
+<!-- 仅在 `key` 为 `Enter` 时调用 `submit` -->
+<input @keyup.enter="submit" />
+```
+
+- [按键修饰符](https://cn.vuejs.org/guide/essentials/event-handling.html#key-modifiers)
+
+
+
+### 高级特性
+
+以下是一些高级特性, 可查阅如下文档进行了解
+
+- [在内联事件处理器中访问事件参数](https://cn.vuejs.org/guide/essentials/event-handling.html#accessing-event-argument-in-inline-handlers)
+- [事件修饰符](https://cn.vuejs.org/guide/essentials/event-handling.html#event-modifiers)
+
+
+表单输入绑定
+------------
+
+Vue使用`v-model`指令提供表单元素与变量的双向绑定, 例如
+
+```html
+<input v-model="text">
+```
+
+则在页面上修改input的内容时, text变量的值会同步变化. 使用JS修改text变量的值时, input的内容也会同步变化.
+
+> 表单组件的各类表现可直接查看官方的[交互式示例](https://cn.vuejs.org/guide/essentials/forms.html#form-input-bindings)
+
+
+生命周期
+-----------
+
+Vue框架给组件的生命周期定义了多个阶段, 其中最常用的是`onMounted`钩子, 其相当于各类语言中的init阶段, 可以做一些初始化工作.
+
+```
+onMounted(() => {
+  console.log(`the component is now mounted.`)
+})
+```
+
+> 通常并不需要关注Vue的生命周期
+
+
+组件props
+------------
+
+使用`defineProps`宏来声明组件需要的props, 例如
+
+```js
+const props = defineProps<{
+  title?: string
+  likes?: number
+}>()
+```
+
+使用上述方式声明props可以附带变量的类型, 从而为后续使用相关变量提供语法检查和代码补全.
+
+### 绑定多个值
+
+如果想将一个对象的所有属性都当作 props 传入, 可以使用不指定参数名的绑定方式, 即
+
+```js
+const post = {
+  id: 1,
+  title: 'My Journey with Vue'
+}
+```
+
+```html
+<BlogPost v-bind="post" />
+```
+
+### 单向数据流
+
+当父元素修改props的值时, 子元素会自动的感知到props的变化, 并进行相应的更新. 这种变更机制是单向的, 即仅父元素可变更子元素, 而子元素不应该反向影响父元素. 通常, 如果子元素希望父元素发生改变, 应该抛出一个事件.
+
+> 因此props可以直接声明为const变量. 这可以防止在子元素中修改props.
+
+
+### 扩展特性
+
+以下是一些高级特性, 可查阅如下文档进行了解
+
+- [Props校验](https://cn.vuejs.org/guide/components/props.html#prop-validation)
+
+
+
+组件事件
+---------
+
+在组件的模板表达式中, 直接使用`$emit`触发事件, 在父组件中, 使用`@`绑定事件处理逻辑, 例如
+
+```html
+<!-- MyComponent -->
+<button @click="$emit('someEvent')">click me</button>
+
+<MyComponent @some-event="callback" />
+```
+
+```html
+<button @click="$emit('increaseBy', 1)">
+  Increase by 1
+</button>
+
+<MyButton @increase-by="(n) => count += n" />
+```
+
+-----------
+
+在JS代码中, 需要通过`defineEmits`宏, 声明涉及的事件, 例如
+
+```html
+<script setup>
+const emit = defineEmits<{
+  (e: 'update-todo', type: string, data:FuncData | CreateItem ) : void
+}>()
+
+function buttonClick() {
+  emit('update-todo', 'create', data)
+}
+</script>
+```
+
+### 扩展特性
+
+以下是一些高级特性, 可查阅如下文档进行了解
+
+- [事件校验](https://cn.vuejs.org/guide/components/events.html#events-validation)
