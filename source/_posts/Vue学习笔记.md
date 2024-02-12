@@ -257,7 +257,31 @@ onMounted(() => {
 })
 ```
 
-> 通常并不需要关注Vue的生命周期
+> 通常并不需要关注Vue的生命周期, 仅使用onMounted做初始化工作即可
+
+
+侦听器
+----------
+
+可以使用`watch`函数在每次响应式状态发生变化时触发回调函数, 可以监听的对象包括响应式对象或者一个函数.
+
+```js
+// 单个 ref
+watch(x, (newX) => {
+  console.log(`x is ${newX}`)
+})
+
+// getter 函数
+watch(
+  () => x.value + y.value,
+  (sum) => {
+    console.log(`sum of x + y is: ${sum}`)
+  }
+)
+```
+
+> 注意: props不属于响应式变量, 应该使用getter函数的方式进行监听
+
 
 
 组件props
@@ -345,3 +369,95 @@ function buttonClick() {
 以下是一些高级特性, 可查阅如下文档进行了解
 
 - [事件校验](https://cn.vuejs.org/guide/components/events.html#events-validation)
+
+
+
+Vue路由
+-------------
+
+`Vue Router`是Vue官方的路由插件. 通过该插件可以便捷的实现单页面应用. 单页面应用与传统的前端页面相比, 其主要区别在于页面交互时不发生跳转, 直接在当前页面上进行元素的重新渲染.
+
+创建Vue项目时, 可选择是否包含`Vue Router`, 选择包含时, 会自动添加相关的依赖. 仅需两步即可引入, 首先定义路由规则, 例如
+
+```js
+// 1. 定义路由组件.
+import Home from "@/xx"
+import About from "@/xx"
+
+const router = VueRouter.createRouter({
+  history: VueRouter.createWebHashHistory(),
+  routes: [
+    { path: '/', component: Home },
+    { path: '/about', component: About },
+  ]
+})
+
+
+// 2. 创建并挂载根实例
+const app = Vue.createApp({})
+app.use(router)
+```
+
+### 动态路由
+
+如果路径中包含一些参数, 则可以使用动态路由特性, 该特性可将路径中的一部分内容匹配到变量之中, 例如对于如下的配置
+
+```js
+const routes = [
+  // 动态字段以冒号开始
+  { path: '/users/:id', component: User },
+]
+```
+
+则无论是访问`/users/233`还是`/users/114514`都会匹配此规则, 并且在组件中, 还可以通过如下的方式获得具体的ID值
+
+```js
+const $router = useRouter();
+const id = $router.params.userId as string
+```
+
+
+Axios网络请求库
+------------------
+
+### 基础使用
+
+在Vue框架中, 通常使用axios库发送请求. 通常使用如下的方式发送HTTP请求
+
+```js
+import axios from 'axios'
+
+// 发送GET请求
+axios.get<TomatoItem>('/tomato/getTask')
+
+// 发送POST请求
+axios.post<Item[]>('/item/back', { id, parent }).then((res) => {doSomething()})
+```
+
+通常情况下, 对于POST请求, 仅需要指定路径和参数接口. 
+
+> 注意, 对于TS代码, 在函数后通过泛型参数指定返回值类型, 可使得返回对象(即res)具有正确的数据结构, 从而获得代码补全和语法检查
+
+### 全局拦截器
+
+axios可配置全局拦截器, 使得在发送每个请求前和收到每个响应后, 统一执行一段代码, 例如
+
+```js
+// 设置统一的URL前瞻, 实际URL等于前缀+函数指定的路径, 例如 /api/item/back
+axios.defaults.baseURL = '/api'
+
+// 设置统一的请求拦截器, 在发送请求前可统一设置参数
+axios.interceptors.request.use(config => {
+    config.headers.set('Token', 'XXX')
+    return config;
+});
+
+// 设置统一的响应拦截器, 在收到请求后可设置统一的错误处理
+axios.interceptors.response.use(res => {
+    return res;
+}, async error=> {
+    if (error.response.status === 401) {
+        console.log("返回401, 跳转到登录页面")
+    } 
+});
+```
