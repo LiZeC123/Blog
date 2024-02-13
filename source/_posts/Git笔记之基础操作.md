@@ -399,7 +399,7 @@ git tag -a tagName -m tagMessage digs  //给指定ID的提交添加标签和详�
 ```
 git tag -d tagName            //删除指定的标签
 git push origin tagName        //推送指定的标签
-git push origin --tags        //推送所有的标签
+git push --tags               //推送所有的标签
 ```
 
 
