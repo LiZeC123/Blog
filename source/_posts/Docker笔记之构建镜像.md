@@ -111,7 +111,7 @@ Dockerfile多阶段构建
 
 对此Dockerfile提供了多阶段构建的能力, 可以分别使用两个镜像来编译和运行程序. 例如如下的Dockerfile分别使用两个镜像来构建Java镜像. 在编译阶段, 使用maven镜像将源码打包为jar, 在运行阶段直接在jre环境运行上一步打包的jar. 
 
-```
+```dockerfile
 # First stage: complete build environment
 FROM maven:3.5.0-jdk-8-alpine AS builder
 
