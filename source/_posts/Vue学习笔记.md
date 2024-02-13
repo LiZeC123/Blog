@@ -461,3 +461,19 @@ axios.interceptors.response.use(res => {
     } 
 });
 ```
+
+Vue其他相关知识
+--------------------
+
+
+### Vue引用静态资源
+
+在Vue中, 静态资源也视为一个模块, 因此可以也可以导入, 例如
+
+```js
+import imgUrl from '../assets/test.png';
+```
+
+之后将该变量赋值给Vue的变量, 即可将其视为一种资源进行引用
+
+- [Vue 引入本地资源](https://blog.csdn.net/XueDaJing030409/article/details/117549660)
