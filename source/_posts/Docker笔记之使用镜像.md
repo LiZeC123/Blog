@@ -65,7 +65,7 @@ echo "File Browser: ccaa:admin"
 
 注意事项:
 1. 不建议设置`restart: always`, 镜像如果出现BUG导致大量IO读写操作, 设置该属性可能导致重启后无法解决问题.
-2. File Browser的初始账号密码为`ccaa:admin`
+2. File Browser的初始账号密码为`ccaa:admin`, 可进入设置页面修改密码.
 
 
 
@@ -90,13 +90,8 @@ services:
       - ./data:/data
 ```
 
-
-进入安装页面后注意
-1. SSH端口填写实际映射的端口, 即5022
-2. HTTP监听端口保持3000端口不变
-3. URL改为真实URL, 例如git.lizec.top
-4. 防火墙开放5022端口
-5. 账户添加Pub Key
-
-
+启动镜像后直接访问对应的路径, 第一次访问自动跳转值安装页面, 进行配置时注意如下细节
+- SSH端口填写实际映射的端口(即5022), HTTP监听端口保持3000端口不变
+- URL改为真实URL(即git.lizec.top), 注意修改所有的localhost
+- 防火墙开放5022端口
 

@@ -138,13 +138,32 @@ CMD ["java", "-jar", "my-app-1.0-SNAPSHOT.jar"]
 
 
 
-Docker-Compose文件详解
----------------------
+docker-compose.yml文件详解
+-----------------------------
+
+在启动Docker镜像时, 如果镜像的配置比较复杂, 则命令行中需要附带大量的参数才可以启动. docker-compose.yml文件可将相关的配置固化到文件之中, 从而可以一键启动镜像. 此外, 基于yml文件还可以配置多个镜像的依赖关系, 使得我们能够便捷的将一组镜像按照一定规则启动, 组合成我们需要的应用.
+
+一个基本的docker-compose.yml文件通常具有如下的一些属性
+
+```yml
+version: '3.0'
+services:
+  todo:
+    container_name: smart-todo
+    image: ghcr.io/lizec123/smart-todo:latest
+    restart: always
+    environment:
+      TZ: Asia/Shanghai
+    ports: 
+      - "8080:80"
+    volumes:
+      - ./config:/app/config
+```
+
+> 文件中的各个配置与命令行中的数据基本一一对应, 此处不再赘述
 
 
-
-
-
+- [Compose 模板文件](https://yeasy.gitbook.io/docker_practice/compose/compose_file)
 
 
 前后端分离部署
