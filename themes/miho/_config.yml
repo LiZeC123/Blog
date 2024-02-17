@@ -7,11 +7,11 @@ favicon: /favicon.ico
 # Header
 
 # Keywords of your site | 网站关键字
-keywords: LiZeC,LiZeC's Blog
+keywords: LiZeC, 博客, 计算机科学, 人工智能
 # Head headline | 头部标题
-header_title: LiZeC's Blog
+header_title: LiZeC的博客
 # Head description | 头部描述
-header_description: Abstractness is the price of generality 
+header_description: 通用性的代价是抽象 
 # LInk to your logo | logo地址
 logo: images/logo.png
 # Link to your banner_img | 首页banner图地址
@@ -23,19 +23,19 @@ banner_img: images/banner.jpg
 #    target: true         Whether to jump out | 是否跳出
 menu:
   archive:
-    title: Archives
+    title: 文章归档
     url: /archives/
     target: false
   tv:
-    title: Slides
+    title: 学术报告
     url: /slides/
     target: false
   database:
-    title: Knowledge
+    title: 知识库
     url: /categories/个人知识库/
     target: false
   user:
-    title: About
+    title: 关于
     url: /about/
     target: false
 # Social setting, use to display social information | 社交设置，用来展示社交信息
