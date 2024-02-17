@@ -42,3 +42,13 @@ Python语言的插件, 对于机器学习场景, 感觉比PyCharm更好用.
 对于Mac系统, 可以按下`command+shift+p `打开指令面板后, 输入`Install Code command in PATH`的一部分开启该功能.
 
 - [mac 下命令行启动vscode打开指定文件夹](https://blog.csdn.net/qq_31460257/article/details/81592812)
+
+常见问题修复
+----------------
+
+
+### Mac端与Linux端远程连接服务器超时
+
+当远程服务器配置使用fish时, 可能出现Mac端或Linux端无法连接远程服务器的问题, 参考Vscode的ISSUS, 可配置`"remote.SSH.useLocalServer": false`来解决此问题
+
+- ["Connecting with SSH timed out" when Fish/tcsh/csh shell is used](https://github.com/microsoft/vscode-remote-release/issues/2509)

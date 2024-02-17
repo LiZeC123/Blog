@@ -34,7 +34,7 @@ date: 2017-09-01 09:01:00
 
 - 最喜欢的游戏是[Spelunky](https://store.steampowered.com/app/239350/Spelunky/)和[Spelunky 2](https://store.steampowered.com/app/418530/Spelunky_2/), 优秀的rougelite类游戏充分展示了游戏在算法上的魅力.
 
-- 不喝肥宅快乐水, 希望有一天能有肥宅快乐兽.
+- 不喝肥宅快乐水, ~~希望有一天能有肥宅快乐兽~~ 已有[肥宅快乐兽](/images/others/肥宅快乐兽.jpg).
 
 
 友情链接
