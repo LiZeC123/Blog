@@ -95,3 +95,28 @@ services:
 - URL改为真实URL(即git.lizec.top), 注意修改所有的localhost
 - 防火墙开放5022端口
 
+
+Navidrome相关配置
+-------------------
+
+Navidrome是一个音乐管理和播放服务, 类似于网页版的网易云音乐. 使用该镜像可以从Web端查看和播放音频.
+
+
+```yml
+version: "3"
+services:
+  navidrome:
+    image: deluan/navidrome:latest
+    ports:
+      - "4533:4533"
+    environment:
+      # Optional: put your config options customization here. Examples:
+      ND_SCANSCHEDULE: 1h
+      ND_LOGLEVEL: info  
+      ND_BASEURL: ""
+    volumes:
+      - "./data:/data"
+      - "~/Music:/music:ro"
+```
+
+启动镜像后, 第一次访问时需要设置管理员账号. 登录后在系统的用户选项下选择快速扫描可刷新歌曲列表
