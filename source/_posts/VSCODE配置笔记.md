@@ -52,3 +52,9 @@ Python语言的插件, 对于机器学习场景, 感觉比PyCharm更好用.
 当远程服务器配置使用fish时, 可能出现Mac端或Linux端无法连接远程服务器的问题, 参考Vscode的ISSUS, 可配置`"remote.SSH.useLocalServer": false`来解决此问题
 
 - ["Connecting with SSH timed out" when Fish/tcsh/csh shell is used](https://github.com/microsoft/vscode-remote-release/issues/2509)
+
+### Vscode在Vue文件中无法自动关闭括号
+
+根据这篇回答的说法, 通过reload可以修复此问题. 对于Github Codespace, 可通过禁用该插件实现reload操作.
+
+- [Auto closing brackets in visual-studio-code not working for Vue files](https://stackoverflow.com/questions/64086068/auto-closing-brackets-in-visual-studio-code-not-working-for-vue-files)
