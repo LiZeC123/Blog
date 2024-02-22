@@ -55,6 +55,6 @@ Python语言的插件, 对于机器学习场景, 感觉比PyCharm更好用.
 
 ### Vscode在Vue文件中无法自动关闭括号
 
-根据这篇回答的说法, 通过reload可以修复此问题. 对于Github Codespace, 可通过禁用该插件实现reload操作.
+根据这篇回答的说法, 通过`reload window`可以修复此问题. 对于Github Codespace, 也可以执行reload操作
 
 - [Auto closing brackets in visual-studio-code not working for Vue files](https://stackoverflow.com/questions/64086068/auto-closing-brackets-in-visual-studio-code-not-working-for-vue-files)
