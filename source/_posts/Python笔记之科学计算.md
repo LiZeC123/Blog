@@ -477,6 +477,45 @@ M+Enter | 执行当前Cell代码,并且移动到下一个Cell
 
 除了以上的指令以外, 还可以在点击`Help->Keyboard Shortcut`查看全部的快捷键, 点击`Help->User Interface Tour`查看用户界面引导.
 
+### docker部署
+
+Jupyter支持使用Docker部署, Jupyter团队在dockerhub提供了专用于科学计算的Docker镜像, 其中已经预制了各类常用的科学计算库, 可使用如下的配置
+
+```yml
+version: '3.0'
+services:
+  gitlab:
+    image: jupyter/scipy-notebook:ubuntu-20.04
+    container_name: jupyter-lab
+    user: root
+    environment: 
+      TZ: Asia/Shanghai
+      GRANT_SUDO: 'yes'
+    ports: 
+      - "8888:8888"
+    volumes:
+      - ./work:/home/jovyan/work
+    command: start.sh jupyter lab
+```
+
+如果希望内置的用户`jovyan`具有不需要密码的root权限, 则必须配置`user: root`和`GRANT_SUDO: 'yes'`. 通常情况下, 在此镜像内安装新的Python包并不需要root权限, 获取root权限主要是为了使用`apt`工具按照其他的依赖.
+
+
+- [Jupyter Docker Stacks](https://github.com/jupyter/docker-stacks)
+- [Using sudo within a container](https://jupyter-docker-stacks.readthedocs.io/en/latest/using/recipes.html#using-sudo-within-a-container)
+- [How to configure docker-compose.yml to up a container as root](https://stackoverflow.com/questions/48727548/how-to-configure-docker-compose-yml-to-up-a-container-as-root)
+
+
+### 安装其他内核
+
+由于Jupyter Notebook的模式非常好用, 因此有许多第三方开发了其他语言的内核, 使得Notebook可以运行其他的语言. 支持的语言可在如下的页面上查询.
+
+- [Jupyter-kernels](https://github.com/jupyter/jupyter/wiki/Jupyter-kernels)
+
+> 大部分常用语言(例如C, Java, Go等)以及许多非常小众的语言(例如Scheme, Prolog等)都提供了支持.
+
+使用Notebook的模式, 可以快速的运行某个语言的代码片段, 因此非常适合作为学习新语言的工具.
+
 
 我的看法
 -------------
