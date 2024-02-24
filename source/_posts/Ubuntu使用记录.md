@@ -190,7 +190,7 @@ apt-get clean all && apt-get update
 ```
 
 - [Linux-Ubuntu20更换apt源](https://blog.csdn.net/timonium/article/details/115540622)
-
+- [中科大 Ubuntu 源使用帮助](https://mirrors.ustc.edu.cn/help/ubuntu.html)
 
 
 查看文件夹空间占用情况

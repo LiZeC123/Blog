@@ -510,9 +510,10 @@ services:
 
 由于Jupyter Notebook的模式非常好用, 因此有许多第三方开发了其他语言的内核, 使得Notebook可以运行其他的语言. 支持的语言可在如下的页面上查询.
 
-- [Jupyter-kernels](https://github.com/jupyter/jupyter/wiki/Jupyter-kernels)
+- [官方列表](https://github.com/jupyter/jupyter/wiki/Jupyter-kernels)
+- [非官方列表](https://gist.github.com/chronitis/682c4e0d9f663e85e3d87e97cd7d1624)
 
-> 大部分常用语言(例如C, Java, Go等)以及许多非常小众的语言(例如Scheme, Prolog等)都提供了支持.
+大部分常用语言(例如C, Java, Go等)以及许多非常小众的语言(例如Scheme, Prolog等)都提供了支持. 非官方列表更新情况更多, 相较于官方列表, 删除了一些较为旧的可能无法更新的项目.
 
 使用Notebook的模式, 可以快速的运行某个语言的代码片段, 因此非常适合作为学习新语言的工具.
 
