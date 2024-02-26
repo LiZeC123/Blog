@@ -477,3 +477,9 @@ import imgUrl from '../assets/test.png';
 之后将该变量赋值给Vue的变量, 即可将其视为一种资源进行引用
 
 - [Vue 引入本地资源](https://blog.csdn.net/XueDaJing030409/article/details/117549660)
+
+
+Vue问题解决方案
+--------------------
+
+- [Vue--Router--解决多路由复用同一组件页面不刷新问题](https://blog.51cto.com/knifeedge/5627125)
