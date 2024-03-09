@@ -504,44 +504,38 @@ def now():
 
 ### 装饰器参数
 
-可以注意到, 装饰器函数以被装饰的函数作为参数, 因此按照上面的方法, 装饰器函数本身并不能要求输入额外的参数了. 如果需要使装饰器可以接受参数, 那么需要引入一些技巧, 具体代码如下
+可以注意到, 装饰器函数以被装饰的函数作为参数, 因此按照上面的方法, 装饰器函数本身并不能要求输入额外的参数了. 如果需要使装饰器可以接受参数, 可以使用类定义装饰器, 具体代码如下
 
 ```py
-from functools import wraps, partial
-import logging
+class authority_check:
+    def __init__(self, role='ROLE_USER') -> None:
+        self.role = role
 
-def logged(func=None, level=logging.DEBUG, name=None, message=None):
-    if func is None:
-        return partial(logged, level=level, name=name, message=message)
+    def __call__(self, func) -> Any:
+        @functools.wraps(func)
+        def wrapped_function(*args, **kwargs):
+            # 装饰器逻辑
+            func(*args, **kwargs) 
 
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        log.log(level, logmsg)
-        return func(*args, **kwargs)
-
-    return wrapper
+        return wrapped_function
 ```
 
-这里的核心技巧是: 如果直接使用装饰器, 那么func参数有取值, 而其他参数为默认值, 而如果使用有参数的装饰器, 那么func为默认值None, 而其他参数有具体的取值. 那么根据func是否为None就可以判断是直接使用了装饰器还是使用了有参数的装饰器.
-
-在装饰器使用了参数的情况下, 可以使用`partial`生成一个其他参数都被初始化了, 仅func没有初始化的偏函数, 将这个偏函数应用到被装饰的函数上, 就等价于上一节定义了基本的装饰器. 而如果装饰器没有使用参数, 也能够使用默认参数完成装饰器的功能.
-
-最后可以使用如下的两种形式使用装饰器:
+这里的核心技巧是: 重载call方法并在其中返回装饰器逻辑, 从而避免多层次嵌套导致的逻辑难以理解的问题. 可以使用如下的两种形式使用装饰器:
 
 ``` py
-# 无参数装饰器
-@logged
+# 无参数装饰器, 此时也必须有括号
+@authority_check()
 def add(x, y):
     return x + y
 
 # 有参数装饰器
-@logged(level=logging.CRITICAL, name='example')
+@authority_check(role="ADMIN')
 def spam():
     print('Spam!')
 ```
 
+- [理解 Python 装饰器看这一篇就够了](https://foofish.net/python-decorator.html)
 - [第九章：元编程](https://python3-cookbook.readthedocs.io/zh_CN/latest/chapters/p09_meta_programming.html)
-- [9.6 带可选参数的装饰器](https://python3-cookbook.readthedocs.io/zh_CN/latest/c09/p06_define_decorator_that_takes_optional_argument.html)
 
 
 类型注解
