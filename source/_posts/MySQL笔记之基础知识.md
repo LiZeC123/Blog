@@ -3,6 +3,7 @@ title: MySQL笔记之基础知识
 date: 2020-06-26 21:25:03
 categories: MySQL笔记
 tags:
+    - SQL
     - MySQL
     - 数据库
 cover_picture: images/mysql.png

@@ -3,6 +3,7 @@ title: MySQL笔记之基本配置
 date: 2021-01-20 17:12:54
 categories: MySQL笔记
 tags:
+    - SQL
     - MySQL
     - 数据库
 cover_picture: images/mysql.png
