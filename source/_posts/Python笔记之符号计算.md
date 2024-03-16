@@ -13,8 +13,7 @@ math: true
 
 文本介绍Python中两个与符号计算相关的第三方库, 即Sympy库和Linalg库. 其中Sympy库用于符号计算, Linalg库是Scipy的一个子包, 用于线性代数的计算.
 
-本文只展示部分函数的计算结果, 更多API调用和计算结果可以参考[Sympy使用示例补充](/notebook/UseSympy.html)
-
+本文只展示部分函数的计算结果, 更多API调用和计算结果可以参考[Sympy使用示例补充](/notebook/Python笔记之符号计算.html)
 
 基本概念
 ---------------
