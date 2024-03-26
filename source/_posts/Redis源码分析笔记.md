@@ -244,6 +244,51 @@ sds _sdsMakeRoomFor(sds s, size_t addlen, int greedy) {
 SDS库中其他的函数基本上与常规的字符串处理函数类似, 逻辑也相对比较简单, 此处不再具体解读, 可直接查看Redis源码进行学习.
 
 
+跳跃表
+-------------
+
+跳跃表是一种链表结构, 其中的元素按照顺序排列, 并且不同的链表节点具有不同的层高, 从而在查询数据的时候, 能够跳过一些节点实现O(logN)的时间复杂度. 跳跃表实现的效果与红黑树类似, 但相较于红黑树复杂的旋转和染色操作, 跳跃表的实现相对更为简单直接.
+
+跳跃表是Redis中ZSET的底层数据结构. ZSET是一个类似于哈希表的数据结构, 但其中的每个对象可以附加一个分数, Redis保证可以高效的按照分数的大小顺序来遍历ZSET中的项目.
+
+### 数据结构
+
+跳跃表的结构信息定义在`server.h`文件中, 具体如下
+
+```c
+typedef struct zskiplistNode {
+    sds ele;
+    double score;
+    struct zskiplistNode *backward;
+    struct zskiplistLevel {
+        struct zskiplistNode *forward;
+        unsigned long span;
+    } level[];
+} zskiplistNode;
+
+typedef struct zskiplist {
+    struct zskiplistNode *header, *tail;
+    unsigned long length;
+    int level;
+} zskiplist;
+
+typedef struct zset {
+    dict *dict;
+    zskiplist *zsl;
+} zset;
+```
+
+`zskiplistNode`是跳跃表的节点接口, 其中`ele`是存储的对象, 其类型是上一节介绍的简单动态字符串. `score`是该数据的分数, 用于排序. `backward`是反向指针, 指向该节点的上一个元素(因此跳跃表是一个双向链表, 从而支持两个方向的遍历). `zskiplistLevel`是一个柔性数组, 实际就是每一层的节点结构. 其中每一层包含两个元素, `forward`指向下一个节点, `span`表示跨越的节点数量.
+
+Redis中使用`zskiplist`管理跳跃表, 其中包含指向头尾节点的指针, 跳跃表的元素数量以及跳跃表的高度. 最后可以看到, ZSET实际上就是哈希表+跳跃表, 其中哈希表用于存储数据, 跳跃表用于使数据保持顺序.
+
+
+### 创建跳跃表
+
+
+
+
+
 补充说明:常见宏效果说明
 -----------------
 
