@@ -89,5 +89,68 @@ func main() {
 }
 ```
 
+
+### 配置MySQL
+
+与SQLite几乎不需要任何参数的链接方式不同, 在连接到MySQL时, 需要配置好MySQL的字符串, 并且添加如下的一些参数
+
+- `parseTime=True`: 启用时间解析, 否则无法正确实例时间类型, 导致数据获取失败
+
+### 字段标记
+
+GORM使用GO语言提供的结构体字段tag功能实现数据库字段的结构定义, 例如
+
+```
+type Task struct {
+	gorm.Model
+	Type     string `gorm:"size:32"`
+	Status      string `gorm:"size:8"`
+	Env         string `gorm:"size:32;index"`
+}
+```
+
+所欲的属性都以`gorm`开头, 在属性的内部, 不同的属性之间使用`;`分割, 同一个属性的参数之间使用`,`分割. 详细的标记使用方法可参考官方文档
+
+- [所有可用属性表](https://gorm.io/docs/models.html#Fields-Tags)
+- [Index相关属性](https://gorm.io/docs/indexes.html)
+
+### 动态查询
+
+在开发Web接口时, 可能遇到不定条件的查询请求, 又或者一个基本相同的SQL需要做分页查询, 需要返回分页数据和总数据条数. 此时可利用GORM的链式调用能力实现此功能.
+
+GORM的WHERE函数可多次调用, 这些条件之间使用AND连接. 在组装完毕后, 可分别调用Count函数和Find函数获取数据, 例如
+
+
+```go
+db := VarGorm.Table("tasks").Order("id desc")
+if  xx {
+  db = db.Where("creator = ?", Req.Get("creator").String() )
+}
+
+db.Count(&count)
+
+db.Limit(10).Offset(20).Find(&tasks)
+```
+
+- [一种使用GORM实现动态查询的可行方案](https://www.cnblogs.com/Di-iD/p/16320874.html)
+
+
+### 无结构体查询
+
+通常情况下, GORM需要一个GO的结构体作为模型, 从而确定需要查询的表以及数据的映射关系. 但有些情况下可能无法给定对应的模型, 或者需要一个通用能力的查询接口. 此时可以使用字符串指定表名, 使用map获取数据, 例如
+
+```go
+// 查询单条数据
+m := map[string]interface{}{}
+VarGorm.Table("tasks").First(&m)
+
+// 查询多条数据
+s := []map[string]interface{}
+VarGorm.Table("tasks").Find(&s)
+```
+
+
+### 参考资料
+
 - [GORM Guides](https://gorm.io/docs/index.html)
 - [go-sqlite3](https://github.com/mattn/go-sqlite3)

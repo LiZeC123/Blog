@@ -453,6 +453,68 @@ void zslDeleteNode(zskiplist *zsl, zskiplistNode *x, zskiplistNode **update) {
 在Redis中, 跳跃表用于zset的底层实现, 但zset并不一定采取跳跃表. 仅当zset中的元素较多, 或者项目的长度较长时才会采取此数据结构, 否则Redis将采取另一种称为压缩列表的数据结构进行存储.
 
 
+压缩表
+--------
+
+压缩表`ziplist`是一个基于字节数组的双向表结构, Redis的有序集合, 散列和列表都直接或者间接使用了压缩列表. 其中的元素按照顺序连续存储, 其基本结构如下所示
+
+```
+<zlbytes> <zltail> <zllen> <entry> <entry> ... <entry> <zlend>
+```
+
+启用`<entry>`表示具体存储的数据, 当插入或删除数据时, `ziplist`通过复制的方式移动数据的位置. `<entry>`结构如下所示
+
+```
+<prevlen> <encoding> <entry-data>
+```
+
+其中`<prevlen>`表示当且节点的前一个节点的长度, `<encoding>`表示本阶段编码类型, 包含了存储的内容结构以及本节数据的长度, `<entry-data>`为具体的数据. 在反向遍历压缩表时, 可通过`<prevlen>`计算出前一个节点的起始位置.
+
+### 编码格式
+
+`<encoding>`有多种表示方式, 具体如下所示
+
+```
+ * |00pppppp| - 1 byte
+ *      String value with length less than or equal to 63 bytes (6 bits).
+ *      "pppppp" represents the unsigned 6 bit length.
+ * |01pppppp|qqqqqqqq| - 2 bytes
+ *      String value with length less than or equal to 16383 bytes (14 bits).
+ *      IMPORTANT: The 14 bit number is stored in big endian.
+ * |10000000|qqqqqqqq|rrrrrrrr|ssssssss|tttttttt| - 5 bytes
+ *      String value with length greater than or equal to 16384 bytes.
+ *      Only the 4 bytes following the first byte represents the length
+ *      up to 2^32-1. The 6 lower bits of the first byte are not used and
+ *      are set to zero.
+ *      IMPORTANT: The 32 bit number is stored in big endian.
+ * |11000000| - 3 bytes
+ *      Integer encoded as int16_t (2 bytes).
+ * |11010000| - 5 bytes
+ *      Integer encoded as int32_t (4 bytes).
+ * |11100000| - 9 bytes
+ *      Integer encoded as int64_t (8 bytes).
+ * |11110000| - 4 bytes
+ *      Integer encoded as 24 bit signed (3 bytes).
+ * |11111110| - 2 bytes
+ *      Integer encoded as 8 bit signed (1 byte).
+ * |1111xxxx| - (with xxxx between 0001 and 1101) immediate 4 bit integer.
+ *      Unsigned integer from 0 to 12. The encoded value is actually from
+ *      1 to 13 because 0000 and 1111 can not be used, so 1 should be
+ *      subtracted from the encoded 4 bit value to obtain the right value.
+ * |11111111| - End of ziplist special entry.
+```
+
+基于以上定义, 一个ziplist可能具有如下的形式
+
+```
+ *  [0f 00 00 00] [0c 00 00 00] [02 00] [00 f3] [02 f6] [ff]
+ *        |             |          |       |       |     |
+ *     zlbytes        zltail     zllen    "2"     "5"   end
+```
+
+### 基础操作
+
+`ziplist`由于仅顺序存储数据, 因此插入和删除操作实际并无特殊逻辑. 仅在插入或删除数据后, 需要根据节点情况适当的更新`<prevlen>`(并且该操作可能产生级联效果, 导致更多节点需要更新`<prevlen>`).
 
 
 
