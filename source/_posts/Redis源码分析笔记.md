@@ -517,6 +517,32 @@ void zslDeleteNode(zskiplist *zsl, zskiplistNode *x, zskiplistNode **update) {
 `ziplist`由于仅顺序存储数据, 因此插入和删除操作实际并无特殊逻辑. 仅在插入或删除数据后, 需要根据节点情况适当的更新`<prevlen>`(并且该操作可能产生级联效果, 导致更多节点需要更新`<prevlen>`).
 
 
+哈希表
+---------
+
+哈希表结构定义如下, Redis中的哈希表采取链表法解决冲突, 其中`dictEntry`表示具体的节点, `dictEntry **ht_table[2];`的声明较为复杂, 可以拆分为两个部分, 其中`dictEntry **`表示一个`dictEntry`指针构成的数组, 后面的`[2]`表示有两个这样的数组. 因为哈希表结构可能存在rehash的情况, 因此此时需要两个不同的哈希表分别表示rehash之前的数据和rehash之后的数据. 
+
+因此, 哈希表中`ht_used`和`ht_size_exp`字段也都是具有两个元素的数组.
+
+```c
+struct dict {
+    dictType *type;
+
+    dictEntry **ht_table[2];
+    unsigned long ht_used[2];
+
+    long rehashidx; /* rehashing not in progress if rehashidx == -1 */
+
+    /* Keep small vars at end for optimal (minimal) struct padding */
+    int16_t pauserehash; /* If >0 rehashing is paused (<0 indicates coding error) */
+    signed char ht_size_exp[2]; /* exponent of size. (size = 1<<exp) */
+    int16_t pauseAutoResize;  /* If >0 automatic resizing is disallowed (<0 indicates coding error) */
+    void *metadata[];
+};
+```
+
+
+
 
 补充说明:C语言特性说明
 -------------------------
