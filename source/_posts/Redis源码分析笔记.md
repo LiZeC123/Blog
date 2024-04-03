@@ -520,9 +520,9 @@ void zslDeleteNode(zskiplist *zsl, zskiplistNode *x, zskiplistNode **update) {
 哈希表
 ---------
 
-哈希表结构定义如下, Redis中的哈希表采取链表法解决冲突, 其中`dictEntry`表示具体的节点, `dictEntry **ht_table[2];`的声明较为复杂, 可以拆分为两个部分, 其中`dictEntry **`表示一个`dictEntry`指针构成的数组, 后面的`[2]`表示有两个这样的数组. 因为哈希表结构可能存在rehash的情况, 因此此时需要两个不同的哈希表分别表示rehash之前的数据和rehash之后的数据. 
+哈希表结构定义如下, Redis中的哈希表采取经典的哈希表实现, 即使用一个数组存储实际的元素, 通过哈希函数将key转换为数组的下标. 当下标冲突时, 使用链表法解决冲突.
 
-因此, 哈希表中`ht_used`和`ht_size_exp`字段也都是具有两个元素的数组.
+因此, 
 
 ```c
 struct dict {
@@ -537,9 +537,290 @@ struct dict {
     int16_t pauserehash; /* If >0 rehashing is paused (<0 indicates coding error) */
     signed char ht_size_exp[2]; /* exponent of size. (size = 1<<exp) */
     int16_t pauseAutoResize;  /* If >0 automatic resizing is disallowed (<0 indicates coding error) */
-    void *metadata[];
+    void *metadata[];  // 依然是柔性数组, 自定义大小的meta空间
 };
 ```
+
+在上面的定义中, `dictEntry`表示一个具体的哈希表元素节点. `dictEntry **ht_table[2];`的声明较为复杂, 可以拆分为两个部分, 其中`dictEntry **`是二重指针, 可以视为一个`dictEntry`指针构成的数组, 后面的`[2]`表示有两个这样的元素的数组. 
+
+因为哈希表结构可能存在rehash的情况, 因此需要有两个指针分别指向扩容前的哈希表和扩容后的哈希表. 哈希表中`ht_used`和`ht_size_exp`字段也因此声明为具有两个元素的数组.
+
+`rehashidx`字段除了使用`-1`表示当前无rehash操作外, 当其大于0时, 还表示了当前数据迁移的进度. 当`rehashidx`等于旧哈希表容量时, 表明迁移操作已经完成.
+
+
+```c
+struct dictEntry {
+    void *key;
+    union {
+        void *val;
+        uint64_t u64;
+        int64_t s64;
+        double d;
+    } v;
+    struct dictEntry *next;     /* Next entry in the same hash bucket. */
+};
+```
+
+`dictEntry`表示一个具体的存储节点, 其中的定义比较简单, 存储值的部分使用了C语言的联合特性, v字段的类型在运行时可为定义的几种类型中的一种.
+
+```c
+typedef struct dictType {
+    /* Callbacks */
+    uint64_t (*hashFunction)(const void *key);
+    void *(*keyDup)(dict *d, const void *key);
+    void *(*valDup)(dict *d, const void *obj);
+    int (*keyCompare)(dict *d, const void *key1, const void *key2);
+    void (*keyDestructor)(dict *d, void *key);
+    void (*valDestructor)(dict *d, void *obj);
+    int (*resizeAllowed)(size_t moreMem, double usedRatio);
+    /* Invoked at the start of dict initialization/rehashing (old and new ht are already created) */
+    void (*rehashingStarted)(dict *d);
+    /* Invoked at the end of dict initialization/rehashing of all the entries from old to new ht. Both ht still exists
+     * and are cleaned up after this callback.  */
+    void (*rehashingCompleted)(dict *d);
+    /* Allow a dict to carry extra caller-defined metadata. The
+     * extra memory is initialized to 0 when a dict is allocated. */
+    size_t (*dictMetadataBytes)(dict *d);
+
+    /* Data */
+    void *userdata;
+
+    /* Flags */
+    /* The 'no_value' flag, if set, indicates that values are not used, i.e. the
+     * dict is a set. When this flag is set, it's not possible to access the
+     * value of a dictEntry and it's also impossible to use dictSetKey(). Entry
+     * metadata can also not be used. */
+    unsigned int no_value:1;
+    /* If no_value = 1 and all keys are odd (LSB=1), setting keys_are_odd = 1
+     * enables one more optimization: to store a key without an allocated
+     * dictEntry. */
+    unsigned int keys_are_odd:1;
+    /* TODO: Add a 'keys_are_even' flag and use a similar optimization if that
+     * flag is set. */
+} dictType;
+```
+
+`dictType`是一个包含许多函数的结构体, 在创建哈希表时必须传入此结构体.哈希表在执行各类操作时, 会调用`dictType`中定义的一些函数.
+
+
+### 创建哈希表
+
+```c
+dict *dictCreate(dictType *type)
+{
+    size_t metasize = type->dictMetadataBytes ? type->dictMetadataBytes(NULL) : 0;
+    dict *d = zmalloc(sizeof(*d)+metasize);
+    if (metasize > 0) {
+        memset(dictMetadata(d), 0, metasize);
+    }
+    _dictInit(d,type);
+    return d;
+}
+
+/* Initialize the hash table */
+int _dictInit(dict *d, dictType *type)
+{
+    _dictReset(d, 0);
+    _dictReset(d, 1);
+    d->type = type;
+    d->rehashidx = -1;
+    d->pauserehash = 0;
+    d->pauseAutoResize = 0;
+    return DICT_OK;
+}
+
+/* Reset hash table parameters already initialized with _dictInit()*/
+static void _dictReset(dict *d, int htidx)
+{
+    d->ht_table[htidx] = NULL;
+    d->ht_size_exp[htidx] = -1;
+    d->ht_used[htidx] = 0;
+}
+```
+
+创建过程主要是内存分配和参数初始化, 其中为了分别初始化内部的两个元素, 调用了两次`_dictReset`函数.
+
+
+### 扩缩容操作
+
+```c
+/* Resize or create the hash table,
+ * when malloc_failed is non-NULL, it'll avoid panic if malloc fails (in which case it'll be set to 1).
+ * Returns DICT_OK if resize was performed, and DICT_ERR if skipped. */
+int _dictResize(dict *d, unsigned long size, int* malloc_failed)
+{
+    if (malloc_failed) *malloc_failed = 0;
+
+    /* We can't rehash twice if rehashing is ongoing. */
+    assert(!dictIsRehashing(d));
+
+    /* the new hash table */
+    // 为新的哈希表计算需要的空间, 既有可能执行扩容操作, 也有可能执行缩容操作
+    dictEntry **new_ht_table;
+    unsigned long new_ht_used;
+    signed char new_ht_size_exp = _dictNextExp(size); // 根据当前给定的容量大小, 对齐到2^n, 例如给定15, 则对其到16=2^4, 并返回4
+
+    /* Detect overflows */
+    size_t newsize = DICTHT_SIZE(new_ht_size_exp);
+    if (newsize < size || newsize * sizeof(dictEntry*) < newsize)
+        return DICT_ERR;
+
+    /* Rehashing to the same table size is not useful. */
+    if (new_ht_size_exp == d->ht_size_exp[0]) return DICT_ERR;
+
+    /* Allocate the new hash table and initialize all pointers to NULL */
+    // 根据给定的是否允许失败参数, 尝试分配内存
+    if (malloc_failed) {
+        new_ht_table = ztrycalloc(newsize*sizeof(dictEntry*));
+        *malloc_failed = new_ht_table == NULL;
+        if (*malloc_failed)
+            return DICT_ERR;
+    } else
+        new_ht_table = zcalloc(newsize*sizeof(dictEntry*));
+
+    new_ht_used = 0;
+
+    /* Prepare a second hash table for incremental rehashing.
+     * We do this even for the first initialization, so that we can trigger the
+     * rehashingStarted more conveniently, we will clean it up right after. */
+    // 给新的哈希表初始化参数
+    d->ht_size_exp[1] = new_ht_size_exp;
+    d->ht_used[1] = new_ht_used;
+    d->ht_table[1] = new_ht_table;
+    d->rehashidx = 0;
+    if (d->type->rehashingStarted) d->type->rehashingStarted(d);
+
+    /* Is this the first initialization or is the first hash table empty? If so
+     * it's not really a rehashing, we can just set the first hash table so that
+     * it can accept keys. */
+    // 检查旧哈希表状态, 如果已经全部迁移完成, 则重置旧哈希表的指针指向新的哈希表
+    if (d->ht_table[0] == NULL || d->ht_used[0] == 0) {
+        if (d->type->rehashingCompleted) d->type->rehashingCompleted(d);
+        if (d->ht_table[0]) zfree(d->ht_table[0]);
+        d->ht_size_exp[0] = new_ht_size_exp;
+        d->ht_used[0] = new_ht_used;
+        d->ht_table[0] = new_ht_table;
+        _dictReset(d, 1);
+        d->rehashidx = -1;
+        return DICT_OK;
+    }
+
+    return DICT_OK;
+}
+```
+
+
+### Rehash操作
+
+```c
+/* Helper function for `dictRehash` and `dictBucketRehash` which rehashes all the keys
+ * in a bucket at index `idx` from the old to the new hash HT. */
+// 尝试移动一个元素
+static void rehashEntriesInBucketAtIndex(dict *d, uint64_t idx) {
+    dictEntry *de = d->ht_table[0][idx];
+    uint64_t h;
+    dictEntry *nextde;
+    while (de) {
+        nextde = dictGetNext(de);
+        void *key = dictGetKey(de);
+        /* Get the index in the new hash table */
+        if (d->ht_size_exp[1] > d->ht_size_exp[0]) {
+            // 如果是扩容, 则重新计算一次哈希值
+            h = dictHashKey(d, key) & DICTHT_SIZE_MASK(d->ht_size_exp[1]);
+        } else {
+            /* We're shrinking the table. The tables sizes are powers of
+             * two, so we simply mask the bucket index in the larger table
+             * to get the bucket index in the smaller table. */
+            // 如果是缩容, 则使用掩码遮盖高位bit即可
+            h = idx & DICTHT_SIZE_MASK(d->ht_size_exp[1]);
+        }
+        if (d->type->no_value) {
+            if (d->type->keys_are_odd && !d->ht_table[1][h]) {
+                /* Destination bucket is empty and we can store the key
+                 * directly without an allocated entry. Free the old entry
+                 * if it's an allocated entry.
+                 *
+                 * TODO: Add a flag 'keys_are_even' and if set, we can use
+                 * this optimization for these dicts too. We can set the LSB
+                 * bit when stored as a dict entry and clear it again when
+                 * we need the key back. */
+                assert(entryIsKey(key));
+                if (!entryIsKey(de)) zfree(decodeMaskedPtr(de));
+                de = key;
+            } else if (entryIsKey(de)) {
+                /* We don't have an allocated entry but we need one. */
+                de = createEntryNoValue(key, d->ht_table[1][h]);
+            } else {
+                /* Just move the existing entry to the destination table and
+                 * update the 'next' field. */
+                assert(entryIsNoValue(de));
+                dictSetNext(de, d->ht_table[1][h]);
+            }
+        } else {
+            // 此函数设置de的next指针, 使得de变量链接到现有链表的头部.
+            // 如果当前位置本来就没有元素, 则此操作也等于什么都不做
+            dictSetNext(de, d->ht_table[1][h]);
+        }
+        d->ht_table[1][h] = de; // 在对应的位置写入de, 使得de变为头结点
+        d->ht_used[0]--;
+        d->ht_used[1]++;
+        de = nextde;
+    }
+    d->ht_table[0][idx] = NULL;
+}
+```
+
+`dictRehash`执行N次迁移操作, 同时为了避免遇到太多空位置, 导致此函数执行时间过长, 内部限制了最多处理10*N个空元素就退出执行.
+
+```c
+/* Performs N steps of incremental rehashing. Returns 1 if there are still
+ * keys to move from the old to the new hash table, otherwise 0 is returned.
+ *
+ * Note that a rehashing step consists in moving a bucket (that may have more
+ * than one key as we use chaining) from the old to the new hash table, however
+ * since part of the hash table may be composed of empty spaces, it is not
+ * guaranteed that this function will rehash even a single bucket, since it
+ * will visit at max N*10 empty buckets in total, otherwise the amount of
+ * work it does would be unbound and the function may block for a long time. */
+int dictRehash(dict *d, int n) {
+    int empty_visits = n*10; /* Max number of empty buckets to visit. */
+    // 获取新旧两个哈希表的容量
+    unsigned long s0 = DICTHT_SIZE(d->ht_size_exp[0]);
+    unsigned long s1 = DICTHT_SIZE(d->ht_size_exp[1]);
+    // dict_can_resize是一个全局变量, Redis在进行备份时, 由于使用copy-on-write机制,  为了避免产生太多的内存移动, 此时会全局禁用哈希表的迁移操作
+    if (dict_can_resize == DICT_RESIZE_FORBID || !dictIsRehashing(d)) return 0;
+    /* If dict_can_resize is DICT_RESIZE_AVOID, we want to avoid rehashing. 
+     * - If expanding, the threshold is dict_force_resize_ratio which is 4.
+     * - If shrinking, the threshold is 1 / (HASHTABLE_MIN_FILL * dict_force_resize_ratio) which is 1/32. */
+    // 如果当前是 DICT_RESIZE_AVOID, 则扩容和缩容的要求更加严格, 从而减少Rehash的概率
+    if (dict_can_resize == DICT_RESIZE_AVOID && 
+        ((s1 > s0 && s1 < dict_force_resize_ratio * s0) ||
+         (s1 < s0 && s0 < HASHTABLE_MIN_FILL * dict_force_resize_ratio * s1)))
+    {
+        return 0;
+    }
+
+    while(n-- && d->ht_used[0] != 0) {
+        /* Note that rehashidx can't overflow as we are sure there are more
+         * elements because ht[0].used != 0 */
+        assert(DICTHT_SIZE(d->ht_size_exp[0]) > (unsigned long)d->rehashidx);
+        while(d->ht_table[0][d->rehashidx] == NULL) {
+            // rehashidx 除了用于记录当前是否正在rehash以外, 还用于记录当前rehash的进度, 当其等于旧哈希表容量时表明已经完成迁移
+            d->rehashidx++;
+            if (--empty_visits == 0) return 1;
+        }
+        /* Move all the keys in this bucket from the old to the new hash HT */
+        rehashEntriesInBucketAtIndex(d, d->rehashidx);
+        d->rehashidx++;
+    }
+
+    // 检查是否已经完成迁移, 如果完成迁移则调整对应字段的值
+    return !dictCheckRehashingCompleted(d);
+}
+```
+
+### 添加数据
+
 
 
 
@@ -560,6 +841,22 @@ typedef struct Sa {
 Sa* pa = (Sa*)malloc(sizeof(int) + 10*sizeof(int))
 // buf具有10个元素的空间
 ```
+
+### Union
+
+联合(Union)是一种能在同一储存空间里储存不同类型数据的数据结构. 其定义方式为
+
+```
+union 标志符{
+	成员1
+	成员2
+	.
+	.
+};     //注意此处的分号
+```
+
+### 位域
+
 
 
 补充说明:常见宏效果说明
