@@ -677,7 +677,8 @@ conda init fish
 
 echo "set PATH /home/lizec/.local/bin $PATH" >>  ~/.config/fish/config.fish
 
-### 服务器版开启X11支持
+服务器版开启X11支持
+----------------------
 
 执行如下指令安装需要的模块
 
@@ -699,7 +700,8 @@ sudo systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.ta
 - [记UbuntuServer自动关机问题的排查和解决](https://www.jianshu.com/p/6653b4ac1d11)
 
 
-### 设置时区
+设置时区
+--------------
 
 ```
 sudo timedatectl set-timezone Asia/Shanghai
