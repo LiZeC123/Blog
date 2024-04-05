@@ -68,3 +68,9 @@ Python语言的插件, 对于机器学习场景, 感觉比PyCharm更好用.
 根据这篇回答的说法, 通过`reload window`可以修复此问题. 对于Github Codespace, 也可以执行reload操作
 
 - [Auto closing brackets in visual-studio-code not working for Vue files](https://stackoverflow.com/questions/64086068/auto-closing-brackets-in-visual-studio-code-not-working-for-vue-files)
+
+### VSCode连接服务器太慢问题解决
+
+在使用Vscode连接服务器时, 如果当前客户端使用了更新的版本, 则在服务器上也会对应下载最新的版本. 此时可能出现下载服务器版速度太慢的问题.
+
+当前搜索这个问题, 有些博客会建议手动下载文件并解压到对应的目录. 截止2024年4月, 实测上述操作无效. 但在操作过程中, 发现对待下载文件的写入操作返回busy, 因此当即尝试对服务器进行重启. 重启后下载速度恢复正常.
