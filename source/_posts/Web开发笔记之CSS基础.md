@@ -2,10 +2,10 @@
 title: Web开发笔记之CSS基础
 math: false
 date: 2022-07-14 13:02:10
-categories: web
+categories: Web开发笔记
 tags:
-    - web
-    - css
+    - Web
+    - CSS
 cover_picture: images/web.jpg
 ---
 

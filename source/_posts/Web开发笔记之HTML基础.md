@@ -2,10 +2,10 @@
 title: Web开发笔记之HTML基础
 math: false
 date: 2022-07-14 13:00:50
-categories: web
+categories: Web开发笔记
 tags:
-    - web
-    - html
+    - Web
+    - HTML
 cover_picture: images/web.jpg
 ---
 

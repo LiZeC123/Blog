@@ -2,10 +2,10 @@
 title: Web开发笔记之JavaScript基础
 math: false
 date: 2022-07-14 13:02:25
-categories: web
+categories: Web开发笔记
 tags:
-    - web
-    - javascript
+    - Web
+    - JavaScript
 cover_picture: images/web.jpg
 ---
 

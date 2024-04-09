@@ -1,8 +1,9 @@
 ---
 title: CSAPP笔记之汇编语言
 date: 2020-08-10 12:06:34
-categories: CSAPP笔记
+categories: 
 tags:
+    - 操作系统
 cover_picture: images/CSAPP.jpg
 ---
 
