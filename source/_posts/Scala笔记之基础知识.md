@@ -1,7 +1,7 @@
 ---
 title: Scala笔记之基础知识
 date: 2019-12-17 15:12:25
-categories: Scala笔记
+categories:
 tags:
     - Scala
 cover_picture: images/scala.png
@@ -9,9 +9,6 @@ cover_picture: images/scala.png
 
 
 Scala语言运行在JVM上, 因此Scala可以认为在一定程度上与Java是兼容的, Scala可以自由的使用Java所有的类.
-
-
-
 
 
 变量

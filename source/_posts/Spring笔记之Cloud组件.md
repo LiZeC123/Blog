@@ -1,7 +1,7 @@
 ---
 title: Spring笔记之Cloud组件
 date: 2021-09-01 16:07:25
-categories: Spring
+categories: Spring笔记
 tags:
     - Spring
 cover_picture: images/spring.jpg 

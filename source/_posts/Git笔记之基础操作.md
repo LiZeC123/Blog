@@ -1,7 +1,7 @@
 ---
 title: Git笔记之基础操作
 date: 2017-08-07 19:10:36
-categories: Git笔记
+categories: 
 tags:
     - Git
 cover_picture:  images/git.jpg

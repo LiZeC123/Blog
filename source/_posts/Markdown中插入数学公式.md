@@ -1,7 +1,7 @@
 ---
 title: Markdown中插入数学公式
 date: 2018-03-30 16:46:54
-categories: LaTeX
+categories:
 tags:
   - LaTeX
 cover_picture: images/latex.PNG

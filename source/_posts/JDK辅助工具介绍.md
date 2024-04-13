@@ -1,7 +1,7 @@
 ---
 title: JDK辅助工具介绍
 date: 2018-11-21 16:05:22
-categories: JDK笔记
+categories:
 tags:
     - Java
 cover_picture: images/java.jpg
@@ -17,11 +17,11 @@ Jar指令
 
 使用jar指令对Java的的代码和资源文件进行压缩或解压
 
-1. 压缩包：
+### 压缩包：
 jar cvf filename.jar a.class b.class: 压缩指定文件；
 jar cvf weibosdkcore.jar *: 全部压缩；
 
-2. 解压包：
+### 解压包：
 jar xvf test.jar
 
 选项:

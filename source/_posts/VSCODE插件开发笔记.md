@@ -2,7 +2,7 @@
 title: VSCODE插件开发笔记
 math: false
 date: 2023-08-25 22:30:20
-categories: vscode
+categories:
 tags:
     - vscode
 cover_picture: images/vscode.jpg

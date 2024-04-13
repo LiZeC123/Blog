@@ -1,7 +1,7 @@
 ---
 title: VSCODE配置笔记
 date: 2022-04-07 10:10:31
-categories: vscode
+categories:
 tags:
     - vscode
 cover_picture: images/vscode.jpg
