@@ -47,7 +47,7 @@
         showSidebarBox: function (status) {
             if (status) {
                 sideMenuBox.animate({
-                    height:'200px',
+                    height:'300px',
                     opacity:'1'
                 }, 300);
             } else {
