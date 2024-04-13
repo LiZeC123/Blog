@@ -90,5 +90,13 @@
 
 <% if (post.math) { %>
     <!-- 启用数学公式的支持 -->
-    <script type="text/javascript" src="https://lib.baomitu.com/mathjax/2.7.4/MathJax.js?config=default"></script>
+    <script type="text/javascript" src="https://lib.baomitu.com/mathjax/2.7.4/MathJax.js?config=default">
+        MathJax.Hub.Config({
+            tex2jax: {
+                skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+                inlineMath: [['$','$'], ['\\(','\\)']],
+                processEscapes: true
+            }
+        });
+    </script>
 <% } %>
