@@ -21,7 +21,7 @@ math: true
 Markdown中引入LaTex
 --------------------
 
-### 公式引擎
+### 直接引用
 如果需要在Markdown中加入LaTex公式,可以使用MathJax引擎, 在Markdown中添加MathJax引擎仅仅需要在文章的任意地方加入以下代码
 ``` html
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default"></script>
@@ -30,7 +30,33 @@ Markdown中引入LaTex
 注意: 上述地址可能在某一天失效, 可以在MathJax的[News页面](https://www.mathjax.org/news/)查看最新版的有关信息.
 
 
+### 创建博客配置
+
+可以在博客的底层代码中加入如下的配置:
+
+```
+<% if (post.math) { %>
+    <!-- 启用数学公式的支持 -->
+    <script type="text/javascript" src="https://lib.baomitu.com/mathjax/2.7.4/MathJax.js?config=default">
+        MathJax.Hub.Config({
+            tex2jax: {
+                skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+                inlineMath: [['$','$'], ['\\(','\\)']],
+                processEscapes: true
+            }
+        });
+    </script>
+<% } %>
+```
+
+该配置检查文章的属性中是否包含了`math`选项, 如果有则引入对应的JS文件, 并进行了一些转义配置. 配置的具体属性可参考[MathJax 与 Markdown 的究极融合](https://yihui.name/cn/2017/04/mathjax-markdown/).
+
+> 对于事物的理解果然是螺旋上升的, 17年就存在这篇文章了, 但24年才觉得这些配置确实好用.
+
 ### 引入公式
+
+> 2024.4.13日更新: 进行了转义配置后, 可直接使用单个美元符号表示行内公式, 从而与标准的Latex语法保持一致.
+
 在文本中`$$公式$$`表示行间公式,`\\(公式\\)`表示行内公式. 例如以下的一段源代码
 
 ``` LaTeX
@@ -231,6 +257,7 @@ y
 $$
 ```
 
+<p>
 $$
 \left(
 \begin{matrix}
@@ -252,6 +279,7 @@ y
 \end{matrix}
 \right)
 $$
+</p>
 
 ### 等号对齐
 
@@ -304,7 +332,9 @@ LaTex也支持输入包括逻辑运算符,集合运算符等其他的符号, 由
 辅助输入工具
 ------------------
 
-在[codecogs](https://www.codecogs.com/)的网站上提供了一个LaTeX的[公式编辑器](https://www.codecogs.com/latex/eqneditor.php), 通过点击相应符号的按钮就可以生成LaTeX代码, 并且提供实时预览.
+首先推荐妈咪叔提供的[LaTeX公式编辑器](https://www.latexlive.com/), 该网站除了提供点击相应符号按钮生成LaTeX代码并提供实时预览能力外, 在注册账号并登录的情况下, 还支持识别图片中的公式. 这个功能实在是非常良心, 在我写毕业论文的时候提供了很多帮助.
+
+其次推荐[在线LaTeX公式编辑器](https://zh.numberempire.com/latexequationeditor.php), 该网站除了可在线编辑LaTeX外, 还提供了许多数学相关的工具.
 
 针对矩阵语法比较复杂的问题, 我编写了一个小程序来完成矩阵代码的生产, 可以查看我的博客文章[如何优雅的输入矩阵公式](https://lizec.top/2019/07/03/%E5%A6%82%E4%BD%95%E4%BC%98%E9%9B%85%E7%9A%84%E8%BE%93%E5%85%A5%E7%9F%A9%E9%98%B5%E5%85%AC%E5%BC%8F/)获得程序源代码和使用说明.
 
@@ -312,13 +342,9 @@ LaTex也支持输入包括逻辑运算符,集合运算符等其他的符号, 由
 特殊符号转义问题
 -----------------
 
-在LaTex中可能要使用 `_` 等符号, 而这些符号在Markdown中也是特殊符号, 并且Markdwon会先于LaTex的解析过程, 因此公式中使用了这些符号就导致公式的解析错误.
+推荐按照[MathJax 与 Markdown 的究极融合](https://yihui.name/cn/2017/04/mathjax-markdown/)这篇文章进行调整, 足够解决大部分情况下的公式转义问题.
 
-对于这一问题, 目前基本上是无解的, 综合考虑之后, 我编写了一个小程序来完成转义字符的处理, 输入原始的LaTeX代码之后, 由小程序完成转义字符的处理工作. [代码](https://github.com/LiZeC123/miniTools/blob/master/fixLatex.py)已经开源在Github上.
-
-因为我只在Markdown上使用LaTeX输入数学公式, 而所有的Markdown渲染器都存在这一问题, 因此修改LaTeX代码应该是一种代价最小的方案. 此外, 还有一些针对Markdown渲染器进行修改的方法, 具体内容如下所示:
- - [关于 Markdown 与 Mathjax 的冲突问题及几个解决方案](https://kingsleyxie.cn/markdown-mathjax-conflicts-and-several-solutions/)
-- [MathJax 与 Markdown 的究极融合](https://yihui.name/cn/2017/04/mathjax-markdown/)
+对于少部分更复杂的公式(例如矩阵的等式), [关于 Markdown 与 Mathjax 的冲突问题及几个解决方案](https://kingsleyxie.cn/markdown-mathjax-conflicts-and-several-solutions/)指出可以在公式外包裹`<p>`标签, 使得Markdown渲染模块完全不处理该内容. 当然, 加入p标签后, vscode的预览模块也无法解析这些公式了, 但至少保证了最后博客中可以正常渲染.
 
 
 参考文献和补充
@@ -327,5 +353,3 @@ LaTex也支持输入包括逻辑运算符,集合运算符等其他的符号, 由
 - [LaTeX 各种命令, 符号](https://blog.csdn.net/garfielder007/article/details/51646604)
 - [MathJax使用LaTeX语法编写数学公式教程](https://blog.csdn.net/u013007900/article/details/50082205)
 - [使用LaTeX写矩阵](https://blog.csdn.net/bendanban/article/details/44221279)
-- [在线LaTeX公式编辑器](https://zh.numberempire.com/latexequationeditor.php)
-
