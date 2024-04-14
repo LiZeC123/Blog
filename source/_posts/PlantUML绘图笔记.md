@@ -4,7 +4,7 @@ date: 2021-09-13 11:15:39
 categories:
 tags:
 	- UML
-cover_picture:
+cover_picture: images/UML.jpg
 ---
 
 

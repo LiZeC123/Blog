@@ -57,7 +57,7 @@ Markdown中引入LaTex
 
 > 2024.4.13日更新: 进行了转义配置后, 可直接使用单个美元符号表示行内公式, 从而与标准的Latex语法保持一致.
 
-在文本中`$$公式$$`表示行间公式,`\\(公式\\)`表示行内公式. 例如以下的一段源代码
+例如以下的一段源代码
 
 ``` LaTeX
 We denote the conditional probability that \\( y = y\_1\\) given \\( x = x\_1\\) as \\( P(y=y\_1|x=x\_1) \\). 

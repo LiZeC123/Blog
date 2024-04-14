@@ -5,6 +5,7 @@ categories: PyTorch笔记
 tags:
     - Python
     - PyTorch
+    - 自然语言处理
 cover_picture: images/pytorch.png
 ---
 
