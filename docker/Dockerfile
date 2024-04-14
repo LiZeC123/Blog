@@ -1,4 +1,4 @@
-FROM node:14.17-alpine as build-stage
+FROM node:18.17-alpine as build-stage
 
 ENV TZ Asia/Shanghai
 
