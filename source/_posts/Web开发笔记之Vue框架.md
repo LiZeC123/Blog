@@ -1,7 +1,7 @@
 ---
-title: Vue学习笔记
+title: Web开发笔记之Vue框架
 date: 2022-04-07 10:10:31
-categories: 
+categories: Web开发笔记
 tags:
     - vue
     - javascript

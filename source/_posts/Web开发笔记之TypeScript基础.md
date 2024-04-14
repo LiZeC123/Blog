@@ -1,5 +1,5 @@
 ---
-title: TypeScript学习笔记
+title: Web开发笔记之TypeScript基础
 math: false
 date: 2023-09-23 22:18:12
 categories:
@@ -7,8 +7,6 @@ tags:
     - typescript
 cover_picture: images/typescript.jpg
 ---
-
-
 
 TypeScript是JavaScript的超集, 可以视为一个具有类型的JS语言. 因此TS既可以在浏览器中运行(传统的前端开发), 也可以在Node.js环境中运行(写Vscode插件). 由于JS的语法特性TS均支持, 因此学习TS语言, 主要就是学习类型系统.
 
