@@ -2,7 +2,7 @@
 title: Web开发笔记之TypeScript基础
 math: false
 date: 2023-09-23 22:18:12
-categories:
+categories: Web开发笔记
 tags:
     - typescript
 cover_picture: images/typescript.jpg
