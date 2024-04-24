@@ -252,6 +252,21 @@ delete(dict, "go")
 ```
 
 
+IP操作
+--------
+
+### 解析IP地址
+
+```go
+parsedIP := net.ParseIP(rawIP)
+```
+
+使用`net.ParseIP`可以将一个字符串格式的IP地址解析为Go语言中的IP对象. IP对象实际是一个字节数组, 通常占据16字节(对应IPV6地址的长度), 采用大端序存储IP的字节.
+
+
+> 注意: 根据IP协议的规范, 任何一个合法的IPV4地址也是一个合法的IPV6地址. 不要根据IP对象的长度判断IP类型
+
+
 
 
 IO操作
@@ -263,12 +278,12 @@ IO操作
 
 ```go
 type Reader interface {
-    // 从切片p中读取len(p)个字节的数据, 返回实际读取到的字节数以及可能的错误
+    // 从底层数据流读取len(p)个字节的数据到切片p中, 返回实际读取到的字节数以及可能的错误
     Read(p []byte) (n int, err error)
 }
 
 type Writer interface {
-    // 向切片p写入len(p)个字节的数据, 返回实际写入的字节数以及可能的错误
+    // 从切片p写入len(p)个字节的数据到底层数据流, 返回实际写入的字节数以及可能的错误
     Write(p []byte) (n int, err error)
 }
 ```
