@@ -30,17 +30,6 @@ Information about running processes.
  - List all running processes including the full command string:
    ps auxww
 
- - Search for a process that matches a string:
-   ps aux | grep {{string}}
-
- - List all processes of the current user in extra full format:
-   ps --user $(id -u) -F
-
- - List all processes of the current user as a tree:
-   ps --user $(id -u) f
-
- - Get the parent pid of a process:
-   ps -o ppid= -p {{pid}}
 ```
 
 > 再也不用记指令参数了, 也比当场Google不知道快到那里去了
@@ -159,45 +148,47 @@ fi
 2. 表达式部分直接写变量等价于判断此变量是否为空
 
 
-Shell常用判断语句
+
+Bash常用快捷功能
+--------------------
+
+
+| 指令     | 解释                            | 说明                                      |
+| -------- | ------------------------------- | ----------------------------------------- |
+| `cd -`   | 回到上一次停留的目录            |
+| `!<num>` | 快速执行history里的某个指定命令 | `!743`                                    |
+| `!!`     | 指代上一个命令                  | `sudo !!`  以管理员权限重新执行上一条指令 |
+
+
+Shell常见指令简介
 ------------------
 
-### 判断变量是否为空
 
-```bash
-para1=  
-if [ ! $para1 ]; then  
-  echo "IS NULL"  
-else  
-  echo "NOT NULL"  
-fi 
+### ll各列的含义
+
+```
+drwxrwxr-x   9 lizec lizec 4.0K 4月   7 10:10 ./
+drwxrwxr-x   7 lizec lizec 4.0K 4月   3 17:45 ../
+drwxrwxr-x   8 lizec lizec 4.0K 4月   7 18:31 .git/
+-rw-rw-r--   1 lizec lizec 1.1K 3月  26 19:24 LICENSE
+drwxrwxr-x 230 lizec lizec  12K 4月   7 10:10 node_modules/
+drwxrwxr-x   2 lizec lizec 4.0K 3月  26 19:24 scaffolds/
+-rwxrwxr-x   1 lizec lizec  496 3月  26 19:24 service.sh*
+drwxrwxr-x  11 lizec lizec 4.0K 3月  26 19:24 source/
+drwxrwxr-x   3 lizec lizec 4.0K 3月  26 19:24 themes/
 ```
 
-### 判断文件和目录是否存在
+第一列表示文件权限，可以分为四个部分，其中第一部分包含一个字母，之后的三个部分每个部分包含3个字母。第一个字母表示文件的类型，`d`表示文件夹，`-`表示普通文件。后续的三个部分分别表示此文件的用户，同组的用户以及其他用于对该文件的权限。
 
-``` bash
-#如果文件夹不存在, 创建文件夹
-if [ ! -d "/myfolder" ]; then
-  mkdir /myfolder
-fi
+第二列表示链接数量。对于文件夹表示其中的一级子目录的数量，对于文件表示链接的数量。
 
-# -x 参数判断 $folder 是否存在并且是否具有可执行权限
-if [ ! -x "$folder"]; then
-  mkdir "$folder"
-fi
+后续几列分别表示文件的所有者，所有者所在的组，文件的大小，修改时间以及相应的文件名。
 
-# -d 参数判断 $folder 是否存在
-if [ ! -d "$folder"]; then
-  mkdir "$folder"
-fi
+- [ls -l 每一列的含义](https://blog.csdn.net/sinat_36219858/article/details/83721448)
 
-# -f 参数判断 $file 是否存在
-if [ ! -f "$file" ]; then
-  touch "$file"
-fi
-```
 
-- [shell bash判断文件或文件夹是否存在](https://www.cnblogs.com/emanlee/p/3583769.html)
+
+
 
 
 函数
@@ -266,6 +257,50 @@ export PATH=$PATH:/home/lizec/.local/bin
 但这一指令只会对当前终端生效, 如果需要持久生效, 可以将这一指令写入`~/.bashrc`文件. 更多配置可以查看下面的链接
 
 - [【Ubuntu】Ubuntu设置和查看环境变量](https://blog.csdn.net/White_Idiot/article/details/78253004)
+
+
+
+
+Shell常用判断语句
+------------------
+
+### 判断变量是否为空
+
+```bash
+para1=  
+if [ ! $para1 ]; then  
+  echo "IS NULL"  
+else  
+  echo "NOT NULL"  
+fi 
+```
+
+### 判断文件和目录是否存在
+
+``` bash
+#如果文件夹不存在, 创建文件夹
+if [ ! -d "/myfolder" ]; then
+  mkdir /myfolder
+fi
+
+# -x 参数判断 $folder 是否存在并且是否具有可执行权限
+if [ ! -x "$folder"]; then
+  mkdir "$folder"
+fi
+
+# -d 参数判断 $folder 是否存在
+if [ ! -d "$folder"]; then
+  mkdir "$folder"
+fi
+
+# -f 参数判断 $file 是否存在
+if [ ! -f "$file" ]; then
+  touch "$file"
+fi
+```
+
+- [shell bash判断文件或文件夹是否存在](https://www.cnblogs.com/emanlee/p/3583769.html)
+
 
 
 Shell其他常见功能

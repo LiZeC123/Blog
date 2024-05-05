@@ -50,3 +50,24 @@ ScriptEngine engine = manager.getEngineByName("nashorn");
 Object result = engine.eval("'Hello World'.length");
 System.out.println(result);
 ```
+
+
+
+检测线程死锁
+---------------
+
+其实正常写代码的情况下比较少出现死锁，但如果怀疑程序中出现死锁问题，可以使用JDK自带的工具进行检测
+
+1. 使用jstack查看堆栈信息，可以看到线程持有的锁的情况，从而分析死锁问题
+2. 使用visualVM，直接点击检测死锁按钮，也能分析死锁情况
+
+如果代码中出现死锁，可以从如下的角度考虑解决
+
+1. 统一加锁顺序
+2. 设置请求锁超时时间
+3. 响应中断
+4. 使用无锁编程
+
+
+- [Java中的死锁原理、检测以及解决方法](https://blog.csdn.net/weixin_43767015/article/details/104710979)
+

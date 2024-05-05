@@ -10,7 +10,9 @@ cover_picture: images/web.jpg
 ---
 
 
-由于已经学习过Java和Python等编程语言, 因此本文不是一个面向初学者的笔记. 在笔记中往往只会记录js特有的语言特性, 而与大部分语言相同的共性内容会直接忽略.
+由于已经学习过Java和Python等编程语言, 因此本文不是一个面向初学者的笔记. 在笔记中往往只会记录JavaScript特有的语言特性, 而与大部分语言相同的共性内容会直接忽略. 由于并未将JavaScript作为开发语言, 因此本文将直接以ES6标准为基础介绍JavaScript的相关特性.
+
+ES6是JavaScript语言的一种规范定义, 可以类似的理解为类似`Java 8`的语言版本. 该标准于2015年推出, 因此有时候也使用`ECMAScript 2015` 指代. 目前主流浏览器都逐渐支持了ES6的大部分特性, 因此本文不会特意区分那些特性属于ES6.
 
 
 基础知识
@@ -311,6 +313,77 @@ async function m() {
 上述代码相当于以同步的方式执行了一个异步操作, 从而在进行多次异步操作时不用再层层嵌套回调函数.
 
 
+Node.js生态简介
+----------------
+
+Node.js是一个基于Chrome V8引擎的JavaScript运行时环境, 用于在服务器端运行JavaScript代码. 它允许开发者使用JavaScript来编写服务器端应用程序, 从而实现前后端代码的统一性.
+
+由于Node.js本质上就是一个JavaScript的解释器, 因此其天然支持JavaScript的所有特性. 并且Node.js还提供了诸如操作文件系统等必要的API, 使得JavaScript能够实现后端的功能. 
+
+### NPM常用指令
+
+npm（Node Package Manager）是Node.js的包管理工具，用于安装、管理和发布Node.js模块。它是Node.js的核心组件之一，提供了一个巨大的开源模块生态系统，使开发者能够轻松地引入、更新和共享代码。
+
+下面是npm的一些常用指令：
+
+1. `npm init`：在当前目录下初始化一个新的npm项目，并创建一个`package.json`文件，其中包含项目的元数据和依赖管理信息。
+
+2. `npm install`：安装项目所需的依赖包。可以使用`npm install <package-name>`安装特定的包，也可以在`package.json`中指定依赖并运行`npm install`来安装所有依赖。
+
+3. `npm uninstall`：卸载已安装的包。使用`npm uninstall <package-name>`来卸载特定的包。
+
+4. `npm update`：更新已安装的包到最新版本。
+
+5. `npm search`：搜索npm仓库中的包。使用`npm search <package-name>`来搜索特定的包。
+
+6. `npm publish`：将自己的包发布到npm仓库，使其他人可以使用和安装。
+
+7. `npm run`：运行在`package.json`中定义的脚本命令。例如，可以使用`npm run start`来运行项目的启动脚本。
+
+8. `npm list`：显示当前项目的依赖树。可以使用`npm list --depth <depth-level>`来指定显示的深度级别。
+
+9. `npm outdated`：检查已安装的包是否过时，显示当前版本和最新版本之间的差异。
+
+
+### package.json
+
+package.json是Node.js项目中的一个重要文件, 用于记录项目的基本信息, 从而为Node.js项目提供标准的管理模式. 一个典型的package.json文件如下所示
+
+```json
+{
+  "name": "my-project",
+  "version": "1.0.0",
+  "description": "My Node.js project",
+  "author": "John Doe",
+  "license": "MIT",
+  "dependencies": {
+    "package1": "^1.0.0",
+    "package2": "~2.3.1"
+  },
+  "devDependencies": {
+    "package3": "^3.0.0",
+    "package4": "~4.1.2"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "test": "mocha tests"
+  }
+}
+```
+
+dependencies 和 devDependencies 字段用于管理项目所依赖的包.通过在这些字段中列出所需的包及其版本号, npm可以根据这些信息自动下载和安装这些依赖包, 确保项目能够正常运行. dependencies字段通常用于指定项目运行时所需的依赖. devDependencies 字段用于指定开发过程中所需的依赖.
+
+scripts 字段允许开发者定义一系列脚本命令, 用于执行项目中的各种任务. 这些脚本命令可以通过`npm run <script-name>`来运行.
+
+### 依赖管理
+
+对于一个给定的版本号`x.y.z`, `^`表示可以更新`y`和`z`到最新版, `~`表示可以更新`z`到最新版.
+
+可执行`npm outdated`指令查看有哪些依赖可以升级, 之后执行`npm update`指令可将展示的依赖全部升级.
+
+该升级行为仅升级小版本, 而不会升级大版本. 如果存在大版本变更, 需要手动执行`npm install`指令.
+
+> [如何更新 NPM 依赖](https://www.freecodecamp.org/chinese/news/how-to-update-npm-dependencies/)
 
 
 

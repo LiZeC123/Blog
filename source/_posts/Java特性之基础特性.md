@@ -341,3 +341,47 @@ public interface Person {
 1. 类中的方法优先级最高, 类或父类中声明的方法的优先级高于任何声明为默认方法的优先级
 2. 子接口优先级更高, 函数签名相同时, 优先选择最具体的实现的默认方法
 3. 若以上两条规则均无法判定, 则类中需要显式的指定调用哪一个方法
+
+
+
+安全管理器
+--------------
+
+如果阅读JDK中的代码，会发现很多地方都会出现类似的代码
+```java
+SecurityManager sec = System.getSecurityManager();
+if (sec != null) {
+    sec.checkPermission(SET_LOG_PERMISSION);
+}
+```
+
+其中SecurityManager是Java内置的安全管理器，其主要功能是对一些需要权限的操作进行检查。如果有过Android开发经历，那么对于这种权限系统肯定不会陌生。
+
+但由于目前的Java生态已经和当年的模式有很大的区别，所以现在已经很少使用此功能了。见到这部分代码直接忽略即可。
+
+- [The Java Security Manager](https://www.jianshu.com/p/54339e09ef35)
+- [java安全管理器SecurityManager介绍](https://blog.csdn.net/shadow_zed/article/details/106614452)
+
+
+
+
+SPI机制
+---------------
+
+SPI机制即Service Provider Interface, 是服务提供方根据现有接口提供服务实现的一种机制. 典型应用是JDBC驱动, 即无论具体使用哪一种数据库, 客户端代码都只使用JDBC的接口进行交互, 而各个数据库厂商根据接口提供相应的驱动实现类.
+
+例如在`mysql-connector-java-8.0.15.jar`包中的META-INF文件夹下有一个`services/java.sql.Driver`文件，其中指定了一个类名`com.mysql.cj.jdbc.Driver`，而这个类实际上实现的就是将自己注册到DriverManager的功能。通过Java的SPI机制即可实现客户端不使用任何操作的情况下添加新的Drive实现的目的
+
+SPI提供了一种运行时加载具体实现类的方式. 本质上来说就是根据JAR包中提供的类名, 在运行时动态的加载指定的实现类. 因此这一套逻辑完全可以自己用代码实现，Java只是提供了一组封装好的接口而已.
+
+- [JDBC驱动加载机制详解以及spi机制](https://blog.csdn.net/qq_38712932/article/details/82987865)
+
+
+
+JDK新版特性
+-----------------------
+
+- [Java 9 新特性概述](https://www.ibm.com/developerworks/cn/java/the-new-features-of-Java-9/index.html)
+- [Java 10 新特性介绍](https://www.ibm.com/developerworks/cn/java/the-new-features-of-Java-10/index.html)
+- [Java 11 新特性介绍](https://www.ibm.com/developerworks/cn/java/the-new-features-of-Java-11/index.html)
+
