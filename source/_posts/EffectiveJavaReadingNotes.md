@@ -17,7 +17,7 @@ I am not sure what will be written in the note, but there are two reason for me 
 
 ~~Therefor, this article's grammar may not be fully correct. I will try my best to ensure the expression of this note is correct and clear.~~
 
-然而事实证明, 想要一步完成阅读和笔记是不可能的, 勉强完成也没有效率的. 由于目前的英语水平还没有达到流畅表达的地步, 因此强行使用英文只会变成抄写摘要. 所以, 在之后的内容中, 我考虑按照两个步骤完成这篇文章. 第一阶段, 使用中文总结每个部分的主要内容. 第二阶段, 将中文表述转换为英文.
+然而事实证明, 想要一步完成阅读和笔记是不可能的, 勉强完成也没有效率的. 由于目前的英语水平还没有达到流畅表达的地步, 因此强行使用英文只会变成抄写摘要. 所以, 在之后的内容中, 我考虑按照两个步骤完成这篇文章. 第一阶段, 使用中文总结每个部分的主要内容. ~~第二阶段, 将中文表述转换为英文.~~ 咱就是说中国人不难为中国人了, 用英文写并没有什么意义呢. 能看懂英文就行了, 真要用英文交流不还有翻译软件呢.
 
 
 
