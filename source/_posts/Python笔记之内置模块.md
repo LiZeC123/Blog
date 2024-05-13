@@ -273,7 +273,7 @@ precision       ::= digit+
 type            ::= "b" | "c" | "d" | "e" | "E" | "f" | "F" | "g" | "G" | "n" | "o" | "s" | "x" | "X" | "%"
 ```
 
-总体来说, 这部分的语法与其他位置使用的格式化语法差别不大, 其中`align`部分的四个符号分别表示左对齐, 右对齐, 强制在付好后填充和居中. `type`部分表示数据的显示类型, 根据其缩写, 分别表示二进制,字符, 货币类型, 八进制, 十六进制以及字符串等. 
+总体来说, 这部分的语法与其他位置使用的格式化语法差别不大, 其中`align`部分的四个符号分别表示左对齐, 右对齐, 强制在符号后填充和居中. `type`部分表示数据的显示类型, 根据其缩写, 分别表示二进制,字符, 货币类型, 八进制, 十六进制以及字符串等. 
 
 > 使用 help('FORMATTING') 查看内置文档
 
@@ -356,6 +356,7 @@ z
 
 ### 展开嵌套集合
 
+```py
 from collections import Iterable
 
 def flatten(items, ignore_types=(str, bytes)):
@@ -364,7 +365,7 @@ def flatten(items, ignore_types=(str, bytes)):
             yield from flatten(x)
         else:
             yield x
-
+```
 
 yield from 是python协程中的用法, 表示将一个可迭代对象逐元素的yield输出
 
