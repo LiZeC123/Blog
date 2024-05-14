@@ -498,7 +498,7 @@ services:
     command: start.sh jupyter lab
 ```
 
-如果希望内置的用户`jovyan`具有不需要密码的root权限, 则必须配置`user: root`和`GRANT_SUDO: 'yes'`. 通常情况下, 在此镜像内安装新的Python包并不需要root权限, 获取root权限主要是为了使用`apt`工具按照其他的依赖.
+如果希望内置的用户`jovyan`具有不需要密码的root权限, 则必须配置`user: root`和`GRANT_SUDO: 'yes'`. 通常情况下, 在此镜像内安装新的Python包并不需要root权限, 获取root权限主要是为了使用`apt`工具安装其他的依赖.
 
 
 - [Jupyter Docker Stacks](https://github.com/jupyter/docker-stacks)
