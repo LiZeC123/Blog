@@ -4,6 +4,7 @@ date: 2020-08-10 12:06:34
 categories: 
 tags:
     - 操作系统
+    - 汇编语言
 cover_picture: images/CSAPP.jpg
 ---
 
@@ -110,7 +111,7 @@ popq  D | 将栈中数据弹入指定寄存器
 算数指令
 ------------
 
-大部分指令在加上后缀后都有四个版本, 例如addb, addw, addl和addq. 后缀含义都是一致的, 因此下面使用大写表示指令不包含后缀的部分
+大部分指令在加上后缀后都有四个版本, 例如`addb`, `addw`, `addl`和`addq`. 后缀含义都是一致的, 因此下面使用大写表示指令不包含后缀的部分
 
 指令    | 含义
 --------|----------------------
@@ -122,7 +123,7 @@ XOR/OR/AND | 异或/或/与 操作
 SAL/SHL     | 算数左移 / 逻辑左移
 SAR / SHR   | 算数右移 / 逻辑右移
 
-> SHR -> SHift Right  SAR -> Shift Arithmetic Right
+> `SHR -> SHift Right`  `SAR -> Shift Arithmetic Right`
 
 `leaq`指令表示加载变量的地址, 第一个操作数是一个内存位置, `leaq`指令将该内存位置的地址写入第二个参数.
 
@@ -153,6 +154,8 @@ long scale(long x, long y, long z) {
 
 CPU维护如下的一些条件码, 这些条件码均指示最近一次操作的一些特征, 具体如下
 
+名称| 含义      | 效果
+----|----------|------------------
 CF  | 进位标志  | 是否产生进位
 ZF  | 零标志    | 是否产生0
 SF  | 符号标志  | 是否产生负数
