@@ -824,7 +824,34 @@ int dictRehash(dict *d, int n) {
 ### 添加数据
 
 
+整数集合
+---------
 
+整数集合`intset`底层实际就是一个按照大小排序的数组, 当Redis集合中的数据全部是小于64位的整数并且数量较少时使用此数据结构. `intset`结构非常简单, 其定义如下
+
+```c
+typedef struct intset {
+    uint32_t encoding;
+    uint32_t length;
+    int8_t contents[];
+} intset;
+```
+
+其中`encoding`用于表示每个元素的类型, 例如int16, int32或者int64. `length`存储元素的数量, `contents`存储具体的数据. 
+
+由于不同类型的整数本质上只有长度不同, 因此`intset`的实现非常的普通. 在插入数据时, `intset`使用二分法判断是否存在对应的数据, 从而避免元素重复. 如果插入的数据大于当前的表示范围(例如当前按照int16存储, 插入了int32的数据), 则对`intset`进行扩容, 每个元素的长度翻倍.
+
+
+快速列表
+----------
+
+
+快速列表`quicklist`可以视为将`ziplist`作为元素的双向链表
+
+![quicklist结构示意图](/images/redis/quicklist.jpeg)
+
+
+从上图可以看到, `quicklist`的数据结构非常适合存储大量数据并实现列表结构. 当列表以队列模式使用时, 该结构的操作非常高效. 为了进一步节省内存, `quicklist`还支持对中间的元素进行压缩(同时作为代价, 删除中间的元素的成本很大).
 
 
 补充说明:C语言特性说明
@@ -859,6 +886,27 @@ union 标志符{
 
 ### 位域
 
+位域（Bit Fields）是一种允许程序在结构体或联合体中定义比特级别的字段的数据结构. 其定义方式为
+
+```
+struct 位域结构名 {
+    数据类型 位域名 : 比特数;
+    ...
+};
+```
+
+例如对于如下的定义
+
+
+```c
+struct BitFieldExample {
+    unsigned int a : 3;  // a占3位
+    unsigned int b : 5;  // b占5位
+    unsigned int c : 10; // c占10位
+};
+```
+
+3个字段实际只使用18个bit, 编译器将其连续的存储并在读写时完成对应的转换.
 
 
 补充说明:常见宏效果说明
