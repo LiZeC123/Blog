@@ -851,7 +851,70 @@ typedef struct intset {
 ![quicklist结构示意图](/images/redis/quicklist.jpeg)
 
 
-从上图可以看到, `quicklist`的数据结构非常适合存储大量数据并实现列表结构. 当列表以队列模式使用时, 该结构的操作非常高效. 为了进一步节省内存, `quicklist`还支持对中间的元素进行压缩(同时作为代价, 删除中间的元素的成本很大).
+从上图可以看到, `quicklist`的数据结构非常适合存储大量数据并实现列表结构. 在Redis中列表通常按照队列模式使用, 仅可再头尾添加或删除元素, 因此为了进一步节省内存, `quicklist`还支持对中间的元素进行压缩.
+
+
+### 数据结构
+
+```c
+/* quicklist is a 40 byte struct (on 64-bit systems) describing a quicklist.
+ * 'count' is the number of total entries.
+ * 'len' is the number of quicklist nodes.
+ * 'compress' is: 0 if compression disabled, otherwise it's the number
+ *                of quicklistNodes to leave uncompressed at ends of quicklist.
+ * 'fill' is the user-requested (or default) fill factor.
+ * 'bookmarks are an optional feature that is used by realloc this struct,
+ *      so that they don't consume memory when not used. */
+typedef struct quicklist {
+    quicklistNode *head;
+    quicklistNode *tail;
+    unsigned long count;        /* total count of all entries in all listpacks */
+    unsigned long len;          /* number of quicklistNodes */
+    signed int fill : QL_FILL_BITS;       /* fill factor for individual nodes */
+    unsigned int compress : QL_COMP_BITS; /* depth of end nodes not to compress;0=off */
+    unsigned int bookmark_count: QL_BM_BITS;
+    quicklistBookmark bookmarks[];
+} quicklist;
+```
+
+`quicklist`结构定义如上所示, 其中`fill`为正数时表示表示每个`ziplist`的最大元素个数, 为负数时, 按照取值表示最大的长度(单位为字节). `compress`表示两端不压缩的节点数量, 例如取值为1则左右各1个`ziplist`不压缩.
+
+
+```c
+/* quicklistNode is a 32 byte struct describing a listpack for a quicklist.
+ * We use bit fields keep the quicklistNode at 32 bytes.
+ * count: 16 bits, max 65536 (max lp bytes is 65k, so max count actually < 32k).
+ * encoding: 2 bits, RAW=1, LZF=2.
+ * container: 2 bits, PLAIN=1 (a single item as char array), PACKED=2 (listpack with multiple items).
+ * recompress: 1 bit, bool, true if node is temporary decompressed for usage.
+ * attempted_compress: 1 bit, boolean, used for verifying during testing.
+ * dont_compress: 1 bit, boolean, used for preventing compression of entry.
+ * extra: 9 bits, free for future use; pads out the remainder of 32 bits */
+typedef struct quicklistNode {
+    struct quicklistNode *prev;
+    struct quicklistNode *next;
+    unsigned char *entry;
+    size_t sz;             /* entry size in bytes */
+    unsigned int count : 16;     /* count of items in listpack */
+    unsigned int encoding : 2;   /* RAW==1 or LZF==2 */
+    unsigned int container : 2;  /* PLAIN==1 or PACKED==2 */
+    unsigned int recompress : 1; /* was this node previous compressed? */
+    unsigned int attempted_compress : 1; /* node can't compress; too small */
+    unsigned int dont_compress : 1; /* prevent compression of entry that will be used later */
+    unsigned int extra : 9; /* more bits to steal for future usage */
+} quicklistNode;
+```
+
+其中`encoding`表示编码类型, 可选默认编码或者LZF压缩编码. `container`表示存储类型, 默认情况下使用`ziplist`存储数据(即PACKED), 但如果需要存储的元素体积较大, 则会直接存储该元素(即PLAIN). `recompress`表示该节点是否被压缩, 如果已经被压缩则修改前需要解压, 修改后需要压缩.
+
+
+### 数据压缩
+
+
+
+
+
+
 
 
 补充说明:C语言特性说明
