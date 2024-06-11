@@ -10,7 +10,7 @@ cover_picture: images/redis.jpg
 
 Redis是一个C语言实现的高性能内存数据库, 在日常的业务开发过程中, Redis占据重要的地位. 因此阅读和学习Redis源代码有助于理解Redis的具体实现原理, 从而更好的将其运用到业务开发过程之中.
 
-同时Redis源码本身由C语言实现, 因此并不包含复杂的语言特性, 相对较为容易阅读. 阅读这些代码也可以学习如何写出简洁的代码.
+同时Redis源码本身由C语言实现, 因此并不包含复杂的语言特性, 相对较为容易阅读. 阅读这些代码也可以学习如何写出简洁的代码. 本文主要介绍Redis中使用的数据结构, 理解这些数据结构的功能与实现是阅读后续的高层次代码的基础.
 
 
 
@@ -846,7 +846,7 @@ typedef struct intset {
 ----------
 
 
-快速列表`quicklist`可以视为将`ziplist`作为元素的双向链表
+快速列表`quicklist`可以视为将`listpack`作为元素的双向链表. `listpack`与`ziplist`类似, 是一种顺序存储数据的结构, 但其中的元素不要求按照顺序排列.
 
 ![quicklist结构示意图](/images/redis/quicklist.jpeg)
 
@@ -952,7 +952,7 @@ REDIS_STATIC int __quicklistCompressNode(quicklistNode *node) {
 
 最后通过`zrealloc`回收多余的空间, 由于压缩后体积缩小, 所以这里必然是一个减少分配空间的操作.
 
-### 添加数据
+### 添加与删除数据
 
 ```c
 /* Add new entry to head node of quicklist.
@@ -976,6 +976,7 @@ int quicklistPushHead(quicklist *quicklist, void *value, size_t sz) {
     } else {
         // 否则创建一个新节点
         quicklistNode *node = quicklistCreateNode();
+        // lpPrepend 在底层的listpack的头部插入数据
         node->entry = lpPrepend(lpNew(0), value, sz);
 
         quicklistNodeUpdateSz(node);
@@ -988,8 +989,80 @@ int quicklistPushHead(quicklist *quicklist, void *value, size_t sz) {
 
 ```
 
-`lpPrepend`表示在底层的listpack的头部添加数据.
+删除操作与插入操作类似, 先删除底层listpack的数据, 如果一个节点中不包含任何数据了, 则删除对应的节点.
 
+### 替换数据
+
+```c
+/* Replace quicklist entry by 'data' with length 'sz'. */
+void quicklistReplaceEntry(quicklistIter *iter, quicklistEntry *entry,
+                           void *data, size_t sz)
+{
+    quicklist* quicklist = iter->quicklist;
+    quicklistNode *node = entry->node;
+    unsigned char *newentry;
+
+    if (likely(!QL_NODE_IS_PLAIN(entry->node) && !isLargeElement(sz, quicklist->fill) &&
+        (newentry = lpReplace(entry->node->entry, &entry->zi, data, sz)) != NULL))
+    {
+        // 如果是一个普通节点并且插入的数据也是普通数据, 则可以直接替换
+        entry->node->entry = newentry;
+        quicklistNodeUpdateSz(entry->node);
+        /* quicklistNext() and quicklistGetIteratorEntryAtIdx() provide an uncompressed node */
+        quicklistCompress(quicklist, entry->node);
+    } else if (QL_NODE_IS_PLAIN(entry->node)) {
+        if (isLargeElement(sz, quicklist->fill)) {
+            // 如果原节点是平坦节点, 新数据也是平坦数据, 则直接替换
+            zfree(entry->node->entry);
+            entry->node->entry = zmalloc(sz);
+            entry->node->sz = sz;
+            memcpy(entry->node->entry, data, sz);
+            quicklistCompress(quicklist, entry->node);
+        } else {
+            // 否则删除就节点, 插入新数据
+            quicklistInsertAfter(iter, entry, data, sz);
+            __quicklistDelNode(quicklist, entry->node);
+        }
+    } else { /* The node is full or data is a large element */
+        // 如果节点已经满了, 或者要插入一个大体积的数据, 则分裂当前节点
+        quicklistNode *split_node = NULL, *new_node;
+        node->dont_compress = 1; /* Prevent compression in __quicklistInsertNode() */
+
+        /* If the entry is not at the tail, split the node at the entry's offset. */
+        if (entry->offset != node->count - 1 && entry->offset != -1)
+            split_node = _quicklistSplitNode(node, entry->offset, 1);
+
+        /* Create a new node and insert it after the original node.
+         * If the original node was split, insert the split node after the new node. */
+        new_node = __quicklistCreateNode(isLargeElement(sz, quicklist->fill) ?
+            QUICKLIST_NODE_CONTAINER_PLAIN : QUICKLIST_NODE_CONTAINER_PACKED, data, sz);
+        __quicklistInsertNode(quicklist, node, new_node, 1);
+        if (split_node) __quicklistInsertNode(quicklist, new_node, split_node, 1);
+        quicklist->count++;
+
+        /* Delete the replaced element. */
+        if (entry->node->count == 1) {
+            __quicklistDelNode(quicklist, entry->node);
+        } else {
+            unsigned char *p = lpSeek(entry->node->entry, -1);
+            quicklistDelIndex(quicklist, entry->node, &p);
+            entry->node->dont_compress = 0; /* Re-enable compression */
+            new_node = _quicklistMergeNodes(quicklist, new_node);
+            /* We can't know if the current node and its sibling nodes are correctly compressed,
+             * and we don't know if they are within the range of compress depth, so we need to
+             * use quicklistCompress() for compression, which checks if node is within compress
+             * depth before compressing. */
+            quicklistCompress(quicklist, new_node);
+            quicklistCompress(quicklist, new_node->prev);
+            if (new_node->next) quicklistCompress(quicklist, new_node->next);
+        }
+    }
+
+    /* In any case, we reset iterator to forbid use of iterator after insert.
+     * Notice: iter->current has been compressed above. */
+    resetIterator(iter);
+}
+```
 
 
 
