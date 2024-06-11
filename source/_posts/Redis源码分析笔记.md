@@ -911,8 +911,84 @@ typedef struct quicklistNode {
 ### 数据压缩
 
 
+```c
+/* Compress the listpack in 'node' and update encoding details.
+ * Returns 1 if listpack compressed successfully.
+ * Returns 0 if compression failed or if listpack too small to compress. */
+REDIS_STATIC int __quicklistCompressNode(quicklistNode *node) {
+#ifdef REDIS_TEST
+    node->attempted_compress = 1;
+#endif
+    if (node->dont_compress) return 0;
 
+    /* validate that the node is neither
+     * tail nor head (it has prev and next)*/
+    assert(node->prev && node->next);
 
+    node->recompress = 0;
+    /* Don't bother compressing small values */
+    if (node->sz < MIN_COMPRESS_BYTES)
+        return 0;
+
+    quicklistLZF *lzf = zmalloc(sizeof(*lzf) + node->sz);
+
+    /* Cancel if compression fails or doesn't compress small enough */
+    if (((lzf->sz = lzf_compress(node->entry, node->sz, lzf->compressed,
+                                 node->sz)) == 0) ||
+        lzf->sz + MIN_COMPRESS_IMPROVE >= node->sz) {
+        /* lzf_compress aborts/rejects compression if value not compressible. */
+        zfree(lzf);
+        return 0;
+    }
+    lzf = zrealloc(lzf, sizeof(*lzf) + lzf->sz);
+    zfree(node->entry);
+    node->entry = (unsigned char *)lzf;
+    node->encoding = QUICKLIST_NODE_ENCODING_LZF;
+    return 1;
+}
+```
+
+以上函数将一个Node节点进行压缩. 首先分配了`quicklistLZF`的空间, 此时的大小等于该结构体的头部加上原始数据的大小. 之后调用`lzf_compress`进行压缩. 如果压缩过程出现错误或者压缩后体积大于原本的体积, 则该函数返回0, 否则返回压缩后的大小.
+
+最后通过`zrealloc`回收多余的空间, 由于压缩后体积缩小, 所以这里必然是一个减少分配空间的操作.
+
+### 添加数据
+
+```c
+/* Add new entry to head node of quicklist.
+ *
+ * Returns 0 if used existing head.
+ * Returns 1 if new head created. */
+int quicklistPushHead(quicklist *quicklist, void *value, size_t sz) {
+    quicklistNode *orig_head = quicklist->head;
+    
+    // 是否为大体积的元素, 是则直接添加该元素
+    if (unlikely(isLargeElement(sz, quicklist->fill))) {
+        __quicklistInsertPlainNode(quicklist, quicklist->head, value, sz, 0);
+        return 1;
+    }
+
+    // 否则判断当前头部的listpack是否可以继续添加元素, 是则加入
+    if (likely(
+            _quicklistNodeAllowInsert(quicklist->head, quicklist->fill, sz))) {
+        quicklist->head->entry = lpPrepend(quicklist->head->entry, value, sz);
+        quicklistNodeUpdateSz(quicklist->head);
+    } else {
+        // 否则创建一个新节点
+        quicklistNode *node = quicklistCreateNode();
+        node->entry = lpPrepend(lpNew(0), value, sz);
+
+        quicklistNodeUpdateSz(node);
+        _quicklistInsertNodeBefore(quicklist, quicklist->head, node);
+    }
+    quicklist->count++;
+    quicklist->head->count++;
+    return (orig_head != quicklist->head);
+}
+
+```
+
+`lpPrepend`表示在底层的listpack的头部添加数据.
 
 
 
