@@ -1,5 +1,5 @@
 ---
-title: Redis源码分析笔记
+title: Redis源码分析笔记之数据结构
 math: false
 date: 2024-03-22 22:54:02
 categories: Redis笔记
