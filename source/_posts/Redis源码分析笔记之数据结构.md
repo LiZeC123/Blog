@@ -868,7 +868,7 @@ dictEntry *dictAddRaw(dict *d, void *key, dictEntry **existing)
 }
 ```
 
-查找插入点的代码逻辑并不复杂, 找到对应的table的位置即可, 并不需要处理链表的内容. 其中包含一些扩容和渐进式Rehash的内容.
+查找插入点的代码逻辑并不复杂, 找到对应的bucket的位置即可, 并不需要处理链表的内容. 但由于需要支持渐进式Rehash, 因此在查找过程中还需要顺便完成节点迁移的工作.
 
 ```c
 /* Finds and returns the position within the dict where the provided key should
@@ -921,6 +921,7 @@ void *dictFindPositionForInsert(dict *d, const void *key, dictEntry **existing) 
 }
 ```
 
+找到对应的bucket后, 插入操作比较直接, 分配内存后插入即可.
 
 ```c
 /* Adds a key in the dict's hashtable at the position returned by a preceding
@@ -1207,6 +1208,23 @@ void quicklistReplaceEntry(quicklistIter *iter, quicklistEntry *entry,
     resetIterator(iter);
 }
 ```
+
+
+Redis数据结构与底层数据结构的关系
+-----------------------------
+
+
+底层数据结构        |  可存储的Redis数据结构
+------------------|-----------------------
+简单动态字符串      | 字符串
+跳跃表              | 有序集合
+字典                | 集合 散列表 有序集合
+压缩表              | 散列表 有序集合
+整数集合            | 集合
+快速列表            | 列表
+流                  | 流
+
+除了以上涉及的5种数据结构(字符串, 列表, 集合, 散列表, 有序集合)以外, Redis还对外提供了位图(BitMap)和地址位置(Geo), 有关这两种数据结构的相关内容在后续补充.
 
 
 
