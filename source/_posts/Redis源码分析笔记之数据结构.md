@@ -714,6 +714,9 @@ int _dictResize(dict *d, unsigned long size, int* malloc_failed)
 
 ### Rehash操作
 
+
+Redis的Rehash操作具有一个不同于一般哈希表的实现, 可以把这种特性称之为渐进式Rehash. 即需要进行Rehash操作时, 并不是一次性完成所有数据的迁移, 而是将该操作分散到各个操作之中, 使得迁移数据的耗时分散开.
+
 ```c
 /* Helper function for `dictRehash` and `dictBucketRehash` which rehashes all the keys
  * in a bucket at index `idx` from the old to the new hash HT. */
@@ -821,7 +824,148 @@ int dictRehash(dict *d, int n) {
 }
 ```
 
+
+作为渐进式Rehash的一部分, `_dictBucketRehash`在插入数据时调用, 在满足一些条件时执行一次迁移数据操作
+
+```c
+/* Performs rehashing on a single bucket. */
+int _dictBucketRehash(dict *d, uint64_t idx) {
+    if (d->pauserehash != 0) return 0;
+    unsigned long s0 = DICTHT_SIZE(d->ht_size_exp[0]);
+    unsigned long s1 = DICTHT_SIZE(d->ht_size_exp[1]);
+    if (dict_can_resize == DICT_RESIZE_FORBID || !dictIsRehashing(d)) return 0;
+    /* If dict_can_resize is DICT_RESIZE_AVOID, we want to avoid rehashing. 
+     * - If expanding, the threshold is dict_force_resize_ratio which is 4.
+     * - If shrinking, the threshold is 1 / (HASHTABLE_MIN_FILL * dict_force_resize_ratio) which is 1/32. */
+    if (dict_can_resize == DICT_RESIZE_AVOID && 
+        ((s1 > s0 && s1 < dict_force_resize_ratio * s0) ||
+         (s1 < s0 && s0 < HASHTABLE_MIN_FILL * dict_force_resize_ratio * s1)))
+    {
+        return 0;
+    }
+    rehashEntriesInBucketAtIndex(d, idx);
+    dictCheckRehashingCompleted(d);
+    return 1;
+}
+```
+
 ### 添加数据
+
+添加数据的扩充可以概括为先找到要插入数据的位置, 然后在该位置插入数据
+
+
+```c
+dictEntry *dictAddRaw(dict *d, void *key, dictEntry **existing)
+{
+    /* Get the position for the new key or NULL if the key already exists. */
+    void *position = dictFindPositionForInsert(d, key, existing);
+    if (!position) return NULL;
+
+    /* Dup the key if necessary. */
+    if (d->type->keyDup) key = d->type->keyDup(d, key);
+
+    return dictInsertAtPosition(d, key, position);
+}
+```
+
+查找插入点的代码逻辑并不复杂, 找到对应的table的位置即可, 并不需要处理链表的内容. 其中包含一些扩容和渐进式Rehash的内容.
+
+```c
+/* Finds and returns the position within the dict where the provided key should
+ * be inserted using dictInsertAtPosition if the key does not already exist in
+ * the dict. If the key exists in the dict, NULL is returned and the optional
+ * 'existing' entry pointer is populated, if provided. */
+void *dictFindPositionForInsert(dict *d, const void *key, dictEntry **existing) {
+    unsigned long idx, table;
+    dictEntry *he;
+    if (existing) *existing = NULL;
+    uint64_t hash = dictHashKey(d, key);
+    idx = hash & DICTHT_SIZE_MASK(d->ht_size_exp[0]);
+
+    // 如果当前正在Rehash, 则执行一次操作
+    if (dictIsRehashing(d)) {
+        if ((long)idx >= d->rehashidx && d->ht_table[0][idx]) {
+            /* If we have a valid hash entry at `idx` in ht0, we perform
+             * rehash on the bucket at `idx` (being more CPU cache friendly) */
+            _dictBucketRehash(d, idx);
+        } else {
+            /* If the hash entry is not in ht0, we rehash the buckets based
+             * on the rehashidx (not CPU cache friendly). */
+            _dictRehashStep(d);
+        }
+    }
+
+    /* Expand the hash table if needed */
+    // 即计算是否需要扩容
+    _dictExpandIfNeeded(d);
+    for (table = 0; table <= 1; table++) {
+        if (table == 0 && (long)idx < d->rehashidx) continue; 
+        idx = hash & DICTHT_SIZE_MASK(d->ht_size_exp[table]);
+        /* Search if this slot does not already contain the given key */
+        he = d->ht_table[table][idx];
+        while(he) {
+            void *he_key = dictGetKey(he);
+            if (key == he_key || dictCompareKeys(d, key, he_key)) {
+                if (existing) *existing = he;
+                return NULL;
+            }
+            he = dictGetNext(he);
+        }
+        if (!dictIsRehashing(d)) break;
+    }
+
+    /* If we are in the process of rehashing the hash table, the bucket is
+     * always returned in the context of the second (new) hash table. */
+    dictEntry **bucket = &d->ht_table[dictIsRehashing(d) ? 1 : 0][idx];
+    return bucket;
+}
+```
+
+
+```c
+/* Adds a key in the dict's hashtable at the position returned by a preceding
+ * call to dictFindPositionForInsert. This is a low level function which allows
+ * splitting dictAddRaw in two parts. Normally, dictAddRaw or dictAdd should be
+ * used instead. */
+dictEntry *dictInsertAtPosition(dict *d, void *key, void *position) {
+    dictEntry **bucket = position; /* It's a bucket, but the API hides that. */
+    dictEntry *entry;
+    /* If rehashing is ongoing, we insert in table 1, otherwise in table 0.
+     * Assert that the provided bucket is the right table. */
+    int htidx = dictIsRehashing(d) ? 1 : 0;
+    assert(bucket >= &d->ht_table[htidx][0] &&
+           bucket <= &d->ht_table[htidx][DICTHT_SIZE_MASK(d->ht_size_exp[htidx])]);
+    if (d->type->no_value) {
+        if (d->type->keys_are_odd && !*bucket) {
+            /* We can store the key directly in the destination bucket without the
+             * allocated entry.
+             *
+             * TODO: Add a flag 'keys_are_even' and if set, we can use this
+             * optimization for these dicts too. We can set the LSB bit when
+             * stored as a dict entry and clear it again when we need the key
+             * back. */
+            entry = key;
+            assert(entryIsKey(entry));
+        } else {
+            /* Allocate an entry without value. */
+            entry = createEntryNoValue(key, *bucket);
+        }
+    } else {
+        /* Allocate the memory and store the new entry.
+         * Insert the element in top, with the assumption that in a database
+         * system it is more likely that recently added entries are accessed
+         * more frequently. */
+        entry = zmalloc(sizeof(*entry));
+        assert(entryIsNormal(entry)); /* Check alignment of allocation */
+        entry->key = key;
+        entry->next = *bucket;
+    }
+    *bucket = entry;
+    d->ht_used[htidx]++;
+
+    return entry;
+}
+```
 
 
 整数集合
