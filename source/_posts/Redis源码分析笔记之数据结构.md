@@ -1210,7 +1210,7 @@ void quicklistReplaceEntry(quicklistIter *iter, quicklistEntry *entry,
 ```
 
 
-Redis数据结构与底层数据结构的关系
+数据结构的应用
 -----------------------------
 
 
