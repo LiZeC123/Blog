@@ -251,6 +251,20 @@ for k, v := range dict {
 delete(dict, "go") 
 ```
 
+### 零值可用性
+
+不同于切片在任何时候都是零值可用, map数据的零值具有不同的表现, 建议始终使用make函数创建map而不要依赖零值可用性.
+
+
+```go
+var m map[string]string
+fmt.Printf("value is %v", m["123"]) // 零值可查询, 返回对应类型的零值(此处为空字符串)
+m["345"] = "345"                    // panic: assignment to entry in nil map
+fmt.Printf("%v", m == nil)          // true
+```
+
+
+
 
 IP操作
 --------
