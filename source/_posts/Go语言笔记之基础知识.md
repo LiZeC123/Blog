@@ -589,7 +589,8 @@ func main() {
 > 实际上, 这种方式就等价于Java语言中的继承操作. 外面的结构体自动的继承了匿名结构体的成员变量和方法, 
 
 
-### 方法
+结构体方法
+--------------
 
 Go语言中并没有类, 但可以把方法绑定到一个类型上. 例如
 
@@ -618,7 +619,7 @@ func main() {
 
 绑定在值类型上的方法和绑定在指针类型上的方法属于不同的集合. 但用方法时Go会自动转换, 因此无论调用方是值类型还是指针类型都可以直接调用. 
 
-------------------------------------------------------------------------------
+### 绑定已有类型
 
 除了绑定在一个自定义的类似上, 也可以绑定到已有的类型上, 例如
 
@@ -640,6 +641,30 @@ func main() {
 
 > 方法只能绑定在同一个包中的类型上
 
+### 零值方法
+
+Go的方法可以安全的在nil对象上执行, 因此可以使用下面的方式使得任意情况下都可以安全的访问成员变量
+
+```go
+type MyStructWithNil struct {
+	in *MyStructWithNil
+}
+
+func (m *MyStructWithNil) GetA() *MyStructWithNil {
+	// 
+	if m != nil {
+		return m.in
+	}
+	return nil
+}
+
+func TestNilFunction(t *testing.T) {
+	var m *MyStructWithNil
+    
+    // 不会panic
+	fmt.Println(m.GetA().GetA())   
+}
+```
 
 
 接口
@@ -832,3 +857,21 @@ func BenchmarkSplit(b *testing.B) {
 
 - [Go语言基础之单元测试](https://www.liwenzhou.com/posts/Go/unit-test/#autoid-2-5-0)
 - [Go语言圣经 测试](https://gopl-zh.codeyu.com/ch11/ch11.html)
+
+
+### 常用测试指令
+
+```bash
+# 运行当前包下的所有测试, 并显示详细信息
+go test -v
+
+# 以启用缓存的模式运行指定路径下的所有测试, 并显示详细信息
+go test . -v
+
+# 运行当前包下指定名称的测试函数
+go test -run TestFunction
+
+
+# 运行基准测试(默认不会运行基准测试)
+go test -bench .
+```
