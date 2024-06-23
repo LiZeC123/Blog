@@ -1,7 +1,0 @@
-version: '2'
-services:
-  blog:
-    container_name: blog
-    image: ghcr.io/lizec123/blog:latest
-    ports: 
-        - "7080:80"

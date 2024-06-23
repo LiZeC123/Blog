@@ -11,6 +11,25 @@ LiZeC的博客的项目源代码, 访问 https://lizec.top 查看博客.
 
 
 
+部署
+---------
+
+创建`docker-compose.yml`文件, 输入以下内容
+
+```yml
+version: '2'
+services:
+  blog:
+    container_name: blog
+    image: ghcr.io/lizec123/blog:latest
+    ports: 
+        - "7080:80"
+```
+
+从而从Github的镜像服务器拉取博客的镜像, 并启动对应的服务镜像, 并运行在7080端口
+
+
+
 使用模块
 --------
 
