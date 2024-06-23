@@ -17,12 +17,12 @@ jobs:
       packages: write
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Build the Docker image
       run: docker build . --file docker/Dockerfile --tag ghcr.io/lizec123/blog
       
-    - name: Docker Login
-      uses: docker/login-action@v1.10.0
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v3
       with:
         registry: ghcr.io
         username: ${{ github.actor }}
