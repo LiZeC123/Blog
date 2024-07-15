@@ -200,7 +200,6 @@ drwxrwxr-x   3 lizec lizec 4.0K 3月  26 19:24 themes/
 function <funname> () {
     action;
     ...
-    return <int>
 }
 ```
 
@@ -220,6 +219,7 @@ funWithParam(){
 funWithParam 1 2 3 4 5 6 7 8 9 34 73
 ```
 
+Shell中的函数与其他编程语言中的函数概念不同, Shell中的函数更加类似于一段代码块. 因此并不能在Shell的函数中返回结果. 对于需要返回结果的场景, 通常直接使用全局变量.
 
 
 设置可执行权限
