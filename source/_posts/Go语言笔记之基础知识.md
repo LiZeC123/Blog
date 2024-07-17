@@ -875,3 +875,20 @@ go test -run TestFunction
 # 运行基准测试(默认不会运行基准测试)
 go test -bench .
 ```
+
+
+Go语言依赖分析
+---------------
+
+
+通常情况下, 可以在`go.mod`文件中查看项目的依赖情况. 但某些依赖可能属于间接依赖, 无法在`go.mod`文件中找到对应的依赖性. 此时可以使用如下的指令进行查询
+
+```bash
+go mod why <依赖>
+```
+
+如果以上指令返回`main module does not need package`, 则还可以通过如下的指令进行查找
+
+```bash
+go mod graph | grep A
+```
