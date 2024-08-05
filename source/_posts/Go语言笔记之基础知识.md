@@ -799,6 +799,28 @@ func main() {
 type Any interface {}
 ```
 
+### nil接口非nil
+
+由于Go语言中接口实际是一个复合对象, 保存了指向实际数据的指针与类型. 因此将一个有类型的nil指针赋值给interface{}以后, 被赋值的变量并不为nil
+
+```go
+var rsp *Sa = nil
+var i interface{} = rsp
+
+fmt.Printf("i==nil: %v\n", i == nil)              // i==nil: false
+j, ok := i.(*Sa)
+fmt.Printf("ok: %v, j==nil: %v\n", ok, j == nil)  // ok: true, j==nil: true
+```
+
+一般情况下并不会使用`interface{}`类型变量持有一个结构体的指针. 但在下列场景中容易出现该情况, 需要谨慎处理
+
+1. 通用的数据结构, 例如`sync.Map`
+2. 通用框架, 例如数据库框架
+
+在这些场景中, 由于需要通用性, 因此必须使用`interface{}`类型. 而在取回数据时需要进行强制类型转换, 此时尤其需要注意对nil的判断, 不仅需要判断是否转换成功, 还需要进一步判断值是否为nil.
+
+
+
 ### 组合优于继承
 
 Go语言在中并没有提供类似Java的各种继承语法, 因此并不能写出非常具有Java风格的代码. 相反地, Go更偏向于通过组合的方式实现代码复用.
