@@ -370,10 +370,55 @@ type Context interface {
 }
 ```
 
-context通过内嵌父context的方式记录依赖关系, 有点类似Lisp的cons结构. 例如WithDeadline方法在给定的context对象基础上返回新的context, 使得达到截止时间时关闭done通道.
 
-> Context的设计哲学要求Context不可修改, 不可复制. 因此如果需要修改, 仅可通过覆盖的方式实现
+### 创建Context
 
+`context`包提供了两个方法用于创建最初的Context对象. 两种函数的实现是相同的, 仅语义上具有不同, 分别是
+
+```go
+// 创建一个基础的Contex
+context.Background()
+
+// 创建一个现在还未准备好, 将来会替换的Contex
+context.TODO()
+```
+
+
+
+### 派生Context
+
+
+在基础的Context基础上, 提供了如下的4个函数用于扩展
+
+```go
+// 创建一个可撤销操作的Context, 通过调用cancel取消此Context上的操作
+func WithCancel(parent Context) (ctx Context, cancel CancelFunc)
+
+// 创建一个具有Deadline的Context
+func WithDeadline(parent Context, deadline time.Time) (Context, CancelFunc)
+
+// 创建一个具有超时时间的Context
+func WithTimeout(parent Context, timeout time.Duration) (Context, CancelFunc)
+
+// 创建一个具有特定值的Context
+func WithValue(parent Context, key, val interface{}) Context
+```
+
+前面三个函数都是给Context附加一个可取消的操作, 在业务代码中, 通过对Done通道判断来确定是否需要取消
+
+```go
+select {
+    case <- ctx.Done():
+        // Context已经取消了, 这里停止业务逻辑操作
+        return
+    default:
+        // 此时Context还未取消, 可以继续执行业务逻辑
+}
+```
+
+最后一个函数用于给当前Context附加参数. 通过将当前Ctx嵌入到新的Context之中实现数据添加, 有点类似于Lisp的cons结构. 
+
+> Context的设计哲学要求Context不可修改, 不可复制. 因此所有的修改都是通过在原来的Ctx中包裹一层新的Context实现
 
 - [小白也能看懂的context包详解：从入门到精通](https://segmentfault.com/a/1190000040917752)
 

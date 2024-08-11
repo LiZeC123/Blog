@@ -673,6 +673,10 @@ Go语言在标准库`database/sql包中提供了数据库相关的操作. 在`da
 数据库的写入性能最终还是取决于IOPS, 如果50个连接就可以使IOPS达到最大值, 那么新增更多连接也不会使插入速度更快, 过多的连接数还会导致额外的CPU消耗, 从而进一步降低数据库性能.
 
 
+### 扩展阅读
+
+- [Golang sql 标准库源码解析 - Powered by MinDoc](https://www.iminho.me/wiki/blog-41.html)
+
 
 
 参考资料与扩展阅读
