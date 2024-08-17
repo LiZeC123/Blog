@@ -136,6 +136,58 @@ CMD ["java", "-jar", "my-app-1.0-SNAPSHOT.jar"]
 -[在Dockerfile中使用多阶段构建打包Java应用](https://help.aliyun.com/document_detail/173175.html)
 
 
+
+
+前后端分离部署
+-------------
+
+
+### 配置前后端项目的编译和运行环境
+
+对于前后端分离的项目, 一般有如下的几个要素
+
+1. 前端的编译环境和运行环境. 如果使用Vue.js开发, 那么编译过程需要npm环境, 运行过程则只需要nginx代理编译后的静态文件. 
+2. 后端的编译环境和运行环境. 如果使用Java开发, 则后端编译过程需要Maven环境, 运行过程则需要JRE环境. 如果使用Python开发, 则因为解释执行只需要对应的Python环境
+
+无论是那种情况, 都可以使用Dockerfile轻松的引入相应的依赖并执行操作
+
+
+### 配置文件
+
+由于前端使用nginx代理了静态文件, 所以访问后端的请求需要在配置文件中转发给后端容器. 使用docker-compose时, 可以直接把后端容器名作为域名, 在配置文件中进行转发, 例如
+
+```
+    # Smart-Todo
+    upstream backend {
+        server backend:4231;
+    }
+
+    server {
+        listen 80;
+
+        # 所有的请求默认转发到前端的index文件, 由Vue进行代理 
+        location / {
+            root /app;
+            try_files $uri $uri/ /index.html;
+        }  
+        
+        # API相关的路径是后端的接口, 转发给后端
+        location /api {
+            proxy_pass http://backend;
+            proxy_set_header User-Agent $http_user_agent;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        }
+    }
+```
+
+### 参考资料
+
+- [docker-compose 部署 Vue+SpringBoot 前后端分离项目](https://segmentfault.com/a/1190000021008496)
+- [前后端分离应用（单应用/多应用）docker部署](https://segmentfault.com/a/1190000023939043)
+
+
+
 Docker镜像构建常见问题
 ---------------------------
 

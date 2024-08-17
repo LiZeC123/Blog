@@ -126,7 +126,7 @@ services:
 Redis
 ---------------
 
-使用如下的配置可启动一个基本的Redis服务并将端口暴露, 可使用该镜像用于Redis相关业务逻辑的开发和调试
+使用如下的配置可启动一个基本的Redis服务并将端口暴露, 可将该镜像用于Redis相关业务逻辑的开发和调试
 
 ```yml
 services:
@@ -141,3 +141,40 @@ services:
 ```
 
 > 注意: 该镜像默认不可被本地的网络访问, 可参考[Error: Protocol error, got "H" as reply type byte](https://cloud.tencent.com/developer/article/1706012)
+
+
+
+Clickhouse
+------------
+
+使用如下配置可启动一个基本的Clickhouse服务, 可将该镜像用于Clickhouse相关的验证和测试
+
+
+```yml
+services:
+  todo:
+    container_name: base-clickhouse
+    image: clickhouse/clickhouse-server
+    environment:
+      TZ: Asia/Shanghai
+    ports: 
+      - "8123:8123"
+    volumes:
+      - ./data:/var/lib/clickhouse/
+      - ./log:/var/log/clickhouse-server/   
+    deploy:
+      resources:
+        limits:
+          nofile: 262144    
+```
+
+> 注意: Clickhouse作为一个存储组件, 一定要映射数据卷, 否则在其中产生的数据会随着容器的销毁而丢失. 拉取测试数据本身就会消耗很多时间, 数据丢失产生的损失很大.
+
+官方镜像中包含了客户端程序, 可进入进行进行操作
+
+```sh
+sudo docker exec -it base-clickhouse clickhouse-client
+```
+
+
+- [docker镜像官方文档](https://hub.docker.com/r/clickhouse/clickhouse-server)

@@ -96,7 +96,10 @@ Docker操作容器
 启动镜像      | `run <imageName>`   | 启动容器     | `start <containerId>`
 删除容器      | `rm <containerID>`  | 停止容器     | `stop <containerId>`
 
-> 因为start指令需要指定容器ID, 因此这个指令实际上可以理解为再次启动已经关闭的容器
+
+因为start指令需要指定容器ID, 因此这个指令实际上可以理解为再次启动已经关闭的容器. 默认情况下容器将会在后台启动并执行, 只有手动设置为交互使用时, 才会将当前终端链接到镜像.
+
+-----------
 
 执行`ls`指令后, 会输入类似如下格式的内容
 ```
@@ -147,17 +150,6 @@ docker logs -f {{container_name}}
 
 > 使用`tldr docker-logs`可以查看更多常见用法
 
-### 保存容器
-
-可以使用docker commit指令将容器保存为镜像. 
-
-```bash
-sudo docker commit -a "runoob.com" -m "my apache" a404c6c174a2  mymysql:v1 
-```
-
-使用`-a`指定镜像的作者信息, `-m`指定镜像附加的message信息. 
-
-> 通过保存容器的方式可以交互式的构建复杂的镜像, 实现搭建开发环境, 临时保存工作区等功能
 
 ### 重命名容器
 
@@ -263,7 +255,7 @@ Docker的容器运行过程中需要消耗CPU和内存, 可以使用`docker stat
 docker-compose安装
 ----------------------
 
-当前docker-compose项目已经在Github上开源, 可在对应的release页面中查到需要的二进制文件, 以Linux系统下, X86指令集为例, 可下载
+当前docker-compose项目已经在Github上开源, 可在对应的[release页面](https://github.com/docker/compose/releases)中找到需要的二进制文件, 以Linux系统下X86指令集为例, 可下载
 
 ```bash
 wget https://github.com/docker/compose/releases/download/v2.29.2/docker-compose-linux-x86_64
@@ -301,56 +293,6 @@ services:
 
 
 - [Compose 模板文件](https://yeasy.gitbook.io/docker_practice/compose/compose_file)
-
-
-前后端分离部署
--------------
-
-
-### 配置前后端项目的编译和运行环境
-
-对于前后端分离的项目, 一般有如下的几个要素
-
-1. 前端的编译环境和运行环境. 如果使用Vue.js开发, 那么编译过程需要npm环境, 运行过程则只需要nginx代理编译后的静态文件. 
-2. 后端的编译环境和运行环境. 如果使用Java开发, 则后端编译过程需要Maven环境, 运行过程则需要JRE环境. 如果使用Python开发, 则因为解释执行只需要对应的Python环境
-
-无论是那种情况, 都可以使用Dockerfile轻松的引入相应的依赖并执行操作
-
-
-### 配置文件
-
-由于前端使用nginx代理了静态文件, 所以访问后端的请求需要在配置文件中转发给后端容器. 使用docker-compose时, 可以直接把后端容器名作为域名, 在配置文件中进行转发, 例如
-
-```
-    # Smart-Todo
-    upstream backend {
-        server backend:4231;
-    }
-
-    server {
-        listen 80;
-
-        # 所有的请求默认转发到前端的index文件, 由Vue进行代理 
-        location / {
-            root /app;
-            try_files $uri $uri/ /index.html;
-        }  
-        
-        # API相关的路径是后端的接口, 转发给后端
-        location /api {
-            proxy_pass http://backend;
-            proxy_set_header User-Agent $http_user_agent;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        }
-    }
-```
-
-### 参考资料
-
-- [docker-compose 部署 Vue+SpringBoot 前后端分离项目](https://segmentfault.com/a/1190000021008496)
-- [前后端分离应用（单应用/多应用）docker部署](https://segmentfault.com/a/1190000023939043)
-
 
 
 
