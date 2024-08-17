@@ -250,6 +250,112 @@ Docker的容器运行过程中需要消耗CPU和内存, 可以使用`docker stat
 
 `-m 300M --memory-swap -1`表示最大可用内存为300M, 但是可以无限制使用swap空间, `-m 300M --memory-swap 500M`表示最大可用内存为300M, 还可以额外使用200M的swap空间。
 
+### 参考文献
+
+以下的几篇文章讨论了限制容器的资源使用情况的指令.
+
+- [Docker: 限制容器可用的 CPU](https://www.cnblogs.com/sparkdev/p/8052522.html)
+- [Docker: 限制容器可用的内存](https://cnblogs.com/sparkdev/p/8032330.html)
+
+
+
+
+docker-compose安装
+----------------------
+
+当前docker-compose项目已经在Github上开源, 可在对应的release页面中查到需要的二进制文件, 以Linux系统下, X86指令集为例, 可下载
+
+```bash
+wget https://github.com/docker/compose/releases/download/v2.29.2/docker-compose-linux-x86_64
+```
+
+由于docker-compose项目使用GO语言实现, 因此选择正确的版本后, 直接赋予可进行权限即可运行, 无需其他任何依赖项目. 如果需要在任意位置执行, 可将文件复制到$PATH变量包含的路径中.
+
+> 这大概就是GO语言静态编译的余裕吧
+
+
+
+docker-compose.yml文件详解
+-----------------------------
+
+在启动Docker镜像时, 如果镜像的配置比较复杂, 则命令行中需要附带大量的参数才可以启动. docker-compose.yml文件可将相关的配置固化到文件之中, 从而可以一键启动镜像. 此外, 基于yml文件还可以配置多个镜像的依赖关系, 使得我们能够便捷的将一组镜像按照一定规则启动, 组合成我们需要的应用.
+
+一个基本的docker-compose.yml文件通常具有如下的一些属性
+
+```yml
+version: '3.0'
+services:
+  todo:
+    container_name: smart-todo
+    image: ghcr.io/lizec123/smart-todo:latest
+    restart: always
+    environment:
+      TZ: Asia/Shanghai
+    ports: 
+      - "8080:80"
+    volumes:
+      - ./config:/app/config
+```
+
+> 文件中的各个配置与命令行中的数据基本一一对应, 此处不再赘述
+
+
+- [Compose 模板文件](https://yeasy.gitbook.io/docker_practice/compose/compose_file)
+
+
+前后端分离部署
+-------------
+
+
+### 配置前后端项目的编译和运行环境
+
+对于前后端分离的项目, 一般有如下的几个要素
+
+1. 前端的编译环境和运行环境. 如果使用Vue.js开发, 那么编译过程需要npm环境, 运行过程则只需要nginx代理编译后的静态文件. 
+2. 后端的编译环境和运行环境. 如果使用Java开发, 则后端编译过程需要Maven环境, 运行过程则需要JRE环境. 如果使用Python开发, 则因为解释执行只需要对应的Python环境
+
+无论是那种情况, 都可以使用Dockerfile轻松的引入相应的依赖并执行操作
+
+
+### 配置文件
+
+由于前端使用nginx代理了静态文件, 所以访问后端的请求需要在配置文件中转发给后端容器. 使用docker-compose时, 可以直接把后端容器名作为域名, 在配置文件中进行转发, 例如
+
+```
+    # Smart-Todo
+    upstream backend {
+        server backend:4231;
+    }
+
+    server {
+        listen 80;
+
+        # 所有的请求默认转发到前端的index文件, 由Vue进行代理 
+        location / {
+            root /app;
+            try_files $uri $uri/ /index.html;
+        }  
+        
+        # API相关的路径是后端的接口, 转发给后端
+        location /api {
+            proxy_pass http://backend;
+            proxy_set_header User-Agent $http_user_agent;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        }
+    }
+```
+
+### 参考资料
+
+- [docker-compose 部署 Vue+SpringBoot 前后端分离项目](https://segmentfault.com/a/1190000021008496)
+- [前后端分离应用（单应用/多应用）docker部署](https://segmentfault.com/a/1190000023939043)
+
+
+
+
+
+
 参考文献
 ----------------
 
@@ -257,10 +363,3 @@ Docker的容器运行过程中需要消耗CPU和内存, 可以使用`docker stat
 
 - [Docker 入门教程](https://www.ruanyifeng.com/blog/2018/02/docker-tutorial.html)
 - [Docker —— 从入门到实践](https://yeasy.gitbook.io/docker_practice/)
-
-------------------
-
-以下的几篇文章讨论了限制容器的资源使用情况的指令.
-
-- [Docker: 限制容器可用的 CPU](https://www.cnblogs.com/sparkdev/p/8052522.html)
-- [Docker: 限制容器可用的内存](https://cnblogs.com/sparkdev/p/8032330.html)

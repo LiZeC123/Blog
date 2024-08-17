@@ -120,3 +120,24 @@ services:
 ```
 
 启动镜像后, 第一次访问时需要设置管理员账号. 登录后在系统的用户选项下选择快速扫描可刷新歌曲列表
+
+
+
+Redis
+---------------
+
+使用如下的配置可启动一个基本的Redis服务并将端口暴露, 可使用该镜像用于Redis相关业务逻辑的开发和调试
+
+```yml
+services:
+  todo:
+    container_name: base-redis
+    image: redis
+    restart: always
+    environment:
+      TZ: Asia/Shanghai
+    ports: 
+      - "6379:6379"
+```
+
+> 注意: 该镜像默认不可被本地的网络访问, 可参考[Error: Protocol error, got "H" as reply type byte](https://cloud.tencent.com/developer/article/1706012)
