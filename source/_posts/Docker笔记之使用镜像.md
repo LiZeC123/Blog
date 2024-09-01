@@ -170,7 +170,7 @@ services:
 
 > 注意: Clickhouse作为一个存储组件, 一定要映射数据卷, 否则在其中产生的数据会随着容器的销毁而丢失. 拉取测试数据本身就会消耗很多时间, 数据丢失产生的损失很大.
 
-官方镜像中包含了客户端程序, 可进入进行进行操作
+官方镜像中包含了客户端程序, 可进入容器进行操作
 
 ```sh
 sudo docker exec -it base-clickhouse clickhouse-client

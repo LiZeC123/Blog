@@ -57,3 +57,8 @@ Peak memory usage: 6.72 MiB.
 
 
 
+参考资料
+----------
+
+- [clickhouse/clickhouse-server | DockerHub](https://hub.docker.com/r/clickhouse/clickhouse-server)
+- [案例: 英国房地产支付价格 | ClickHouse Docs](https://clickhouse.com/docs/zh/getting-started/example-datasets/uk-price-paid)
