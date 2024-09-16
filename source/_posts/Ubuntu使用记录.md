@@ -49,6 +49,9 @@ sudo snap install node --classic
 
 > snap是Ubuntu公司提出的一种包管理系统, 可以安装大部分的开源软件和部分的非开源软件, 无法使用apt安装的软件都可以考虑使用snap安装
 
+---
+
+> 2024年9月更新: 如果在国内无法使用包管理器下载也无法下载预编译文件, 可考虑使用清华大学提供的[镜像加速](https://mirrors.tuna.tsinghua.edu.cn/help/nodejs-release/)
 
 
 安装OneDrive客户端
