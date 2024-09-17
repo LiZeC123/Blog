@@ -13,10 +13,13 @@ cover_picture: images/redis.jpg
 安装和配置Redis
 --------------------
 
+对于Linux平台, 可以优先考虑从源码编译安装. 由于Redis是一个纯C项目且自带了所有的依赖, 因此从源码编译非常简单且几乎不会出现构建失败的情况. mac平台可以直接使用brew安装redis, 客户端需要参考以下链接进行安装. 
+
+> 不建议在Window平台查看和编译源码, 环境变量有很多不同
+
 - [ubuntu 18.04 安装 Redis](https://wangxin1248.github.io/linux/2018/07/ubuntu18.04-install-redis.html)
 - [mac安装redis-cli](https://blog.csdn.net/w5688414/article/details/102692919)
 
-> mac平台可以直接使用brew安装redis, 客户端需要参考上述链接进行安装
 
 
 Redis功能速览
