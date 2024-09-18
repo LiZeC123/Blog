@@ -316,7 +316,7 @@ zskiplistNode *zslCreateNode(int level, double score, sds ele) {
 }
 ```
 
-创建`zskiplist`的逻辑比较简单, 给数组分配空间后填充对应的初始值即可. 其中`ZSKIPLIST_MAXLEVEL`在当前版本的定义为32, 因此头节点时一个具有32层的节点.
+创建`zskiplist`的逻辑比较简单, 给数组分配空间后填充对应的初始值即可. 其中`ZSKIPLIST_MAXLEVEL`在当前版本的定义为32, 因此头节点是一个具有32层的节点.
 
 ### 插入数据
 
@@ -987,11 +987,17 @@ typedef struct intset {
 由于不同类型的整数本质上只有长度不同, 因此`intset`的实现非常的普通. 在插入数据时, `intset`使用二分法判断是否存在对应的数据, 从而避免元素重复. 如果插入的数据大于当前的表示范围(例如当前按照int16存储, 插入了int32的数据), 则对`intset`进行扩容, 每个元素的长度翻倍.
 
 
+字符串列表
+--------------
+
+字符串列表`listpack`与`ziplist`类似, 是一种顺序存储数据的结构, 但其中的元素不要求按照顺序排列. 其结构与编码方式也类似.
+
+
 快速列表
 ----------
 
 
-快速列表`quicklist`可以视为将`listpack`作为元素的双向链表. `listpack`与`ziplist`类似, 是一种顺序存储数据的结构, 但其中的元素不要求按照顺序排列.
+快速列表`quicklist`可以视为将`listpack`作为元素的双向链表. 
 
 ![quicklist结构示意图](/images/redis/quicklist.jpeg)
 
@@ -1207,6 +1213,76 @@ void quicklistReplaceEntry(quicklistIter *iter, quicklistEntry *entry,
      * Notice: iter->current has been compressed above. */
     resetIterator(iter);
 }
+```
+
+
+前缀树
+------------
+
+
+前缀树`Rax`是一种树形结构, 按照字符串的字符顺序进行构造, 从而可以快速的判断一个指定的字符串是否位于集合之中. 
+
+```c
+/* Representation of a radix tree as implemented in this file, that contains
+ * the strings "foo", "foobar" and "footer" after the insertion of each
+ * word. When the node represents a key inside the radix tree, we write it
+ * between [], otherwise it is written between ().
+ *
+ * This is the vanilla representation:
+ *
+ *              (f) ""
+ *                \
+ *                (o) "f"
+ *                  \
+ *                  (o) "fo"
+ *                    \
+ *                  [t   b] "foo"
+ *                  /     \
+ *         "foot" (e)     (a) "foob"
+ *                /         \
+ *      "foote" (r)         (r) "fooba"
+ *              /             \
+ *    "footer" []             [] "foobar"
+ *
+ * However, this implementation implements a very common optimization where
+ * successive nodes having a single child are "compressed" into the node
+ * itself as a string of characters, each representing a next-level child,
+ * and only the link to the node representing the last character node is
+ * provided inside the representation. So the above representation is turned
+ * into:
+ *
+ *                  ["foo"] ""
+ *                     |
+ *                  [t   b] "foo"
+ *                  /     \
+ *        "foot" ("er")    ("ar") "foob"
+ *                 /          \
+ *       "footer" []          [] "foobar"
+ *
+ * However this optimization makes the implementation a bit more complex.
+ * For instance if a key "first" is added in the above radix tree, a
+ * "node splitting" operation is needed, since the "foo" prefix is no longer
+ * composed of nodes having a single child one after the other. This is the
+ * above tree and the resulting node splitting after this event happens:
+ *
+ *
+ *                    (f) ""
+ *                    /
+ *                 (i o) "f"
+ *                 /   \
+ *    "firs"  ("rst")  (o) "fo"
+ *              /        \
+ *    "first" []       [t   b] "foo"
+ *                     /     \
+ *           "foot" ("er")    ("ar") "foob"
+ *                    /          \
+ *          "footer" []          [] "foobar"
+ *
+ * Similarly after deletion, if a new chain of nodes having a single child
+ * is created (the chain must also not include nodes that represent keys),
+ * it must be compressed back into a single node.
+ *
+ */
 ```
 
 
