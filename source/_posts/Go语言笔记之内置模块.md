@@ -277,8 +277,6 @@ fmt.Printf("%v", m == nil)          // true
 IO操作
 ---------
 
-### 基础接口
-
 与Java的抽象一样, Go也提供了一套统一的IO操作, 无论是读写文件, 读写网络数据, 读写标准输入输出还是读写字符串, 都可以抽象为对应的IO读写操作, 基于IO接口的上层函数也可以应用到任意的一种实现了IO接口的数据类型上. Go语言中定义了两个基本的IO接口, 即
 
 ```go
@@ -309,9 +307,6 @@ type Writer interface {
 | net/conn            | 网络相关方法      | 网络流也实现了了Reader和Writer等方法         |
 
 
-
-
-
 ### 扩展接口
 
 除了最基础的读取和写入接口外, 在io包中还定义了如下的一些接口, 其含义都非常明确
@@ -340,9 +335,6 @@ type WriterAt interface {
 
 通常情况下, 由Writer对象实现ReadFrom方法, Reader对象实现WriteTo方法, 从而将一个IO流中的数据全部移动到另一个IO流中. 某些自定义的数据结构也可以使用该方法表示读取或写入全部数据.
 
-
-IO常见操作
----------------
 
 ### 读取整个文件
 
@@ -427,18 +419,16 @@ Go的格式化系统与C基本一致, 对于文件, 标准输入输出和字符�
 | 0        | 使用0填充空位                  |
 
 
-字符串操作包
+字符串操作
 --------------
 
 Go本身并不暴露string的底层结构, 但可以认为Go语言中的字符串与C的实现类似, 是一个指向实际数据的指针. 和大部分语言一样, string也是不可变的, 传递string变量也不会产生拷贝开销.
 
 - [GO 中 string 的实现原理](https://segmentfault.com/a/1190000040203636)
 
-
-### 字符串基本操作
+--------------------------------
 
 strings包提供了字符串的常见操作, 包括比较字符串大小, 查找字符, 替换字符, 合并字符串等操作
-
 
 - [strings — 字符串操作](https://books.studygolang.com/The-Golang-Standard-Library-by-Example/chapter02/02.1.html)
 
@@ -617,6 +607,67 @@ func formatAtom(v reflect.Value) string {
 
 
 
+原子操作
+--------------
+
+在GO语言中, 对于小于64位的基本类型和指针类型, 其赋值操作是原子的, 可以不加锁的进行并发赋值. 但对于复杂的数据结构, 无法保证原子的赋值. Go提供了Value对象来原子的对任意类型赋值. 其Store函数源码如下:
+
+```go
+func (v *Value) Store(val any) {
+    if val == nil {
+        panic("sync/atomic: store of nil value into Value")
+    }
+    // Value对象实际就是一个interface{}, 而interface{}可以视为一个包含两个指针字段的结构体
+    // 其中字段typ表示类型, data表示实际的值
+    // 无论val是什么类型, 进入Store函数后, val都是指向实际数据的interface{}对象
+    vp := (*ifaceWords)(unsafe.Pointer(v))
+    vlp := (*ifaceWords)(unsafe.Pointer(&val))
+    for {
+        // 由于interface{}对象包含两个字段, 实际上这个函数要做的就是一致性的写入两个字段
+        typ := LoadPointer(&vp.typ)
+        if typ == nil {
+            // 首先获取当前对象的type字段, 如果为空, 说明之前从未写入过任何数据, 这是第一次尝试写入数据
+            runtime_procPin()   // 此函数关闭Go语言的协程调度
+            // 首先尝试CAS更新type字段, 将其设置为更新的标记
+            if !CompareAndSwapPointer(&vp.typ, nil, unsafe.Pointer(&firstStoreInProgress)) {
+                // CAS失败, 等价于其他协程获得锁, 当前协程进入自旋
+                runtime_procUnpin()
+                continue
+            }
+            // CAS成功等价于当前协程获得锁, 因此执行更新操作
+            StorePointer(&vp.data, vlp.data)
+            StorePointer(&vp.typ, vlp.typ)
+            runtime_procUnpin()
+            return
+        }
+        // 如果当前的type标记为更新状态
+        // 说明其他协程正在更新, 因此当前协程进行自旋等待
+        // 等待其他协程更新完毕后, 当前协程可直接更新data部分
+        if typ == unsafe.Pointer(&firstStoreInProgress) {
+            continue
+        }
+        // 如果type不是nil, 说明之前已经设置过类型, 此时进行判断
+        // Value对象不能存储不同类型的数据
+        if typ != vlp.typ {
+            panic("sync/atomic: store of inconsistently typed value into Value")
+        }
+        // 类型相同时, 更新操作值需要更新一个data字段, 此时直接更新即可
+        StorePointer(&vp.data, vlp.data)
+        return
+    }
+}
+
+
+// ifaceWords is interface{} internal representation.
+type ifaceWords struct {
+    typ  unsafe.Pointer
+    data unsafe.Pointer
+}
+```
+
+> 上述接口非常巧妙地利用了Go语言中interface{}对象的结构, 用一种简单的方式实现了对象的原子赋值
+
+
 IP操作
 --------
 
@@ -629,7 +680,7 @@ parsedIP := net.ParseIP(rawIP)
 使用`net.ParseIP`可以将一个字符串格式的IP地址解析为Go语言中的IP对象. IP对象实际是一个字节数组, 通常占据16字节(对应IPV6地址的长度), 采用大端序存储IP的字节.
 
 
-> 注意: 根据IP协议的规范, 任何一个合法的IPV4地址也是一个合法的IPV6地址. 不要根据IP对象的长度判断IP类型
+> 注意: 根据IP协议的规范, 任何一个合法的IPV4地址也是一个合法的IPV6地址. **不要根据IP对象的长度判断IP类型**
 
 
 

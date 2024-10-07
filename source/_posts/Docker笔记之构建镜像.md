@@ -4,6 +4,7 @@ date: 2021-08-07 10:50:24
 categories: Docker笔记
 tags:
     - Docker
+    - Nginx
 cover_picture: images/docker.jpg
 ---
 

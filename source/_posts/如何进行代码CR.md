@@ -4,7 +4,7 @@ math: false
 date: 2024-04-25 21:36:34
 categories:
 tags:
-cover_picture:
+cover_picture: images/CR.jpg
 ---
 
 

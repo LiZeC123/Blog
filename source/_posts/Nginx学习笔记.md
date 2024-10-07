@@ -4,7 +4,8 @@ math: false
 date: 2024-06-19 21:31:44
 categories:
 tags:
-cover_picture:
+    - Nginx
+cover_picture: images/nginx.png
 ---
 
 内容施工中, 请稍后查看...
