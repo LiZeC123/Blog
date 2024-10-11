@@ -719,6 +719,50 @@ Go语言在标准库`database/sql`包中提供了数据库相关的操作. 在`d
 
 
 
+singleflight包
+---------------
+
+`singleflight`包提供了一个`Do`函数, 用于防止在短时间内对同一组参数的重复调用. `Do`函数根据传入的`key`来判断是否需要执行函数`f`, 如果多个协程同时调用`Do`函数并具有相同的`key`, 则只有1个协程会实际调用`f`, 其他函数会阻塞等待`f`执行结束, 并且所有的协程获得相同的值.
+
+> `singleflight`包提供的能力对于防止缓存击穿等问题特别有用
+
+想要实现上述效果其思路非常直接, 使用一个map存储`key`和执行结果. 执行`Do`函数时首先判断map中是否有对应的结构体, 如果存在则说明此时有另外一个协程在执行, 因此使用`WaitGroup`进行等待. 如果map中无对应结构体, 则使用`WaitGroup`进行`Add(1)`操作, 然后调用`f`. `f`执行完毕后, 执行`WaitGroup`的`Done`操作, 唤醒等待的其他协程.
+
+```go
+func (g *Group) Do(key string, fn func() (interface{}, error)) (v interface{}, err error, shared bool) {
+	g.mu.Lock()     // 此锁用于保证对g.m的操作是并发安全的
+	if g.m == nil {
+        // map是惰性加载的
+		g.m = make(map[string]*call)
+	}
+    // 如果已经有协程在处理了, 等待执行结果
+	if c, ok := g.m[key]; ok {
+		c.dups++
+		g.mu.Unlock()
+		c.wg.Wait()
+
+		if e, ok := c.err.(*panicError); ok {
+			panic(e)
+		} else if c.err == errGoexit {
+			runtime.Goexit()
+		}
+		return c.val, c.err, true
+	}
+    
+    // 如果没有协程在执行, 则当前协程执行
+	c := new(call)
+	c.wg.Add(1)
+	g.m[key] = c
+	g.mu.Unlock()
+
+    // 执行f函数, 执行完毕后调用c.wg.Done()
+	g.doCall(c, key, fn)
+	return c.val, c.err, c.dups > 0
+}
+```
+
+
+
 参考资料与扩展阅读
 -------------------------
 
