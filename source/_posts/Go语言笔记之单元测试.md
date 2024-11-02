@@ -1,5 +1,5 @@
 ---
-title: Go语言笔记之基础知识
+title: Go语言笔记之单元测试
 date: 2024-11-02 15:00:28
 categories: Go语言笔记
 tags: 
@@ -74,7 +74,7 @@ go test -bench .
 
 ```go
 func ExampleSplit() {
-	fmt.Println(split.Split("a:b:c", ":"))
+    fmt.Println(split.Split("a:b:c", ":"))
 }
 ```
 
@@ -120,21 +120,21 @@ Mock函数
 ```go
 import (
     "github.com/bytedance/mockey"
-	"github.com/stretchr/testify/assert"
+    "github.com/stretchr/testify/assert"
 )
 
 func TestGetUser(t *testing.T) {
     // 替换操作仅在PatchConvey传入的函数内生效, 离开此函数自动恢复, 从而避免各类Mock操作相互干扰
-	mockey.PatchConvey("TestGetUser", t, func() {
-		// 将rpc.GetUser 替换为 MockTestGetUser, 调用Build函数后生效
+    mockey.PatchConvey("TestGetUser", t, func() {
+        // 将rpc.GetUser 替换为 MockTestGetUser, 调用Build函数后生效
         mockey.Mock(rpc.GetUser).To(MockTestGetUser).Build()
-		
+        
         // 被测试函数, 其中包含了对 rpc.GetUser 的调用
-		m := GetUsers("username")
+        m := GetUsers("username")
 
         // 断言结果
-		assert.Equal(t, len(m), 3)
-	})
+        assert.Equal(t, len(m), 3)
+    })
 }
 ```
 
