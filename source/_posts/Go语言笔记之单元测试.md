@@ -87,6 +87,11 @@ Go语言内置了强大的并发能力, 因此在开发并发的代码时, 有�
 
 Go在执行测试时, 可加入`-race`参数执行数据竞态测试. 其原理是在编译过程中, 加入特殊的处理函数, 以便在运行时监控对共享数据的访问, 从而可以判断是否存在读写冲突问题.
 
+数据竞态测试通常需要依赖CGO特性, 因此通常使用如下的模式启动测试
+
+```sh
+CGO_ENABLED=1 go test -race -run TestGoReadMap
+```
 
 - [官方文档](https://golang.org/doc/articles/race_detector.html)
 
@@ -104,6 +109,8 @@ Mock函数
 3. 被Mock的函数的函数体占用的内存足够长, 在写入调用Mock函数的二进制指令后不至于超过函数范围.
 
 因此如果函数被内联, 操作系统不可修改内存属性, 或者函数太短都可能导致替换失败.
+
+> 基于本地Mock的方式, 可以对一些比较难以在本地运行的代码进行测试, 从而能提前发现问题.
 
 
 ### Mockery框架
@@ -130,6 +137,27 @@ func TestGetUser(t *testing.T) {
 	})
 }
 ```
+
+执行Mock操作必须关闭函数内联, 因此通常以如下的模式启用测试
+
+```sh
+go test -gcflags="all=-l -N" -run TestGetUser
+```
+
+
+其他常用参数
+----------
+
+### 抑制PB冲突
+
+
+由于一些代码的历史原因, PB直接可能存在名称冲突问题. 此时可通过如下指令在运行测试时将冲突的panic改为warning
+
+```sh
+go test -ldflags " -X google.golang.org/protobuf/reflect/protoregistry.conflictPolicy=warn" -run TestGoReadMap
+```
+
+
 
 
 参考资料
