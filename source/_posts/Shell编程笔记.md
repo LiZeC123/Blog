@@ -8,10 +8,10 @@ cover_picture:
 ---
 
 
-
 在使用Linux系统的过程中, 经常会用到shell, 本文介绍shell脚本编程. 通过shell脚本, 能够将一系列固定的指令快速的执行, 在合适的场景下能够大幅度提高开发效率. 本文按照创建一个Shell脚本的顺序, 依次介绍各个环节涉及的知识.
 
 在使用shell脚本时也需要注意, 由于语法设计堪称非常糟糕, 因此shell脚本不适合做复杂逻辑的处理. shell脚本适合简单调用shell指令的场景, 对于较为复杂的操作, 使用Python脚本进行处理可能更有优势. 例如使用shell操作Git通常都比较简单直观, 而对于处理一个YAML文件的正则替换问题, 使用Python更加的简明易懂.
+
 
 
 帮助系统
@@ -35,6 +35,7 @@ Information about running processes.
 > 再也不用记指令参数了, 也比当场Google不知道快到那里去了
 
 
+
 指定脚本解释器
 -----------------------
 
@@ -46,6 +47,7 @@ Information about running processes.
 bash是`Bourne Again Shell`, 是很多Linux系统的默认脚本解释器. 常见的解析器包括`bash`, `sh`, `fish`, `zsh`等. 不同的解释器语法规则存在差异, 因此虽然bash多数情况下是默认的选择, 但为了避免不必要的麻烦, 还是应该在每个脚本开头的位置都指明需要使用的解释器类型.
 
 > 对于很多极简的docker镜像, 其中甚至仅包含`sh`, 此时应该将解释器类型指定为`#! /bin/sh`
+
 
 
 创建变量
@@ -123,6 +125,7 @@ Shell运算符
 - [Shell 运算符：Shell 算数运算符、关系运算符、布尔运算符、字符串运算符等](https://wiki.jikexueyuan.com/project/shell-tutorial/shell-operator.html)
 
 
+
 流程控制语句
 --------------------
 
@@ -160,6 +163,7 @@ Bash常用快捷功能
 | `!!`     | 指代上一个命令                  | `sudo !!`  以管理员权限重新执行上一条指令 |
 
 
+
 Shell常见指令简介
 ------------------
 
@@ -185,9 +189,6 @@ drwxrwxr-x   3 lizec lizec 4.0K 3月  26 19:24 themes/
 后续几列分别表示文件的所有者，所有者所在的组，文件的大小，修改时间以及相应的文件名。
 
 - [ls -l 每一列的含义](https://blog.csdn.net/sinat_36219858/article/details/83721448)
-
-
-
 
 
 
@@ -222,6 +223,7 @@ funWithParam 1 2 3 4 5 6 7 8 9 34 73
 Shell中的函数与其他编程语言中的函数概念不同, Shell中的函数更加类似于一段代码块. 因此并不能在Shell的函数中返回结果. 对于需要返回结果的场景, 通常直接使用全局变量.
 
 
+
 设置可执行权限
 -----------------------
 
@@ -232,6 +234,7 @@ $ chmod +x shell.sh
 ```
 
 > 对于图像界面可以通过右键设置来赋予可执行权限
+
 
 
 添加到搜索目录
@@ -332,3 +335,8 @@ EOF
 
 
 
+参考资料
+----------
+
+
+- [Shell编程基础 - Ubuntu Wiki](https://wiki.ubuntu.org.cn/Shell%E7%BC%96%E7%A8%8B%E5%9F%BA%E7%A1%80)
