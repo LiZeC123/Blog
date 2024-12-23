@@ -40,12 +40,12 @@ CREATE TABLE <表名>
 );
 
 列完整性约束条件 => PRIMARY KEY | NOT NULL | UNIQUE
+列完整性约束条件 => DEFAULT <默认值> | COMMENT <列说明>
+
 表完整性约束条件 => PRIMARY KEY(<列名1> [,<列名2>]...[,<列名n>])
 表完整性约束条件 => FOREIGN KEY(<列名>) REFERENCES <表名>(<列名>)
+表完整性约束条件 => [UNIQUE] INDEX <索引名> (<列名1> [,<列名2>]...[,<列名n>]) [USING <索引类型>]
 ```
-
-关于全部的约束条件, 可以查看本文的[完整性约束](#完整性约束)章节
-
 
 常见的数据类型有如下的几种：
 
@@ -64,9 +64,13 @@ TIME                | 时间, 包含时, 分, 秒
 3. 避免使用NULL, 尤其索引列不适合有NULL值
 
 
+-----------
+
+关于更高级的约束条件设置方法, 可以查看本文的[完整性约束](#完整性约束)章节. 关于索引, 默认情况下相当于使用了`USING BTREE`
+
 
 ### 修改表
-```
+```sql
 ALTER TABLE <TableName>
 [ADD [COLUMN] <newColName> <datType> [ColIntegrity]]
 [ADD <TabIntegrity>]
@@ -131,7 +135,7 @@ ALTER TABLE Student
 
 ### 单表查询
 
-```
+```sql
 SELECT [ALL|DISTINCT] <目标列表达式> [, <目标列表达式>] ...
 FROM <表名 | 视图名> [, <表名 | 视图名>]
 [WHERE <条件表达式>]
@@ -153,7 +157,7 @@ SELECT Sno,AVG(Grade) FROM SC GROUP BY Sno HAVING AVG(Grade)>=90;
 ```
 
 ### 连接查询
-```
+```sql
 SELECT *
 FORM <TabName1> <JoinKeyWord> <TabName2>
 ON <ConditionExpr>
@@ -190,7 +194,7 @@ WHERE Sno IN
 更新
 --------------
 ### 插入元组
-```
+```sql
 INSERT INTO <TableName> [(<ColName_1> [, <ColName_2>]...)]
 VALUE (<Data1>, [<Data2>] ...);
 ```
@@ -200,7 +204,7 @@ VALUE (<Data1>, [<Data2>] ...);
 2. 非字符类型的数据也可以使用单引号包括
 
 ### 修改元组
-```
+```sql
 UPDATE <TableName>
 SET <ColName> = <Expr> [, <ColName> = <Expr>]
 [WHERE <ConditionExpr>]
@@ -214,7 +218,7 @@ WHERE m.LIB_ID = ml.LIB_ID;
 ```
 
 ### 删除元组
-```
+```sql
 DELETE FROM <TableName>
 [WHERE <conditionExpr>]
 ```
@@ -222,7 +226,7 @@ DELETE FROM <TableName>
 索引
 ----------------
 ### 建立索引
-```
+```sql
 CREATE [UNIQUE] [CLUSTER] INDEX <IndexName>
 ON <TableName>(<ColName> [Order] [, <ColName> [Order]])
 
@@ -233,12 +237,12 @@ Order => ASC | DESC
 2. 每个列名后可跟随一个排序表示
 
 ### 修改索引
-```
+```sql
 ALTER INDEX <OldIndexName> RENAME TO <NewIndexName>
 ```
 
 ### 删除索引
-```
+```sql
 DROP INDEX <IndexName>
 ```
 
@@ -246,7 +250,7 @@ DROP INDEX <IndexName>
 视图
 ---------------
 ### 建立视图
-```
+```sql
 CREATE VIEW <ViewName> [(<ColName> [, <ColName>] ... )]
 AS <SubSelect>
 [WITH CHECK OPTION]
@@ -256,7 +260,7 @@ AS <SubSelect>
 2. WITH CHECK OPTION表示对视图的更新操作需要保证满足子查询的条件表达式
 
 ### 删除视图
-```
+```sql
 DROP VIEW <ViewName> [CASCADE]
 ```
 
@@ -295,7 +299,7 @@ DROP VIEW <ViewName> [CASCADE]
 -----------------
 
 ### 授予权限
-```
+```sql
 GRANT <权限> [, <权限>] ...
 ON <对象类型> <对象名> [, <对象类型> <对象名>]
 TO <用户> [, <用户>]
@@ -303,7 +307,7 @@ TO <用户> [, <用户>]
 ```
 
 例如：
-```
+```sql
 GRANT UPDATE(Sno), SELECT
 ON TABLE Student
 TO PUBLIC
@@ -313,7 +317,7 @@ TO PUBLIC
 2. 不允许循环授权
 
 ### 收回权限
-```
+```sql
 REVOKE <权限> [, <权限>] ...
 ON <对象类型> <对象名> [, <对象类型> <对象名>]
 FROM <用户> [, <用户>]
@@ -323,12 +327,12 @@ FROM <用户> [, <用户>]
 角色控制
 -----------
 ### 创建角色
-```
+```sql
 CREATE ROLE <RoleName>
 ```
 
 ### 角色授权
-```
+```sql
 GRANT <权限> [, <权限>] ...
 ON <对象类型> <对象名> [, <对象类型> <对象名>]
 TO <角色> [, <角色名>]
@@ -345,7 +349,7 @@ TO <角色3> [, <用户1>] ...
 2. WITH ADMIN OPTION表示被授权者可以再次授予自己的权限
 
 ### 角色权限的收回
-```
+```sql
 REVOKE <权限> [, <权限>] ...
 ON <对象类型> <对象名> [, <对象类型> <对象名>]
 FROM <角色> [, <角色名>]
