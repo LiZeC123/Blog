@@ -22,6 +22,7 @@ vscode不需要安装插件即可支持基本的Clojure开发, 体验类似于�
 
 IDEA需要安装Cursive插件, 安装完毕后重启IDEA即可选择Clojure项目. 在IDEA中, 依然支持Clojure语言的代码补全, 自动导入包等能力.
 
+> 注意: Cursive是付费插件
 
 
 脚本方式运行Clojure

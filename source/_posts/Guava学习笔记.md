@@ -96,6 +96,8 @@ joiner.join("Harry", null, "Ron", "Hermione");
   }
 ```
 
+> 编码一时爽, 优化火葬场. 只能对Java的优化表示敬意.
+
 ### Strings && CharMatcher
 
 Strings提供字符串相关的基本操作，包括判断是否为空，null与空字符串的转换，重复字符串等。 CharMatcher提供字符串匹配相关接口，例如是否为ASCII字符，是否为数字，是否为大写字母等等。

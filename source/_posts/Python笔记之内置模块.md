@@ -25,7 +25,6 @@ Python提供了一些重要的内置函数, 可以大致划分为如下的几组
 数值计算		| min, max, pow, round, sum, divmod
 哈希值			| hash, id
 迭代器			| iter, next
-序列操作        | range, reversed, sorted
 I/O操作         | input, open
 格式化			| display, format
 不常见方法		| memoryview, super, slice

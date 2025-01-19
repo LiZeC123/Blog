@@ -109,7 +109,7 @@ type Task struct {
 }
 ```
 
-所欲的属性都以`gorm`开头, 在属性的内部, 不同的属性之间使用`;`分割, 同一个属性的参数之间使用`,`分割. 详细的标记使用方法可参考官方文档
+所有的属性都以`gorm`开头, 在属性的内部, 不同的属性之间使用`;`分割, 同一个属性的参数之间使用`,`分割. 详细的标记使用方法可参考官方文档
 
 - [所有可用属性表](https://gorm.io/docs/models.html#Fields-Tags)
 - [Index相关属性](https://gorm.io/docs/indexes.html)
