@@ -24,9 +24,9 @@ date: 2017-09-01 09:01:00
 
 - 计算机硕士学位, 研究方向为机器学习和自然语言处理. 欢迎和我交流计算机, 人工智能相关的话题.
 
-- 物理学才是真爱, 正在自学量子力学(~~不自量力中~~), 虽然要学的内容还有很多, 但我的目标确实是星辰大海.
+- 物理学才是真爱, 已经学完分析力学, 正在自学量子力学(~~不自量力中~~), 虽然要学的内容还有很多, 但我的目标确实是星辰大海.
 
-- 熟悉Java和Python, 也会一点C/C++/C#和Lisp, 正在学习Go语言和前端知识.
+- 熟悉Java, Python和Go, 也会一点C/C++/C#和Lisp, 正在学习前端知识.
 
 - 手写过[编译器](https://github.com/LiZeC123/LSC), 尝试过[自制操作系统](https://github.com/LiZeC123/LOS), 浏览器内核正在规划中.
 
@@ -34,7 +34,7 @@ date: 2017-09-01 09:01:00
 
 - 最喜欢的游戏是[Spelunky](https://store.steampowered.com/app/239350/Spelunky/)和[Spelunky 2](https://store.steampowered.com/app/418530/Spelunky_2/), 优秀的rougelite类游戏充分展示了游戏在算法上的魅力.
 
-- 不喝肥宅快乐水, ~~希望有一天能有肥宅快乐兽~~ 已有[肥宅快乐兽](/images/others/肥宅快乐兽.jpg).
+- 不喝肥宅快乐水, ~~希望有一天能有肥宅快乐兽~~ 已有[肥宅快乐兽](/images/others/肥宅快乐兽.jpg)和[赛博肥宅快乐兽](/images/others/赛博肥宅快乐兽.jpg).
 
 
 友情链接
