@@ -52,6 +52,11 @@ cover_picture:  images/ubuntu.jpg
   - [添加环境变量](#添加环境变量)
 - [服务器版开启X11支持](#服务器版开启x11支持)
 - [设置时区](#设置时区)
+- [视频转码](#视频转码)
+  - [安装ffmpeg](#安装ffmpeg)
+  - [视频转码](#视频转码-1)
+  - [进阶选项](#进阶选项)
+  - [任务时间估计](#任务时间估计)
 - [ubuntu桌面版优化](#ubuntu桌面版优化)
   - [注意事项](#注意事项)
   - [安装搜狗输入法](#安装搜狗输入法)
@@ -790,6 +795,70 @@ sudo systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.ta
 ```
 sudo timedatectl set-timezone Asia/Shanghai
 ```
+
+视频转码
+-------------
+
+### 安装ffmpeg
+
+开源项目`ffmpeg`提供了非常好用的视频处理功能, 一般情况下仅使用ffmpeg就可以满足所有的视频处理需求. 对于Ubuntu系统, 可以使用如下指令安装
+
+```bash
+sudo apt install ffmpeg
+```
+
+直接安装, 之后可使用如下指令查看安装是否成功
+
+```bash
+ffmpeg -version
+```
+
+> 如果感觉版本较旧, 可考虑使用snap安装
+
+
+### 视频转码
+
+要使用FFmpeg将视频转码为1080p分辨率的H.264编码MP4文件, 可以按照以下步骤操作
+
+
+```bash
+ffmpeg -i input.mp4 -vf "scale=-1:1080" -c:v libx264 -preset medium -crf 23 -c:a aac -b:a 192k output_1080p.mp4
+```
+
+
+- `-i input.mp4`: 指定输入文件为 `input.mp4`。请将其替换为你要转码的视频文件路径。
+
+- `-vf "scale=-1:1080"`: 使用视频滤镜（Video Filter）调整视频分辨率。`scale=-1:1080` 表示将视频的高度设置为1080像素，宽度自动根据原始视频的宽高比进行调整，以避免变形。
+
+- `-c:v libx264`: 指定视频编码器为 `libx264`，这是H.264编码的标准实现。
+
+- `-preset medium`: 设置编码速度与压缩效率的平衡。常用的预设包括 `ultrafast`, `superfast`, `veryfast`, `faster`, `fast`, `medium`, `slow`, `slower`, `veryslow`。预设越快，编码速度越快，但压缩效率可能较低；预设越慢，压缩效率越高，但编码时间更长。`medium` 是默认值，适合大多数情况。
+
+- `-crf 23`: 设置恒定质量因子（Constant Rate Factor），范围为0-51，数值越小，输出质量越高，文件大小也越大。常用范围是18-28，其中23是默认值。你可以根据需要调整此值以平衡质量和文件大小。
+
+- `-c:a aac`: 指定音频编码器为 `aac`，这是MP4容器中常用的音频编码格式。
+
+- `-b:a 192k`: 设置音频比特率为192kbps，以保证良好的音频质量。你可以根据需求调整此值。
+
+- `output_1080p.mp4`: 指定输出文件名为 `output_1080p.mp4`。请根据需要更改输出路径和文件名。
+
+### 进阶选项
+
+1. **调整帧率**: 如果需要设置特定的帧率（例如30fps），可以添加 `-r 30` 参数：
+
+```bash
+ffmpeg -i input.mp4 -vf "scale=-1:1080,fps=30" -c:v libx264 -preset medium -crf 23 -c:a aac -b:a 192k output_1080p.mp4
+```
+
+2. **多线程编码**: 利用多核CPU加快编码速度，可以添加 `-threads` 参数，例如使用4个线程：
+
+```bash
+ffmpeg -i input.mp4 -vf "scale=-1:1080" -c:v libx264 -preset medium -crf 23 -threads 4 -c:a aac -b:a 192k output_1080p.mp4
+```
+
+### 任务时间估计
+
+执行对应的指令后, 在当前命令行会输出一个统计信息, 其中包含 `speed=1.23x`之类的数据, 其含义为相较于视频原始的播放速度, 当前任务执行速度的倍率. 例如原始视频长度为1小时, 当`speed=2x`时, 转码需要的时间则正好为0.5小时.
 
 
 ubuntu桌面版优化
