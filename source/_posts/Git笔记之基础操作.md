@@ -7,9 +7,7 @@ tags:
 cover_picture:  images/git.jpg
 ---
 
-
-
-本文介绍Git的基础知识, 具体包括Git的初始化配置, 常用的基础指令, Git的基本原理等内容.
+Git是一个免费, 开源的分布式版本控制系统, 用于敏捷高效地处理任何或小或大的项目. Git是 Linus Torvalds 为了帮助管理 Linux 内核开发而开发的一个开放源码的版本控制软件.本文介绍Git的基础知识, 具体包括Git的初始化配置, 常用的基础指令, Git的基本原理等内容.
 
 
 基本使用
@@ -38,7 +36,7 @@ git config --global alias.br branch
 git config --global alias.lg "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
 ```
 
-更多简化方案可以参考如下的配置文件, 输入`git config --global -e`后在打开的文件中进行编辑即可生效.
+可以使用如下的配置文件进行更多配置, 输入`git config --global -e`后在打开的文件中进行编辑即可生效. 详细内容可参考[Git 命令的简写配置(别名)](https://blog.csdn.net/Lakers2015/article/details/111872161)
 
 ```
 [alias]
@@ -57,7 +55,8 @@ git config --global alias.lg "log --color --graph --pretty=format:'%Cred%h%Crese
 	s = stash
 ```
 
-- [Git 命令的简写配置(别名)](https://blog.csdn.net/Lakers2015/article/details/111872161)
+> 在实践过程中, 通常不会在命令行中执行过于复杂的指令, 而是更加倾向于通过IDE的图像界面完成相关操作. 因此配置一些基础的指令别名就可以满足绝大部分需求.
+
 
 ### 基础指令
 
@@ -69,6 +68,20 @@ git config --global alias.lg "log --color --graph --pretty=format:'%Cred%h%Crese
 | git add filename    | 将指定的文件提交                                                              |
 | git commit -m "XXX" | 使用-m参数指定本次提交的信息, 该信息保留在提交日志中,  从而用于识别提交的内容 |
 | git status          | 查看当前的状态, Git同时给出下一步可以执行的操作                               |
+
+### 常用前缀
+
+在Git提交时, 约定使用如下的一些单词作为提交记录的前缀, 以表明本次提交的操作类型
+
+| 前缀   | 含义                       | 前缀     | 含义                       |
+| ------ | -------------------------- | -------- | -------------------------- |
+| feat   | 新功能, 新特性             | fix      | 修复BUG                    |
+| perf   | 不改变功能的前提下提高性能 | refactor | 不改变功能的前提下重构代码 |
+| docs   | 文档修改                   | style    | 代码格式修改               |
+| revert | 恢复上一次提交             | release  | 发布新版本                 |
+| test   | 测试用例新增或修改         | ci       | 持续集成相关文件修改       |
+| build  | 影响项目构建或依赖项修改   | workflow | 工作流相关文件修改         |
+| chore  | 其他修改                   |
 
 
 
@@ -85,7 +98,7 @@ Git中存在三个区域, 每个区域的名称和作用如下
 | 暂存区 | 执行add之后后的文件存在的区域      |
 | 版本库 | 执行commit操作以后的文件进入版本库 |
 
-其中暂存区(staging area)也被称为缓冲区(buffer)或者索引(index). 
+> 其中暂存区(staging area)也被称为缓冲区(buffer)或者索引(index). 
 
 
 ### Git基本原理
@@ -171,11 +184,14 @@ HEAD是头指针,表示当前版本. HEAD~表示上一个版本, 如果是之前
 
 
 ### 远程撤销更改
+
 ```
 git revert HEAD
 ```
 
-使用后分支并不会被回退, 而是创建了一个新的提交, 该提交通过反向修改恢复了代码. 由于这本身也是一个提交操作, 因此即使以及有其他人在此分支上切出, 只要没有同时修改回退的内容, 就不会产生任何的影响. reset适用于私有分支,而revert可以适用于公共分支.
+使用后分支并不会被回退, 而是创建了一个新的提交, 该提交通过反向修改恢复了代码. 由于这本身也是一个提交操作, 因此即使以及有其他人在此分支上切出, 只要没有同时修改回退的内容, 就不会产生任何的影响. 
+
+通常情况下, reset适用于私有分支, 而revert可以适用于公共分支.
  
 
 ### 分支文件替换
@@ -186,23 +202,21 @@ git revert HEAD
 git checkout test -- pom.xml
 ```
 
-可以将当前分支的pom.xml文件替换为test分支上的相应文件.
+可以将当前分支的pom.xml文件替换为test分支上的相应文件. 可查看 [Git reset checkout commit 命令详解](https://halfmoonvic.github.io/2017/07/20/Git-reset-checkout-commit-%E5%91%BD%E4%BB%A4%E8%AF%A6%E8%A7%A3/)获取更多高级用法
 
-
-### 参考资料
-
-- [Git reset checkout commit 命令详解](https://halfmoonvic.github.io/2017/07/20/Git-reset-checkout-commit-%E5%91%BD%E4%BB%A4%E8%AF%A6%E8%A7%A3/)
 
 
 分支管理
------------------------------
+------------------
 
 ### 查看现有分支
+
 ```
 git branch
 ```
 
 ### 创建和切换分支
+
 ```
 git branch        <分支名>                        //创建新分支
 git checkout      <分支名>                        //切换分支
@@ -212,24 +226,30 @@ git checkout -b   <本地分支名> <origin/远程分支名>  //创建并拉取�
 ```
 
 ### 分支合并和撤销
+
 ```
 git merge branchName          //将指定分支的内容合并到当前分支
 git merge --no-gg branchName  //将指定分支的内容合并到当前分支(非快进合并)
 git reset --merge             //撤销本次合并
 ```
+
 例如, 想要将dev分支的内容合并到master分支, 则应该按照如下步骤操作
+
 ```
 git checkout master
 git merge dev
 ```
 
 ### 快进合并
-- 假设当前有两个分支master和dev, 如果仅仅在dev分支上进行更改, 而在master上没有操作, 此时在master分支上进行合并, 则默认进行快速合并, 此时相当于将master的指针移动到和dev指针相关的位置
-- 如果使用非快进合并, 则相当于在master分支上进行一次commit, 此commit后的内容将和dev分支相同, 从而可以保留提交的相关信息, 以便于之后的查找
+
+假设当前有两个分支master和dev, 如果仅仅在dev分支上进行更改, 而在master上没有操作, 此时在master分支上进行合并, 则默认进行快速合并, 此时相当于将master的指针移动到和dev指针相关的位置.
+
+如果使用非快进合并, 则相当于在master分支上进行一次commit, 此commit后的内容将和dev分支相同, 从而可以保留提交的相关信息, 以便于之后的查找
 
 ![快进合并示意图](/images/git/fastforword.jpg)
 
 ### 修改和删除分支
+
 ```
 git branch -m branchName newBranchName    // 重命名分支
 git branch -d branchName                  // 删除本地分支
@@ -237,11 +257,15 @@ git push origin --delete branchname       // 删除远程分支
 ```
 
 ### 冲突合并
-如果两个分支的修改存在冲突, 合并时会提示相关的冲突文件, 并且在相关的文件中留有标记, 因此可以手动到相关的文件中修改冲突的内容, 之后再次进行提交
 
-注意：手动解决冲突不是必要的, 可以在冲突的文件中选择保留某个分支的修改, 也可以选择两个分支的更改都抛弃, 或者不进行任何更改
+如果两个分支的修改存在冲突, 合并时会提示相关的冲突文件, 并且在相关的文件中留有标记, 因此可以手动到相关的文件中修改冲突的内容, 之后再次进行提交.
+
+实践过程中, 对于冲突通常并不会使用文本编辑器手动解决, 而是采取IDE提供的对比工具进行处理. 而且IDE通常还会提供一些自动解决冲突的功能, 对于部分简单冲突的情况可以自动解决.
+
+> 注意：虽然手动解决冲突不是必要的, 即可以选择两个分支的更改都抛弃, 或者不进行任何更改. 但实际通常需要谨慎的处理冲突, 否则几乎必定会产生代码BUG.
 
 ### 保存现场和恢复现场
+
 ```
 git stash list    //列出所有的保存内容
 git stash         //保存当前工作区和暂存区的内容
@@ -249,10 +273,11 @@ git stash apply   //应用栈顶的内容
 git stash drop    //删除栈顶的内容
 git stash pop     //应用并删除栈顶的内容
 ```
-- 通常情况下, 如果工作区或暂存区有未提交的内容时, 是不允许切换分支的
-- 使用上述命令可以先保存相关的操作, 切换分支处理优先级高的问题, 最后切换回来并恢复环境
+
+如果工作区或暂存区有未提交的内容时, Git是不允许切换分支的. 使用上述命令可以先保存相关的操作, 切换分支处理优先级高的问题, 最后切换回来并恢复环境
 
 ### 参考资料
+
 - [简单介绍三路合并](https://blog.csdn.net/u012937029/article/details/77161584)
 - [git merge参数详解(还链接了几篇其他文章, 也可以看看)](https://www.jianshu.com/p/58a166f24c81)
 
@@ -261,9 +286,11 @@ git stash pop     //应用并删除栈顶的内容
 -----------------------------
 
 ### 变基操作
-- 例如有两个分支master和dev,master分支在A提交后分出dev分支, 之后进行了B提交, 在dev分支上进行了C和D提交, 
-- 使用变基操作后, 相当于将dev分支从B上分出
-- 相当于对于C提交和D提交都进行合并
+
+假定有两个分支master和dev, master分支在A提交后分出dev分支, 之后进行了B提交, 在dev分支上进行了C和D提交, 使用变基操作后, 相当于将dev分支修改为从B上分出, 然后进行C和D提交.
+
+使用rebase操作可以保持提交记录简单, 避免产生大量的merge提交记录.
+
 ```
 git rebase master
 ```
@@ -271,9 +298,12 @@ git rebase master
 ![变基操作示意图](/images/git/rebase.jpg)
 
 ### 变基操作的冲突处理
-- 如果在变基过程中产生了冲突, 变基操作会终止, 并提示冲突原因
-- 此时需要手动处理相关冲突, 并add到缓冲区
-- 之后指定 git rebase --continue
+
+如果在变基过程中产生了冲突, 变基操作会终止, 并提示冲突原因. 此时需要手动处理相关冲突, 并add到缓冲区. 之后指定`git rebase --continue`继续变基操作
+
+实践中通常采用IDE完成变基操作, 此时如果产生冲突仅需要按照提示处理即可.
+
+> 执行变基操作前最好对当前分支的提交记录进行合并, 变为只有少数提交. 否则变基过程中可能会多次重复解决相同的冲突, 容易在解决冲突过程中由于决策错误产生BUG.
 
 
 ### 移植分支
@@ -281,6 +311,7 @@ git rebase master
 git chechout dev
 git rebase master --onto release
 ```
+
 ![移植分支示意图](/images/git/changebase.jpg)
 
 
@@ -293,17 +324,20 @@ git cherry-pick <commit-id>
 ```
 
 ### 删除冗余
+
+使用如下指令, 可以删除不可访问的提交, 从而改善文件保存结构并节省硬盘空间
+
 ```
 git gc
 ```
-- 删除不可访问的提交
-- 改善文件保存结构
-- 使用gc命令可以节约硬盘空间
+
+实践中通常并不会手动执行此指令. 正常使用下也不会产生显著数量的不可访问的提交.
 
 
 
 远程仓库
------------------------------
+-------------
+
 ### 初始化SSH密钥
 
 检查当前用户目录下是否有.ssh文件夹, 其中是否包含id_rsa和id_rsa.pub这两个文件, 如果有则说明已经创建过SSH密钥. 如果没有则执行如下的指令来创建密钥
@@ -327,18 +361,20 @@ ssh-keygen -t rsa -C "youremail@example.com"
 
 ### 关联远程仓库
 
-- 在GitHub上创建相关的仓库, 如果为远程仓库为空, 本地仓库非空, 则可使用
+在GitHub上创建相关的仓库, 如果为远程仓库为空, 本地仓库非空, 则可使用
+
 ```
 git remote add origin git@github.com:XXX/YYY.git      //关联本地仓库和远程仓库
 ```
-- 若本地尚未建立仓库, 远程仓库非空, 则可使用
+
+若本地尚未建立仓库, 远程仓库非空, 则可使用
+
 ```
 git clone git@github.com:XXX/YYY.git                  //将远程仓库内容拷贝到本地并关联
 ```
 
----------------------
 
-因为只在第一次使用时需要关联远程仓库, 所以不建议GitHub和本地同时存在内容时进行关联. 在这种条件下的关联操作非常繁琐, 强烈不建议尝试.
+> 因为只在第一次使用时需要关联远程仓库, 所以不建议GitHub和本地同时存在内容时进行关联. 在这种条件下的关联操作非常繁琐, 强烈不建议尝试.
 
 
 远程分支操作
@@ -363,6 +399,7 @@ Git的监视指令
 ------------------
 
 ### 查看记录
+
 ```
 git log
 git log --pretty=oneline
@@ -375,11 +412,13 @@ reflog相对于对git所有的操作进行了版本控制, 其中展示了所有
 
 
 ### 查看更新
+
 ```
 git diff
 git diff filename
 git diff --staged
 ```
+
 - 使用前两种指令将显示*工作区*中的内容和*暂存区*中内容的区别(尚未add的版本和最近一次add或commit的版本的区别)
 - 使用第三中指令将显示*暂存区*中内容和*版本库*中内容的区别
 
@@ -411,6 +450,7 @@ git push --tags               //推送所有的标签
 ### 创建公共仓库
 
 使用以下指令在需要的位置创建一个没有工作区的仓库
+
 
 ```
 git --bare init
