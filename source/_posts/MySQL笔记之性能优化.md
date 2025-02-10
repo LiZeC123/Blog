@@ -128,6 +128,34 @@ MySQL在执行查询操作时, 会分析不同索引的区分度(即不同取值
 此时可通过`ANALYSIS TABLE`语句重新进行抽样计算, 修正明显有偏差的估计值.
 
 
+MYSQL分区
+------------
+
+
+在 MySQL 中，可以使用分区表来管理数据，将数据按照时间范围进行分区，例如按月或按年分区。 MYSQL自动完成分区的存储和查询, 在使用时无需额外设置, 当查询调整中包含分区条件时, 可以排除掉不包含数据的分区, 从而提高查询效率. 例如可以按照如下的方式定义分区.
+
+
+```sql
+-- 创建按月分区的表
+CREATE TABLE your_table (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    data_field1 VARCHAR(255),
+    data_field2 TEXT,
+    create_time DATETIME NOT NULL
+)
+PARTITION BY RANGE (YEAR(create_time) * 100 + MONTH(create_time)) (
+    PARTITION p202501 VALUES LESS THAN (202502),
+    PARTITION p202502 VALUES LESS THAN (202503),
+    -- 可以根据需要继续添加分区
+    PARTITION pmax VALUES LESS THAN MAXVALUE
+);
+```
+
+RANGE分区支持数据表创建后新增分区, 新增操作仅增加规则, 不会产生数据变动, 因此很方便在后续扩展. 除了按照某个顺序进行分区以外, MYSQL也支持List分区(按照给定的列表条件)和Hash分区(按照哈希值).
+
+启用分区功能后创建索引, 如果索引以分区键开头, 那么将自动变为局部索引, 即仅在某个分区的数据上创建索引. 从而可以缩减索引的规模, 以便于更快的检索到数据. 对于其他索引, 则依然将数据表视为整体后创建索引.
+
+
 数据类型优化
 --------------
 
