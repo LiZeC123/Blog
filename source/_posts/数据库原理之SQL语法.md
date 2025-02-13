@@ -37,7 +37,7 @@ CREATE TABLE <表名>
 	[, <列名> <数据类型> [列完整性约束条件]]
 	...
 	[, <表完整性约束>]
-);
+) [表附加属性];
 
 列完整性约束条件 => PRIMARY KEY | NOT NULL | UNIQUE
 列完整性约束条件 => DEFAULT <默认值> | COMMENT <列说明>
@@ -45,33 +45,21 @@ CREATE TABLE <表名>
 表完整性约束条件 => PRIMARY KEY(<列名1> [,<列名2>]...[,<列名n>])
 表完整性约束条件 => FOREIGN KEY(<列名>) REFERENCES <表名>(<列名>)
 表完整性约束条件 => [UNIQUE] INDEX <索引名> (<列名1> [,<列名2>]...[,<列名n>]) [USING <索引类型>]
+
+表附加属性 => ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT ''
 ```
 
-常见的数据类型有如下的几种：
-
-数据类型            | 含义
---------------------|----------------------------
-CHAR(n)             | 长度为n的定长字符串
-INT                 | 整数（4字节）
-FLOAT(n)            | 至少n为精度的浮点数
-DATE                | 日期, 包含年月日
-TIME                | 时间, 包含时, 分, 秒
-
-完整的数据类型表请查看本文末尾的[附录A 数据类型](#附录A-数据类型), 数据类型选择应该遵守如下的一些约束
-
-1. 选择不超过范围的最小数据类型
-2. 尽量使用简单类型
-3. 避免使用NULL, 尤其索引列不适合有NULL值
-
-
------------
-
-关于更高级的约束条件设置方法, 可以查看本文的[完整性约束](#完整性约束)章节. 关于索引, 默认情况下相当于使用了`USING BTREE`.
+完整的数据类型表请查看本文末尾的[附录A 数据类型](#附录A-数据类型), 数据类型选择应该遵守: 选择不超过范围的最小数据类型, 尽量使用简单类型, 避免使用NULL, 尤其索引列.关于更高级的约束条件设置方法, 可以查看本文的[完整性约束](#完整性约束)章节. 
 
 对于时间类型的字段, 可以使用`DEFAULT CURRENT_TIMESTAMP`将该字段的默认值设置为当前时间.
 
+对于索引, 默认情况下相当于使用了`USING BTREE`. 每个索引的列还可以执行索引的顺序, 例如递增或者递减.
+
+对于表附加属性, 可以指定引擎类型和编码集. 通常使用默认值即可, 但出于兼容性考虑, 也可以明确的指定为`InnoDB`和`utf8mb4`
+
 
 ### 修改表
+
 ```sql
 ALTER TABLE <TableName>
 [ADD [COLUMN] <newColName> <datType> [ColIntegrity]]
@@ -81,9 +69,8 @@ ALTER TABLE <TableName>
 ```
 
 
-
-
 ### 删除表
+
 ```
 DROP TABLE <TableName> [RESTRICT|CASCADE]
 ```
@@ -94,6 +81,7 @@ DROP TABLE <TableName> [RESTRICT|CASCADE]
 
 ### 用户自定义约束
 可以使用Check关键字来检测一个属性是否位于某个集合之中, 例如
+
 ``` sql
 CREATE TABLE St
 (
@@ -107,6 +95,7 @@ CREATE TABLE St
 
 
 #### 创建命名约束
+
 ```sql
 CREATE TABLE Student
 (
@@ -123,6 +112,7 @@ CREATE TABLE Student
 ```
 
 ### 修改约束条件
+
 ```sql
 ALTER TABLE Student
     DROP CONSTRAINT C1;
@@ -147,18 +137,22 @@ FROM <表名 | 视图名> [, <表名 | 视图名>]
 
 
 目标表达式除了使用属性列以外, 还可以使用表达式, 例如
+
 ```sql
 SELECT Sname,2018-Sage BIRTHDAY FROM Student;
 ```
+
 上面的语句通过2018-Sage计算了实际的年龄, 并且将该列命名为BIRTHDAY. 
 
 
 HAVING语句用于给GROUP BY的分组设置条件, 例如
+
 ```sql
 SELECT Sno,AVG(Grade) FROM SC GROUP BY Sno HAVING AVG(Grade)>=90;
 ```
 
 ### 连接查询
+
 ```sql
 SELECT *
 FORM <TabName1> <JoinKeyWord> <TabName2>
@@ -168,6 +162,7 @@ JoinKeyWord ==> JOIN | LEFT OUTER JOIN | RIGHT OUTER JOIN | FULL OUTER JOIN
 ```
 
 例如:
+
 ```sql
 SELECT Student.Sno, Sname, Ssex, Sage, Sdept, Cno, Grade
 FROM  Student LEFT OUT JOIN SC 
@@ -195,7 +190,9 @@ WHERE Sno IN
 
 更新
 --------------
+
 ### 插入元组
+
 ```sql
 INSERT INTO <TableName> [(<ColName_1> [, <ColName_2>]...)]
 VALUE (<Data1>, [<Data2>] ...);
@@ -206,6 +203,7 @@ VALUE (<Data1>, [<Data2>] ...);
 2. 非字符类型的数据也可以使用单引号包括
 
 ### 修改元组
+
 ```sql
 UPDATE <TableName>
 SET <ColName> = <Expr> [, <ColName> = <Expr>]
@@ -213,6 +211,7 @@ SET <ColName> = <Expr> [, <ColName> = <Expr>]
 ```
 
 可以同时更新多个表, 例如
+
 ``` sql
 UPDATE message m, lib ml
 SET m.M_ID = ml.M_ID, m.TYPE = ml.TYPE
@@ -220,6 +219,7 @@ WHERE m.LIB_ID = ml.LIB_ID;
 ```
 
 ### 删除元组
+
 ```sql
 DELETE FROM <TableName>
 [WHERE <conditionExpr>]
@@ -227,23 +227,28 @@ DELETE FROM <TableName>
 
 索引
 ----------------
+
 ### 建立索引
+
 ```sql
 CREATE [UNIQUE] [CLUSTER] INDEX <IndexName>
 ON <TableName>(<ColName> [Order] [, <ColName> [Order]])
 
 Order => ASC | DESC
 ```
+
 注意:
 1. 上述索引中, 可以选择每个索引是对应唯一值还是聚簇索引
 2. 每个列名后可跟随一个排序表示
 
 ### 修改索引
+
 ```sql
 ALTER INDEX <OldIndexName> RENAME TO <NewIndexName>
 ```
 
 ### 删除索引
+
 ```sql
 DROP INDEX <IndexName>
 ```
@@ -251,17 +256,21 @@ DROP INDEX <IndexName>
 
 视图
 ---------------
+
 ### 建立视图
+
 ```sql
 CREATE VIEW <ViewName> [(<ColName> [, <ColName>] ... )]
 AS <SubSelect>
 [WITH CHECK OPTION]
 ```
+
 注意:
 1. 可以全部省略列名, 表示由子查询语句指定
 2. WITH CHECK OPTION表示对视图的更新操作需要保证满足子查询的条件表达式
 
 ### 删除视图
+
 ```sql
 DROP VIEW <ViewName> [CASCADE]
 ```
@@ -301,6 +310,7 @@ DROP VIEW <ViewName> [CASCADE]
 -----------------
 
 ### 授予权限
+
 ```sql
 GRANT <权限> [, <权限>] ...
 ON <对象类型> <对象名> [, <对象类型> <对象名>]
@@ -309,16 +319,19 @@ TO <用户> [, <用户>]
 ```
 
 例如：
+
 ```sql
 GRANT UPDATE(Sno), SELECT
 ON TABLE Student
 TO PUBLIC
 ```
+
 说明：
 1. WITH GRANT OPTION 表示被授权用户可以再次将权限授予其他用户
 2. 不允许循环授权
 
 ### 收回权限
+
 ```sql
 REVOKE <权限> [, <权限>] ...
 ON <对象类型> <对象名> [, <对象类型> <对象名>]
@@ -328,12 +341,15 @@ FROM <用户> [, <用户>]
 
 角色控制
 -----------
+
 ### 创建角色
+
 ```sql
 CREATE ROLE <RoleName>
 ```
 
 ### 角色授权
+
 ```sql
 GRANT <权限> [, <权限>] ...
 ON <对象类型> <对象名> [, <对象类型> <对象名>]
@@ -341,16 +357,19 @@ TO <角色> [, <角色名>]
 ```
 
 ### 用户角色授权
+
 ```
 GRANT <角色1> [, <角色2>] ...
 TO <角色3> [, <用户1>] ...
 [WITH ADMIN OPTION]
 ```
+
 说明：
 1. 角色可以授予给某个用户或者其他角色
 2. WITH ADMIN OPTION表示被授权者可以再次授予自己的权限
 
 ### 角色权限的收回
+
 ```sql
 REVOKE <权限> [, <权限>] ...
 ON <对象类型> <对象名> [, <对象类型> <对象名>]
@@ -361,11 +380,13 @@ FROM <角色> [, <角色名>]
 -----------------
 
 ### 创建断言
+
 ``` sql
 CREATE ASSERTION <断言名> <CHECK子句>
 ```
 
 例如
+
 ``` sql
 CREATE ASSERTION ASSE_SC_DB_NUM
 CHECK (60 >= 
@@ -375,10 +396,12 @@ CHECK (60 >=
         )
     )
 ```
+
 执行上述语句后, 每次插入选课记录后, 都会执行一次CHECK子句中的条件, 如果选课人数超过60人, 就会拒绝执行
 
 
 ### 删除断言
+
 ``` sql
 DROP ASSERTION <断言名>
 ```
@@ -484,7 +507,8 @@ A Contain B = (B - A) 为空集
 	- 查询至少选修了学生2002122选修的全部课程的学生号码
 	- 即 求所有学生S: (S选修课程) Contains (学生2002122选修的所有课程)
 	- 即 NOT EXISTS (学生2002122选修的所有课程 EXCEPT S选修课程)
-```
+
+```sql
 SELECT DISTINCT sno
 FROM sc A
 WHERE NOT EXISTS
