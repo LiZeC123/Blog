@@ -447,3 +447,8 @@ navigator.clipboard.writeText(this.message).then(() => {
 
 - [Clipboard API](https://developer.mozilla.org/en-US/docs/Web/API/Clipboard/write)
 
+
+定时器节流
+------------
+
+在 JavaScript 中，`setTimeout`和`setInterval`是常用的定时器函数。在非当前页面中，Chrome 可能会对定时器的执行进行节流处理。比如，当页面处于后台时，定时器的回调函数可能不会按照设定的时间精确执行，而是会被延迟或合并执行，以减少非当前页面中 JavaScript 的执行频率，降低资源消耗。

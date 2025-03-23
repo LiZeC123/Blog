@@ -12,11 +12,11 @@ cover_picture:  images/ubuntu.jpg
 
 
 
-- [SSH仅允许局域网密码登录](#ssh仅允许局域网密码登录)
 - [安装node](#安装node)
 - [安装OneDrive客户端](#安装onedrive客户端)
-- [Ubuntu下如何挂载U盘](#ubuntu下如何挂载u盘)
-- [ubuntu开机自动挂载新硬盘](#ubuntu开机自动挂载新硬盘)
+- [磁盘操作](#磁盘操作)
+  - [Ubuntu挂载U盘](#ubuntu挂载u盘)
+  - [ubuntu开机自动挂载新硬盘](#ubuntu开机自动挂载新硬盘)
 - [清理系统硬盘空间](#清理系统硬盘空间)
   - [排查思路](#排查思路)
   - [清理系统日志](#清理系统日志)
@@ -27,11 +27,9 @@ cover_picture:  images/ubuntu.jpg
 - [设置定时任务](#设置定时任务)
   - [Crontab语法解析](#crontab语法解析)
   - [不执行原因排查](#不执行原因排查)
-- [双系统设置默认启动项](#双系统设置默认启动项)
 - [添加搜索路径](#添加搜索路径)
 - [MySQL中文乱码](#mysql中文乱码)
 - [查看已安装软件位置](#查看已安装软件位置)
-- [创建桌面快捷方式](#创建桌面快捷方式)
 - [清除/dev/loop设备](#清除devloop设备)
 - [Ubuntu server扩展lvm空间](#ubuntu-server扩展lvm空间)
 - [Linux系统目录结构](#linux系统目录结构)
@@ -70,30 +68,8 @@ cover_picture:  images/ubuntu.jpg
   - [查询头文件对应的依赖](#查询头文件对应的依赖)
   - [配置X11转发](#配置x11转发)
   - [EPUB阅读器](#epub阅读器)
-
-
-SSH仅允许局域网密码登录
------------------------------
-
-如果希望处于外网的用户只能使用秘钥登录, 而处于局域网的用户依然可以使用密码登录, 则可以进行如下的配置. 编辑`/etc/ssh/sshd_config`文件, 添加如下的内容
-
-```
-#禁用密码验证
-PasswordAuthentication no
-#启用密钥验证
-RSAAuthentication yes
-PubkeyAuthentication yes
-
-# 局域网IP允许密码验证
-Match Address 10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
-    PasswordAuthentication yes
-Match all
-```
-
-
-- [linux ssh使用秘钥登录并禁用密码登录](https://blog.csdn.net/qq_32506245/article/details/81355497)
-- [Only allow password authentication to SSH server from internal network](https://serverfault.com/questions/406839/only-allow-password-authentication-to-ssh-server-from-internal-network)
-- [OpenSSH: How to end a match block](https://unix.stackexchange.com/questions/67334/openssh-how-to-end-a-match-block)
+  - [双系统设置默认启动项](#双系统设置默认启动项)
+  - [创建桌面快捷方式](#创建桌面快捷方式)
 
 
 
@@ -154,10 +130,11 @@ journalctl --user-unit onedrive -f
 ```
 
 
+磁盘操作
+--------------
 
+### Ubuntu挂载U盘
 
-Ubuntu下如何挂载U盘
--------------------------
 1. 使用  `sudo fdisk -l` 命令查看U盘的位置
 ``` 
 # 结果可能包含如下字段
@@ -189,8 +166,8 @@ $ sudo umount /media/u
 ```
 
 
-ubuntu开机自动挂载新硬盘
----------------------------
+### ubuntu开机自动挂载新硬盘
+
 
 **操作需要Root权限**
 
@@ -365,32 +342,6 @@ du -lh --max-depth=1
 之后可以在日志中查看是否有报错. 
 
 
-双系统设置默认启动项
--------------------------
-1. 打开相关的配置文件
-```
-$ sudo gedit /etc/default/grub
-```
-
-2. 修改相关选项
-```
-# 节选其中的一段内容如下所示
-GRUB_DEFAULT=0     # 此项表示默认选择项位置, 从0开始计数
-#GRUB_HIDDEN_TIMEOUT=0
-GRUB_HIDDEN_TIMEOUT_QUIET=true
-GRUB_TIMEOUT=2     # 此项表示默认选择时间, 单位为秒
-GRUB_DISTRIBUTOR=`lsb_release -i -s 2> /dev/null || echo Debian`
-GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"
-GRUB_CMDLINE_LINUX=""
-```
-
-3. 更新
-只有更新上述设置以后, 相关的修改才会生效
-```
-$ sudo update-grub
-```
-
-
 添加搜索路径
 -------------------------
 通常系统会在用户的home目录下添加一个搜索路径, 以便于用户可以调用自己编写的程序, 如果没有, 可以按照如下方式添加
@@ -433,27 +384,6 @@ character-set-server=utf8
 ``` 
 dpkg -L <软件名>
 ```
-
-创建桌面快捷方式
--------------------
-
-使用文件编辑器在桌面创建一个以`.desktop`结尾的文件. 然后依据需要设置一下的内容
-
-``` shell
-[Desktop Entry]
-Encoding=UTF-8
-Version=1.0                                     #version of an app.
-Name[en_US]=yEd                                 #name of an app.
-GenericName=GUI Port Scanner                    #longer name of an app.
-Exec=java -jar /opt/yed-3.11.1/yed.jar          #command used to launch an app.
-Terminal=false                                  #whether an app requires to be run in a terminal
-Icon[en_US]=/opt/yed-3.11.1/icons/yicon32.png   #location of icon file.
-Type=Application                                #type
-Categories=Application;Network;Security;        #categories in which this app should be listed.
-Comment[en_US]=yEd Graph Editor                 #comment which appears as a tooltip.
-```
-
-- [如何在Linux的桌面上创建快捷方式或启动器](https://linux.cn/article-2289-1.html)
 
 清除/dev/loop设备
 --------------------
@@ -1007,3 +937,51 @@ python3-pycparser: /usr/share/python3-pycparser/fake_libc_include/X11/Xlib.h
 ```
 snap install fbreader
 ```
+
+
+### 双系统设置默认启动项
+
+1. 打开相关的配置文件
+```
+$ sudo gedit /etc/default/grub
+```
+
+1. 修改相关选项
+```
+# 节选其中的一段内容如下所示
+GRUB_DEFAULT=0     # 此项表示默认选择项位置, 从0开始计数
+#GRUB_HIDDEN_TIMEOUT=0
+GRUB_HIDDEN_TIMEOUT_QUIET=true
+GRUB_TIMEOUT=2     # 此项表示默认选择时间, 单位为秒
+GRUB_DISTRIBUTOR=`lsb_release -i -s 2> /dev/null || echo Debian`
+GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"
+GRUB_CMDLINE_LINUX=""
+```
+
+1. 更新
+只有更新上述设置以后, 相关的修改才会生效
+```
+$ sudo update-grub
+```
+
+
+
+### 创建桌面快捷方式
+
+使用文件编辑器在桌面创建一个以`.desktop`结尾的文件. 然后依据需要设置一下的内容
+
+``` shell
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0                                     #version of an app.
+Name[en_US]=yEd                                 #name of an app.
+GenericName=GUI Port Scanner                    #longer name of an app.
+Exec=java -jar /opt/yed-3.11.1/yed.jar          #command used to launch an app.
+Terminal=false                                  #whether an app requires to be run in a terminal
+Icon[en_US]=/opt/yed-3.11.1/icons/yicon32.png   #location of icon file.
+Type=Application                                #type
+Categories=Application;Network;Security;        #categories in which this app should be listed.
+Comment[en_US]=yEd Graph Editor                 #comment which appears as a tooltip.
+```
+
+- [如何在Linux的桌面上创建快捷方式或启动器](https://linux.cn/article-2289-1.html)
