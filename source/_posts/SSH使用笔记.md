@@ -4,7 +4,7 @@ math: false
 date: 2025-03-23 22:13:06
 categories:
 tags:
-cover_picture:
+cover_picture: 
 ---
 
 
