@@ -254,10 +254,24 @@ lizec@ideapad:~$ echo $PATH
 如果想要把某个目录添加到PATH变量之中, 可以直接修改`$PATH`变量的值, 例如
 
 ```
-export PATH=$PATH:/home/lizec/.local/bin
+echo 'export PATH=$PATH:/usr/local/go/bin' >> ~/.bashrc  
+source ~/.bashrc  
 ```
 
-但这一指令只会对当前终端生效, 如果需要持久生效, 可以将这一指令写入`~/.bashrc`文件. 更多配置可以查看下面的链接
+如果使用的是fish, 则可以打开`~/.config/fish/config.fish`添加如下的内容
+
+```sh
+set -gx PATH $PATH /usr/local/go/bin
+```
+
+然后执行如下指令重新加载配置
+
+```sh
+source ~/.config/fish/config.fish
+```
+
+
+更多配置可以查看下面的链接
 
 - [【Ubuntu】Ubuntu设置和查看环境变量](https://blog.csdn.net/White_Idiot/article/details/78253004)
 
