@@ -420,5 +420,29 @@ select {
 
 > Context的设计哲学要求Context不可修改, 不可复制. 因此所有的修改都是通过在原来的Ctx中包裹一层新的Context实现
 
+
+### 始终执行cancel函数
+
+可以注意到, 在Context的派生函数中, 绝大部分会返回一个CancelFunc. 在实践中, 应该始终在当前函数执行完毕后执行CancelFunc, 从而避免可能得资源泄露. 例如
+
+```go
+ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+defer cancel() // 确保函数退出时立即取消
+
+// 执行某些可能耗时的操作
+go func() {
+    select {
+    case <-ctx.Done():
+        fmt.Println("操作已取消或超时")
+    }
+}()
+```
+
+
+如果不执行CancelFunc, 则相关的资源需要等待定时器超时后才能释放. 而执行CancelFunc可以保证相关资源立刻释放.
+
+
+
+
 - [小白也能看懂的context包详解：从入门到精通](https://segmentfault.com/a/1190000040917752)
 
