@@ -51,23 +51,23 @@ CREATE TABLE IF NOT EXISTS users (
 内置指令
 -----------
 
-| **指令**      | **参数说明**            | **功能描述**         | **使用示例**                  |
-| ------------- | ----------------------- | -------------------- | ----------------------------- |
-| `.tables`     | [?PATTERN]              | 显示匹配表名         | `.tables 'user%'`             |
-| `.schema`     | [?TABLE]                | 显示建表语句         | `.schema users`               |
-| `.headers`    | `on`/`off`              | 显示列标题           | `.headers on`                 |
-| `.mode`       | `csv`/`json`/`column`等 | 设置输出格式         | `.mode json`                  |
-| `.dump`       | [?TABLE]                | 导出SQL格式数据      | `.dump orders`                |
-| `.import`     | `FILE` `TABLE`          | 导入CSV数据到表      | `.import data.csv temp_table` |
-| `.output`     | `[FILENAME]`            | 重定向输出到文件     | `.output backup.sql`          |
-| `.read`       | `FILENAME`              | 执行SQL脚本文件      | `.read init.sql`              |
-| `.quit`/.exit | 无                      | 退出命令行           | `.exit`                       |
-| `.databases`  | 无                      | 显示所有附加数据库   | `.databases`                  |
-| `.indexes`    | [?TABLE]                | 显示表的索引         | `.indexes users`              |
-| `.nullvalue`  | `STRING`                | 设置NULL的显示占位符 | `.nullvalue NULL`             |
-| `.timer`      | `on`/`off`              | 显示查询执行时间     | `.timer on`                   |
-| `.stats`      | `on`/`off`              | 显示性能统计信息     | `.stats on`                   |
-| `.width`      | `NUM1 NUM2...`          | 设置列显示宽度       | `.width 10 15 20`             |
+| **指令**        | **参数说明**            | **功能描述**         | **使用示例**                  |
+| --------------- | ----------------------- | -------------------- | ----------------------------- |
+| `.tables`       | [?PATTERN]              | 显示匹配表名         | `.tables 'user%'`             |
+| `.schema`       | [?TABLE]                | 显示建表语句         | `.schema users`               |
+| `.headers`      | `on`/`off`              | 显示列标题           | `.headers on`                 |
+| `.mode`         | `csv`/`json`/`column`等 | 设置输出格式         | `.mode json`                  |
+| `.dump`         | [?TABLE]                | 导出SQL格式数据      | `.dump orders`                |
+| `.import`       | `FILE` `TABLE`          | 导入CSV数据到表      | `.import data.csv temp_table` |
+| `.output`       | `[FILENAME]`            | 重定向输出到文件     | `.output backup.sql`          |
+| `.read`         | `FILENAME`              | 执行SQL脚本文件      | `.read init.sql`              |
+| `.quit`/`.exit` | 无                      | 退出命令行           | `.exit`                       |
+| `.databases`    | 无                      | 显示所有附加数据库   | `.databases`                  |
+| `.indexes`      | [?TABLE]                | 显示表的索引         | `.indexes users`              |
+| `.nullvalue`    | `STRING`                | 设置NULL的显示占位符 | `.nullvalue NULL`             |
+| `.timer`        | `on`/`off`              | 显示查询执行时间     | `.timer on`                   |
+| `.stats`        | `on`/`off`              | 显示性能统计信息     | `.stats on`                   |
+| `.width`        | `NUM1 NUM2...`          | 设置列显示宽度       | `.width 10 15 20`             |
 
 ---
 
