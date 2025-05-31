@@ -8,7 +8,7 @@ cover_picture: images/redis.jpg
 ---
 
 
-Redis是一个纯C语言实习的开源项目, 且项目中已经自带了所有的依赖. 因此在Linux平台可以非常简单的从源码编译得到Redis可执行文件. 配合Vscode可以轻松的阅读Redis源码. 在Mac平台可直接使用brew安装Redis服务端和客户端. 不建议在Windows平台查看和编译源码, 由于环境变量与系统的实现不同, 很难完成项目编译.
+[Redis](https://github.com/redis/redis)是一个纯C语言实现的开源项目, 且项目中已经自带了所有的依赖, 因此在Linux平台可以非常简单的从源码编译得到Redis可执行文件. 配合Vscode可以轻松的阅读Redis源码. 在Mac平台可直接使用brew安装Redis服务端和客户端. 不建议在Windows平台查看和编译源码, 由于环境变量与系统的实现不同, 很难完成项目编译.
 
 - [ubuntu 18.04 安装 Redis](https://wangxin1248.github.io/linux/2018/07/ubuntu18.04-install-redis.html)
 - [mac安装redis-cli](https://blog.csdn.net/w5688414/article/details/102692919)
@@ -45,6 +45,8 @@ Redis支持多种数据类型，具体包括字符串（简单键值对）、哈
 最后, 对于任意一个键, 均支持如下的键操作
 
 **键操作**: 查看键属性, 类型或过期时间. 修改过期时间, 判断键存在, 重命名键, 同步或异步删除键
+
+> 可通过[官方文档](https://redis.io/docs/latest/commands/)快速查阅指令的详细信息.
 
 
 
