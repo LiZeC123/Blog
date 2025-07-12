@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>18世纪至19世纪中外对比年表</title>
+    <style>
+      /* 全局样式 */
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        background-color: #f4f7f6;
+        color: #333;
+        line-height: 1.6;
+        margin: 0;
+        padding: 20px;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 50px;
+      }
+
+      header h1 {
+        font-size: 2.8em;
+        color: #2c3e50;
+        font-weight: 700;
+      }
+
+      header p {
+        font-size: 1.1em;
+        color: #7f8c8d;
+      }
+
+      /* 时间轴容器 */
+      .timeline {
+        position: relative;
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+
+      /* 时间轴中心线 */
+      .timeline::after {
+        content: "";
+        position: absolute;
+        width: 4px;
+        background-color: #bdc3c7;
+        top: 0;
+        bottom: 0;
+        left: 50%;
+        margin-left: -2px;
+      }
+
+      /* 事件容器 */
+      .event-container {
+        padding: 10px 40px;
+        position: relative;
+        width: 50%;
+        box-sizing: border-box;
+      }
+
+      /* 左侧事件容器 */
+      .event-container.left {
+        left: 0;
+      }
+
+      /* 右侧事件容器 */
+      .event-container.right {
+        left: 50%;
+      }
+
+      /* 事件内容区域 */
+      .event-content {
+        padding: 20px 30px;
+        background-color: white;
+        position: relative;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      /* 中国事件特有样式 */
+      .china .event-content {
+        border-top: 4px solid #e74c3c; /* 红色代表中国 */
+      }
+
+      /* 外国事件特有样式 */
+      .foreign .event-content {
+        border-top: 4px solid #3498db; /* 蓝色代表外国 */
+      }
+
+      /* 时间轴上的圆点 */
+      .event-container::after {
+        content: "";
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        background-color: white;
+        border: 4px solid #bdc3c7;
+        top: 25px;
+        border-radius: 50%;
+        z-index: 1;
+      }
+
+      /* 左侧事件圆点位置 */
+      .event-container.left::after {
+        right: -12px;
+      }
+
+      /* 右侧事件圆点位置 */
+      .event-container.right::after {
+        left: -12px;
+      }
+
+      /* 箭头 */
+      .event-content::before {
+        content: " ";
+        height: 0;
+        position: absolute;
+        top: 22px;
+        width: 0;
+        z-index: 1;
+        border: medium solid white;
+      }
+
+      /* 右侧事件的箭头 */
+      .event-container.right .event-content::before {
+        left: -19px;
+        border-width: 10px 20px 10px 0;
+        border-color: transparent white transparent transparent;
+      }
+
+      /* 左侧事件的箭头 */
+      .event-container.left .event-content::before {
+        right: -19px;
+        border-width: 10px 0 10px 20px;
+        border-color: transparent transparent transparent white;
+      }
+
+      /* 事件内容样式 */
+      .event-year {
+        font-size: 1.5em;
+        font-weight: bold;
+        color: #2c3e50;
+        margin-bottom: 5px;
+      }
+
+      .event-title {
+        font-size: 1.2em;
+        font-weight: 600;
+        margin-bottom: 10px;
+      }
+
+      .event-content p {
+        font-size: 0.95em;
+        margin: 0;
+        color: #555;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>18世纪至19世纪中外对比年表</h1>
+      <p>两个世纪的风云变幻：工业革命与中华帝国</p>
+    </header>
+
+    <div id="timeline-container" class="timeline"></div>
+
+    <script>
+      // --- 数据定义 ---
+      // 在这里修改、添加或删除事件
+      const events = [
+        {
+          year: 1705,
+          title: "纽科门蒸汽机",
+          description:
+            "托马斯·纽科门制造出第一台实用的蒸汽机（用于矿井排水），开启了蒸汽动力利用的先河（工业革命的雏形）。",
+          type: "foreign",
+        },
+        {
+          year: 1735,
+          title: "林奈生物分类系统",
+          description:
+            "卡尔·林奈发表《自然系统》，奠定了现代生物分类学（双名法命名）的基础。",
+          type: "foreign",
+        },
+        {
+          year: 1745,
+          title: "莱顿瓶发明",
+          description:
+            "彼得·范·穆申布鲁克和埃瓦尔德·格奥尔格·冯·克莱斯特分别独立发明了莱顿瓶，这是首个能有效储存静电荷的电容器，推动了电学研究。",
+          type: "foreign",
+        },
+        {
+          year: 1752,
+          title: "富兰克林风筝实验",
+          description:
+            "本杰明·富兰克林通过著名的风筝实验证明了闪电的本质是电，并发明了避雷针。",
+          type: "foreign",
+        },
+        {
+          year: 1764,
+          title: "珍妮纺纱机",
+          description:
+            "詹姆斯·哈格里夫斯发明珍妮纺纱机，极大地提高了纺纱效率（工业革命重要标志）。",
+          type: "foreign",
+        },
+        {
+          year: 1774,
+          title: "氧气的独立发现与命名",
+          description:
+            "约瑟夫·普里斯特利和卡尔·威廉·舍勒分别独立发现并制备了氧气（普里斯特利称之为“脱燃素空气”，舍勒称之为“火空气”）。",
+          type: "foreign",
+        },
+        {
+          year: 1781,
+          title: "赫歇尔发现天王星",
+          description:
+            "威廉·赫歇尔发现天王星，这是第一颗用望远镜发现的行星，扩大了人类对太阳系的认识。",
+          type: "foreign",
+        },
+        {
+          year: 1781,
+          title: "瓦特改良蒸汽机专利",
+          description:
+            "詹姆斯·瓦特获得其带有分离冷凝器的改良型蒸汽机的关键专利，极大地提升了蒸汽机的效率和实用性，成为工业革命的核心动力。",
+          type: "foreign",
+        },
+        {
+          year: 1783,
+          title: "现代化学革命",
+          description:
+            "安托万·拉瓦锡发表《化学纲要》，提出氧化学说（推翻了燃素说），定义了元素概念，建立了质量守恒定律，标志现代化学的诞生。",
+          type: "foreign",
+        },
+        {
+          year: 1783,
+          title: "热气球首次载人飞行",
+          description:
+            "蒙特哥菲尔兄弟制造的热气球在法国首次载人（非系留）升空，实现了人类空中飞行的梦想。",
+          type: "foreign",
+        },
+        {
+          year: 1785,
+          title: "库仑定律",
+          description:
+            "夏尔·奥古斯丁·库仑通过扭秤实验确立静电学基本定律，量化了电荷间的作用力。",
+          type: "foreign",
+        },
+        {
+          year: 1789,
+          title: "疫苗概念的诞生",
+          description:
+            "爱德华·詹纳为男孩接种牛痘以预防天花成功，开创了免疫学和疫苗接种的先河。",
+          type: "foreign",
+        },
+        {
+          year: 1796,
+          title: "拉普拉斯《宇宙体系论》",
+          description:
+            "皮埃尔-西蒙·拉普拉斯提出星云假说，尝试用牛顿力学解释太阳系的起源。",
+          type: "foreign",
+        },
+        {
+          year: 1798,
+          title: "卡文迪什测引力常数/称量地球",
+          description:
+            "亨利·卡文迪什通过精密的扭秤实验测量了万有引力常数G，从而计算出地球的密度和质量。",
+          type: "foreign",
+        },
+        {
+          year: 1799,
+          title: "伏打电堆",
+          description:
+            "亚历山德罗·伏打发明了首个能持续产生稳定电流的化学电源——伏打电堆，为电学研究开辟了新天地。",
+          type: "foreign",
+        },
+        {
+          year: 1800,
+          title: "电气时代开端",
+          description:
+            "伏打公布其发明“伏打电堆”（实际在1799年底发明，1800年初公布），标志稳定电流源的出现，开启电气时代。",
+          type: "foreign",
+        },
+        {
+          year: 1803,
+          title: "原子论复兴",
+          description:
+            "约翰·道尔顿提出现代原子论，解释了元素和化合物组成的定量关系（倍比定律）。",
+          type: "foreign",
+        },
+        {
+          year: 1807,
+          title: "第一艘实用蒸汽船",
+          description:
+            "罗伯特·富尔顿的“克莱蒙特号”在哈德逊河成功试航，证明了蒸汽动力船舶的实用价值。",
+          type: "foreign",
+        },
+        {
+          year: 1820,
+          title: "电流的磁效应",
+          description:
+            "汉斯·克里斯蒂安·奥斯特发现电流能引起磁针偏转，揭示了电与磁之间的紧密联系（电磁学的开端）。",
+          type: "foreign",
+        },
+        {
+          year: 1831,
+          title: "电磁感应定律",
+          description:
+            "迈克尔·法拉第发现电磁感应现象（1831年），建立了电磁感应定律，为发电机和电动机的发明奠定了理论基础。法拉第同时发现电磁旋转现象（1821年）。",
+          type: "foreign",
+        },
+        {
+          year: 1827,
+          title: "欧姆定律",
+          description: "乔治·西蒙·欧姆确立描述电流、电压和电阻关系的欧姆定律。",
+          type: "foreign",
+        },
+        {
+          year: 1830,
+          title: "第一条商用铁路",
+          description:
+            "英国的利物浦至曼彻斯特铁路开通，斯蒂芬森的“火箭号”机车证明了铁路运输的可行性，开启铁路时代。",
+          type: "foreign",
+        },
+        {
+          year: 1837,
+          title: "电报发明",
+          description:
+            "威廉·库克和查尔斯·惠斯通以及塞缪尔·莫尔斯分别独立发明了实用的电磁电报系统，实现了远程即时通信。",
+          type: "foreign",
+        },
+        {
+          year: 1839,
+          title: "细胞学说的建立",
+          description:
+            "马蒂亚斯·施莱登和泰奥多尔·施万提出细胞学说，指出所有生物体都由细胞构成。",
+          type: "foreign",
+        },
+        {
+          year: 1846,
+          title: "首次公开演示外科麻醉",
+          description:
+            "威廉·莫顿在马萨诸塞州总医院成功公开演示乙醚麻醉进行外科手术，使无痛外科成为可能。",
+          type: "foreign",
+        },
+        {
+          year: 1851,
+          title: "傅科摆实验",
+          description:
+            "莱昂·傅科在巴黎万神殿通过巨型单摆（傅科摆）直接演示了地球的自转。",
+          type: "foreign",
+        },
+        {
+          year: 1859,
+          title: "达尔文《物种起源》出版",
+          description:
+            "查尔斯·达尔文发表《论通过自然选择的物种起源，或生存斗争中有利物种的保存》，系统地阐述了生物进化论（自然选择学说）。",
+          type: "foreign",
+        },
+        {
+          year: 1860,
+          title: "孟德尔遗传定律",
+          description:
+            "格里哥·孟德尔在豌豆杂交实验中发现了遗传定律（1865年发表，1866年正式出版），奠定了现代遗传学基础（虽被忽视多年）。",
+          type: "foreign",
+        },
+        {
+          year: 1865,
+          title: "麦克斯韦方程组",
+          description:
+            "詹姆斯·克拉克·麦克斯韦发表其电磁场理论的一组方程，预言了电磁波的存在并将电、磁、光统一起来。",
+          type: "foreign",
+        },
+        {
+          year: 1867,
+          title: "发电机实用化",
+          description:
+            "维尔纳·冯·西门子发明实用自励发电机，使大规模发电成为可能。",
+          type: "foreign",
+        },
+        {
+          year: 1869,
+          title: "元素周期表",
+          description:
+            "德米特里·门捷列夫（同期有洛塔尔·迈耶尔）发现元素周期律，制作出元素周期表，成功预测了未知元素及其性质。",
+          type: "foreign",
+        },
+        {
+          year: 1876,
+          title: "实用电话发明",
+          description:
+            "亚历山大·格拉汉姆·贝尔获得电话专利，首次成功实现了语音的远距离电传输。",
+          type: "foreign",
+        },
+        {
+          year: 1877,
+          title: "留声机发明",
+          description: "托马斯·爱迪生发明留声机，首次实现声音的录制和回放。",
+          type: "foreign",
+        },
+        {
+          year: 1879,
+          title: "实用白炽灯发明",
+          description: "托马斯·爱迪生成功研制出可商用的碳丝白炽灯。",
+          type: "foreign",
+        },
+        {
+          year: 1882,
+          title: "公共电力系统",
+          description:
+            "托马斯·爱迪生在纽约建成世界上第一个商业化的火力发电站（珍珠街电站）和输配电系统。",
+          type: "foreign",
+        },
+        {
+          year: 1882,
+          title: "科赫发现结核杆菌",
+          description:
+            "罗伯特·科赫分离出结核杆菌，确证其为结核病病原体，并提出了“科赫法则”，是细菌学和传染病学的奠基人之一。他还分离出霍乱弧菌（1883年）。",
+          type: "foreign",
+        },
+        {
+          year: 1885,
+          title: "第一辆实用汽车诞生",
+          description:
+            "卡尔·本茨制造出第一台以内燃机为动力的三轮汽车并获得专利。",
+          type: "foreign",
+        },
+        {
+          year: 1885,
+          title: "狂犬病疫苗",
+          description:
+            "路易斯·巴斯德成功研制并应用减毒狂犬病疫苗，挽救了被疯狗咬伤的男孩生命，证明免疫可预防传染病。",
+          type: "foreign",
+        },
+        {
+          year: 1887,
+          title: "赫兹证实电磁波",
+          description:
+            "海因里希·赫兹通过实验产生并检测到电磁波，确证了麦克斯韦的理论预言。",
+          type: "foreign",
+        },
+        {
+          year: 1895,
+          title: "伦琴发现X射线",
+          description:
+            "威廉·康拉德·伦琴发现具有强穿透力的X射线，为医学诊断和物质结构研究开辟新途径。",
+          type: "foreign",
+        },
+        {
+          year: 1895,
+          title: "电影放映机发明",
+          description:
+            "奥古斯特和路易·卢米埃尔兄弟发明电影放映机（Cinématographe），并进行了第一次商业电影公映。",
+          type: "foreign",
+        },
+        {
+          year: 1896,
+          title: "放射性发现",
+          description: "亨利·贝可勒尔发现铀盐能发出穿透性辐射（放射性现象）。",
+          type: "foreign",
+        },
+        {
+          year: 1897,
+          title: "电子发现",
+          description: "约瑟夫·约翰·汤姆森通过阴极射线管实验确认了电子的存在。",
+          type: "foreign",
+        },
+        {
+          year: 1898,
+          title: "居里夫妇发现钋和镭",
+          description:
+            "玛丽·居里和皮埃尔·居里从沥青铀矿中分离出新的放射性元素钋和镭。",
+          type: "foreign",
+        },
+        {
+          year: 1722,
+          title: "康熙帝去世，雍正帝即位",
+          description:
+            "康熙帝在位61年后去世，皇四子胤禛即位，是为雍正帝。他即位后，通过一系列改革，强化了皇权，为清朝的盛世奠定了基础。",
+          type: "china",
+        },
+        {
+          year: 1735,
+          title: "雍正帝去世，乾隆帝即位",
+          description:
+            "雍正帝去世，其第四子弘历即位，是为乾隆帝。乾隆帝在位六十年，期间清朝国力达到鼎盛，史称“康乾盛世”。",
+          type: "china",
+        },
+        {
+          year: 1796,
+          title: "乾隆帝禅位，嘉庆帝即位",
+          description:
+            "乾隆帝为表示不超越祖父康熙帝的在位时间，提前禅位给皇十五子永琰，是为嘉庆帝。他成为清朝唯一一位禅位的天子。",
+          type: "china",
+        },
+        {
+          year: 1820,
+          title: "嘉庆帝去世，道光帝即位",
+          description:
+            "嘉庆帝去世，其嫡长子旻宁即位，是为道光帝。他即位后，面临日益严重的内忧外患，标志着清朝国力开始走下坡路。",
+          type: "china",
+        },
+        {
+          year: 1850,
+          title: "道光帝去世，咸丰帝即位",
+          description:
+            "道光帝去世，皇四子奕詝即位，是为咸丰帝。他在位期间，清朝面临太平天国运动、第二次鸦片战争等重大危机。",
+          type: "china",
+        },
+        {
+          year: 1861,
+          title: "咸丰帝去世，同治帝即位",
+          description:
+            "咸丰帝在位仅十一年就去世，其独子载淳即位，是为同治帝。因其年幼，两宫皇太后（慈安、慈禧）垂帘听政，开启了清末的特殊政治格局。",
+          type: "china",
+        },
+        {
+          year: 1875,
+          title: "同治帝去世，光绪帝即位",
+          description:
+            "同治帝去世，因其无后，慈禧太后选择了醇亲王之子载湉即位，是为光绪帝。光绪帝名义上执政，但实权一直被慈禧太后把控。",
+          type: "china",
+        },
+        {
+          year: 1898,
+          title: "光绪帝戊戌变法失败，权力旁落",
+          description:
+            "光绪帝试图推行“戊戌变法”以挽救清朝，但遭到慈禧太后为首的保守派反对。变法失败后，光绪帝被软禁，形同虚位，实权彻底落入慈禧之手。因此，从广义上讲，1898年也可以看作是清朝权力中心的一次重大转移。",
+          type: "china",
+        },
+        {
+          year: 1729,
+          title: "设立军机处",
+          description:
+            "雍正帝设立军机处，极大强化了皇权，成为清朝最重要的中央决策机构。",
+          type: "china",
+        },
+        {
+          year: 1735,
+          title: "乾隆帝即位与“摊丁入亩”",
+          description:
+            "乾隆帝即位，延续并全面推行“摊丁入亩”政策，这是中国赋役制度的重大变革，减轻了无地农民的负担。",
+          type: "china",
+        },
+        {
+          year: 1759,
+          title: "平定准噶尔与大小和卓叛乱",
+          description:
+            "清朝彻底平定新疆地区的叛乱，将其完全纳入中央直接统治，奠定了近代中国的版图基础。",
+          type: "china",
+        },
+        {
+          year: 1773,
+          title: "开始编纂《四库全书》",
+          description:
+            "启动中国古代最大的文化工程《四库全书》的编纂工作，保存了大量典籍，但也进行了思想审查与禁毁。",
+          type: "china",
+        },
+        {
+          year: 1793,
+          title: "马戛尔尼使团访华",
+          description:
+            "英国马戛尔尼使团因礼仪和通商请求被拒而失败，标志着东西方帝国的首次正式碰撞与隔阂。",
+          type: "china",
+        },
+        {
+          year: 1796,
+          title: "白莲教起义爆发",
+          description:
+            "大规模的白莲教起义爆发，历时九年，沉重打击了清朝统治，标志着“康乾盛世”的终结。",
+          type: "china",
+        },
+        {
+          year: 1799,
+          title: "和珅倒台",
+          description:
+            "嘉庆帝迅速查办乾隆朝权臣和珅，其巨额家产被抄，深刻反映了当时吏治的极度腐败。",
+          type: "china",
+        },
+        {
+          year: 1813,
+          title: "天理教起义",
+          description:
+            "部分天理教徒一度攻入紫禁城，虽被迅速镇压，但极大震动了清廷，暴露了深刻的统治危机。",
+          type: "china",
+        },
+        {
+          year: 1840,
+          title: "第一次鸦片战争爆发",
+          description:
+            "以林则徐虎门销烟为导火索，英国发动侵华战争，中国近代史的开端。",
+          type: "china",
+        },
+        {
+          year: 1842,
+          title: "签订《南京条约》",
+          description:
+            "中国战败，被迫签订近代史上第一个不平等条约，割让香港岛、五口通商，主权开始遭严重破坏。",
+          type: "china",
+        },
+        {
+          year: 1851,
+          title: "太平天国运动爆发",
+          description:
+            "洪秀全领导金田起义，建立太平天国。这是中国乃至世界历史上规模最大的农民战争，沉重打击了清朝。",
+          type: "china",
+        },
+        {
+          year: 1856,
+          title: "第二次鸦片战争",
+          description:
+            "英法联军发动侵华战争，清政府被迫签订《天津条约》和《北京条约》，丧失更多主权。",
+          type: "china",
+        },
+        {
+          year: 1860,
+          title: "火烧圆明园与《北京条约》",
+          description:
+            "英法联军火烧“万园之园”圆明园，并强迫清政府签订《北京条约》，割让九龙，俄国也通过一系列条约割占大片领土。",
+          type: "china",
+        },
+        {
+          year: 1861,
+          title: "洋务运动开始",
+          description:
+            "以曾国藩、李鸿章等为代表的官员，以“师夷长技以自强”为口号，开启了中国的近代化尝试。",
+          type: "china",
+        },
+        {
+          year: 1884,
+          title: "左宗棠收复新疆并建省",
+          description:
+            "在左宗棠成功收复新疆后，清政府于该年正式设立新疆行省，加强了对西北边疆的管辖。",
+          type: "china",
+        },
+        {
+          year: 1885,
+          title: "中法战争结束",
+          description:
+            "清政府在战场取胜的情况下签订了《中法新约》，承认法国对越南的宗主权，暴露了清廷的腐朽。",
+          type: "china",
+        },
+        {
+          year: 1894,
+          title: "甲午中日战争爆发",
+          description:
+            "新兴的日本为争夺朝鲜控制权发动战争，清军惨败，北洋水师全军覆没。",
+          type: "china",
+        },
+        {
+          year: 1895,
+          title: "签订《马关条约》",
+          description:
+            "中国战败，被迫签订空前屈辱的《马关条约》，割让台湾全岛及澎湖列岛，标志洋务运动破产。",
+          type: "china",
+        },
+        {
+          year: 1898,
+          title: "戊戌变法",
+          description:
+            "光绪帝支持康有为、梁启超等维新派推行政治改革，但仅持续103天便被慈禧太后发动政变镇压。",
+          type: "china",
+        },
+        {
+          year: 1900,
+          title: "义和团运动与八国联军侵华",
+          description:
+            "以“扶清灭洋”为口号的义和团运动达到高潮，引来八国联军入侵，攻陷北京。",
+          type: "china",
+        },
+        
+      ];
+
+      // --- 动态生成内容 ---
+      document.addEventListener("DOMContentLoaded", function () {
+        // 首先按年份对事件进行排序
+        events.sort((a, b) => a.year - b.year);
+
+        const timelineContainer = document.getElementById("timeline-container");
+        let side = "left"; // 开始时，外国事件在左侧
+
+        events.forEach((event) => {
+          // 根据事件类型决定其位置
+          const position = event.type === "foreign" ? "left" : "right";
+
+          const eventContainer = document.createElement("div");
+          eventContainer.className = `event-container ${position}`;
+
+          const eventElement = document.createElement("div");
+          eventElement.className = `event ${event.type}`;
+
+          eventElement.innerHTML = `
+                    <div class="event-content">
+                        <div class="event-year">${event.year}</div>
+                        <div class="event-title">${event.title}</div>
+                        <p>${event.description}</p>
+                    </div>
+                `;
+
+          eventContainer.appendChild(eventElement);
+          timelineContainer.appendChild(eventContainer);
+        });
+      });
+    </script>
+  </body>
+</html>
