@@ -92,3 +92,21 @@ bind-address      = 127.0.0.1
 - [How To Allow Remote Connections To MySQL](https://phoenixnap.com/kb/mysql-remote-connection)
 
 
+
+MySQL中文乱码
+-------------------------
+
+注意到在Ubuntu上的MySQL并非默认使用UTF8编码, 因此需要手动将默认编码修改为UTF8, 过程如下
+
+修改/etc/mysql/my.cnf, 添加如下的内容：
+
+```
+[client]
+default-character-set=utf8
+[mysqld]
+character-set-server=utf8
+```
+
+然后重启数据库. 
+
+**注意**： 以前添加的表还是会乱码, 因此需要重新创建有关的表
