@@ -161,6 +161,33 @@ Linux系统目录结构
 - [Linux 系统的/usr目录](https://www.cnblogs.com/ftl1012/p/9278578.html)
 
 
+常用指令介绍
+-------------
+
+### ll各列的含义
+
+```
+drwxrwxr-x   9 lizec lizec 4.0K 4月   7 10:10 ./
+drwxrwxr-x   7 lizec lizec 4.0K 4月   3 17:45 ../
+drwxrwxr-x   8 lizec lizec 4.0K 4月   7 18:31 .git/
+-rw-rw-r--   1 lizec lizec 1.1K 3月  26 19:24 LICENSE
+drwxrwxr-x 230 lizec lizec  12K 4月   7 10:10 node_modules/
+drwxrwxr-x   2 lizec lizec 4.0K 3月  26 19:24 scaffolds/
+-rwxrwxr-x   1 lizec lizec  496 3月  26 19:24 service.sh*
+drwxrwxr-x  11 lizec lizec 4.0K 3月  26 19:24 source/
+drwxrwxr-x   3 lizec lizec 4.0K 3月  26 19:24 themes/
+```
+
+第一列表示文件权限，可以分为四个部分，其中第一部分包含一个字母，之后的三个部分每个部分包含3个字母。第一个字母表示文件的类型，`d`表示文件夹，`-`表示普通文件。后续的三个部分分别表示此文件的用户，同组的用户以及其他用于对该文件的权限。
+
+第二列表示链接数量。对于文件夹表示其中的一级子目录的数量，对于文件表示链接的数量。
+
+后续几列分别表示文件的所有者，所有者所在的组，文件的大小，修改时间以及相应的文件名。
+
+- [ls -l 每一列的含义](https://blog.csdn.net/sinat_36219858/article/details/83721448)
+
+
+
 lost+found目录
 -----------------
 

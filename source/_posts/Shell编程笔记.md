@@ -46,7 +46,7 @@ Information about running processes.
 
 bash是`Bourne Again Shell`, 是很多Linux系统的默认脚本解释器. 常见的解析器包括`bash`, `sh`, `fish`, `zsh`等. 不同的解释器语法规则存在差异, 因此虽然bash多数情况下是默认的选择, 但为了避免不必要的麻烦, 还是应该在每个脚本开头的位置都指明需要使用的解释器类型.
 
-> 对于很多极简的docker镜像, 其中甚至仅包含`sh`, 此时应该将解释器类型指定为`#! /bin/sh`
+> 对于很多极简的docker镜像, 其中仅包含`sh`, 此时应该将解释器类型指定为`#! /bin/sh`以便于最大程度的使得脚本可正常执行.
 
 
 
@@ -152,46 +152,6 @@ fi
 
 
 
-Bash常用快捷功能
---------------------
-
-
-| 指令     | 解释                            | 说明                                      |
-| -------- | ------------------------------- | ----------------------------------------- |
-| `cd -`   | 回到上一次停留的目录            |
-| `!<num>` | 快速执行history里的某个指定命令 | `!743`                                    |
-| `!!`     | 指代上一个命令                  | `sudo !!`  以管理员权限重新执行上一条指令 |
-
-
-
-Shell常见指令简介
-------------------
-
-
-### ll各列的含义
-
-```
-drwxrwxr-x   9 lizec lizec 4.0K 4月   7 10:10 ./
-drwxrwxr-x   7 lizec lizec 4.0K 4月   3 17:45 ../
-drwxrwxr-x   8 lizec lizec 4.0K 4月   7 18:31 .git/
--rw-rw-r--   1 lizec lizec 1.1K 3月  26 19:24 LICENSE
-drwxrwxr-x 230 lizec lizec  12K 4月   7 10:10 node_modules/
-drwxrwxr-x   2 lizec lizec 4.0K 3月  26 19:24 scaffolds/
--rwxrwxr-x   1 lizec lizec  496 3月  26 19:24 service.sh*
-drwxrwxr-x  11 lizec lizec 4.0K 3月  26 19:24 source/
-drwxrwxr-x   3 lizec lizec 4.0K 3月  26 19:24 themes/
-```
-
-第一列表示文件权限，可以分为四个部分，其中第一部分包含一个字母，之后的三个部分每个部分包含3个字母。第一个字母表示文件的类型，`d`表示文件夹，`-`表示普通文件。后续的三个部分分别表示此文件的用户，同组的用户以及其他用于对该文件的权限。
-
-第二列表示链接数量。对于文件夹表示其中的一级子目录的数量，对于文件表示链接的数量。
-
-后续几列分别表示文件的所有者，所有者所在的组，文件的大小，修改时间以及相应的文件名。
-
-- [ls -l 每一列的含义](https://blog.csdn.net/sinat_36219858/article/details/83721448)
-
-
-
 函数
 ---------------
 
@@ -224,12 +184,121 @@ Shell中的函数与其他编程语言中的函数概念不同, Shell中的函�
 
 
 
+重定向与管道
+-------------
+
+重定向和管道是我认为最具有Unix哲学的东西, 它们实际上是提供了一种组合的能力, 从而能将各类工具根据需要进行组合. 常见的重定向与管道命令以及一些相关的指令如下表所示:
+
+
+| 符号/操作                      | 名称             | 功能简介 |
+| :---------------------------- | :------------- | :----------------------------- |
+| `command > file`              | 输出重定向       | 将 stdout 覆盖写入文件 |
+| `command >> file`             | 追加输出重定向   | 将 stdout 追加到文件 |
+| `command < file`              | 输入重定向       | 从文件获取 stdin |
+| `command1`&#124;`command2`    | 管道            | 将 command1 的 stdout 作为 command2 的 stdin |
+| `command 2> file`             | 错误重定向      | 将 stderr 覆盖写入文件 |
+| `command &> file`             | 合并重定向      | 将 stdout 和 stderr 都重定向到文件 |
+| `command` &#124;&`command2`   | 错误管道        | 将 stdout 和 stderr 都通过管道传递 |
+| `command >> file 2>&1`        | 经典合并追加    | 将 stdout 和 stderr 都追加到文件 |
+| `<< EOF`                      | Here Document | 多行文本作为输入 |
+| `/dev/null`                   | 空设备         | 丢弃所有写入的数据 |
+| `$(command)`                  | 命令替换        | 将命令的输出结果作为参数 |
+| `<(command)`                  | 进程替换        | 将命令输出作为临时文件使用 |
+| `&&`                          | 逻辑与          | 前一个命令成功才执行下一个 |
+| `\|\|`                        | 逻辑或          | 前一个命令失败才执行下一个 |
+
+
+
+### 重定向
+
+总所周知, 在unix类的系统中, 每个程序会默认开启三个文件:
+
+文件描述符  | 含义                | 默认实现
+----------|--------------------|---------
+0         | 标准输入(stdin)     | 从键盘读取
+1         | 标准输出(stdout)    | 输出到屏幕
+2         | 标准错误输出(stderr) | 输出到屏幕
+
+重定向符号实际上就是改变这些文件的指向. 具体来说, 操作系统提供了`dup2`系统调用, 可以修改文件描述符的指向. 在shell启动命令的进程前, 可通过系统调用将这些标准输入输出重新指向特定的文件, 从而实现重定向.
+
+
+
+### 管道操作符
+
+管道操作符`|`非常的有意思, 它的实现并不是先执行`command1`然后将输出作为`command2`的输入执行`command2`, 而是启动两个进程同时执行`command1`和`command2`, 并且将两者的输出和输入映射到同一个文件. 能体现这个实现的一个典型场景是使用`grep`指令查找进程, 例如
+
+```bash
+> ps aux | grep xx
+lizec     23605   0.0  0.0 410210368   1360 s009  S+    7:18PM   0:00.00 grep xx
+```
+
+在输出的进程列表中可以看到`grep`命令本身, 这正好说明了`ps`指令在输出进程列表时, `grep`指令的进程已经存在了.
+
+-----
+
+操作系统也提供了`pipe`系统调用, 此调用返回两个文件描述符, 分别表示管道的输入端和输出端. shell将两个子进程的标准输出和标准输入映射到两个文件描述符即可实现管道的效果.
+
+> 这也体现了为什么shell是`外壳`了, 功能都是内核kernel实现的, shell提供了一层封装.
+
+
+
+### 多行输入
+
+`<< EOF`可实现多行输入, 例如
+
+```bash
+cat << EOF
+This is line 1.
+This is line 2.
+All this text will be fed into the cat command.
+EOF
+# 常用于脚本中生成配置文件或向交互式命令输入多行内容
+```
+
+### 命令替换与进程替换
+
+`$(command)`执行 `command` 并将其**标准输出**的结果替换到当前命令行中
+
+```bash
+# 将 date 命令的输出作为参数传递给 echo
+echo "The time is $(date)"
+
+# 将当前目录的文件列表作为grep的输入
+grep "pattern" $(find . -name "*.txt")
+```
+
+`<(command)`使命令的输出(或输入)表现得像一个临时文件
+
+```bash
+# 比较两个命令输出的差异
+diff <(ls dir1) <(ls dir2)
+
+# 将一个命令的输出作为文件传递给另一个期望文件参数的命令
+wc -l <(ls -l)
+```
+
+
+### Tee 分叉
+
+`tee` 命令通常与管道连用, 将数据流传给下一个命令，又同时保存到一个文件中(像水管的一个 T 型三通接头)
+
+
+```bash
+# 将 ls 的输出既显示在屏幕上，又保存到 filelist.txt 中
+ls -l | tee filelist.txt
+
+# -a 选项表示追加模式
+ls -l | tee -a filelist.txt
+```
+
+
+
 设置可执行权限
 -----------------------
 
 在运行脚本前需要对其赋予可执行权限, 例如对于脚本`shell.sh`, 可以执行如下指令授予其可执行权限.
 
-```
+```bash
 $ chmod +x shell.sh
 ```
 
@@ -240,23 +309,42 @@ $ chmod +x shell.sh
 添加到搜索目录
 ------------------
 
+TODO: 不同类型的shell添加方式
+
 此步骤不是必须的, 但是如果希望在任意位置都可以执行此脚本, 则可以将脚本放置在一个PATH变量包含的路径之中, 可以使用`echo $PATH`查看系统全部的搜索路径, 例如
 	
-```
+```bash
 lizec@ideapad:~$ echo $PATH
 /home/lizec/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
 ```
 
 将脚本添加到上面的任意一个目录中即可
 
-------------------
+
+### bash新增PATH路径
 
 如果想要把某个目录添加到PATH变量之中, 可以直接修改`$PATH`变量的值, 例如
 
-```
+```bash
 echo 'export PATH=$PATH:/usr/local/go/bin' >> ~/.bashrc  
 source ~/.bashrc  
 ```
+
+
+### zsh新增PATH路径
+
+以新增Go语言的bin目录到PATH路径为例, 打开`~/.zshrc`文件, 新增如下内容
+
+```bash
+# Go PATH Configuration
+export GOPATH=$HOME/go
+export PATH=$PATH:$GOPATH/bin
+```
+
+执行`source`指令使操作立即生效或者重新打开终端
+
+
+### fish新增PATH路径
 
 如果使用的是fish, 则可以打开`~/.config/fish/config.fish`添加如下的内容
 
@@ -274,6 +362,19 @@ source ~/.config/fish/config.fish
 更多配置可以查看下面的链接
 
 - [【Ubuntu】Ubuntu设置和查看环境变量](https://blog.csdn.net/White_Idiot/article/details/78253004)
+
+
+
+
+Bash常用快捷功能
+--------------------
+
+
+| 指令     | 解释                            | 说明                                      |
+| -------- | ------------------------------- | ----------------------------------------- |
+| `cd -`   | 回到上一次停留的目录            |
+| `!<num>` | 快速执行history里的某个指定命令 | `!743`                                    |
+| `!!`     | 指代上一个命令                  | `sudo !!`  以管理员权限重新执行上一条指令 |
 
 
 
@@ -318,6 +419,7 @@ fi
 
 - [shell bash判断文件或文件夹是否存在](https://www.cnblogs.com/emanlee/p/3583769.html)
 
+> shell写逻辑是真的太烂了, 这种东西让AI写就行了.
 
 
 Shell其他常见功能
