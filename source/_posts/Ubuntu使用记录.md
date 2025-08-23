@@ -18,6 +18,8 @@ cover_picture:  images/ubuntu.jpg
   - [设置时区](#设置时区)
 - [linux基础认知](#linux基础认知)
   - [Linux系统目录结构](#linux系统目录结构)
+  - [常用指令介绍](#常用指令介绍)
+    - [ll各列的含义](#ll各列的含义)
   - [lost+found目录](#lostfound目录)
 - [系统更新与包管理](#系统更新与包管理)
   - [APT更换国内镜像源](#apt更换国内镜像源)
