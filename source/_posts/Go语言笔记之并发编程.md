@@ -174,6 +174,49 @@ func main() {
 ```
 
 
+### 基于通道的信号量
+
+带缓冲区的通道可以轻松的实现信号量机制, 例如
+
+```go
+package main
+
+import (
+	"fmt"
+	"sync"
+	"time"
+)
+
+func main() {
+	var wg sync.WaitGroup
+	sem := make(chan struct{}, 5) // 最多5个并发
+
+	for i := 0; i < 20; i++ {
+		wg.Add(1)
+		go func(id int) {
+			defer wg.Done()
+			sem <- struct{}{}        // 获取信号量
+			defer func() { <-sem }() // 释放信号量
+			
+			limitedFunction(id)
+		}(i)
+	}
+
+	wg.Wait() // 等待所有goroutine完成
+}
+
+func limitedFunction(id int) {
+	fmt.Printf("任务%d开始执行\n", id)
+	time.Sleep(time.Second) // 模拟耗时操作
+	fmt.Printf("任务%d执行完成\n", id)
+}
+```
+
+
+> 当前Go也提供了信号量机制, 可使用`golang.org/x/sync/semaphore`包
+
+
+
 多路复用
 -------------
 
@@ -442,7 +485,45 @@ go func() {
 如果不执行CancelFunc, 则相关的资源需要等待定时器超时后才能释放. 而执行CancelFunc可以保证相关资源立刻释放.
 
 
-
-
 - [小白也能看懂的context包详解：从入门到精通](https://segmentfault.com/a/1190000040917752)
+
+
+
+race包与竞态检测
+---------------
+
+如果查看Go标准库中与并发相关的组件, 可以经常看到如下形式的代码
+
+```go
+func (wg *WaitGroup) Add(delta int) {
+	if race.Enabled {
+		if delta < 0 {
+			// Synchronize decrements with Wait.
+			race.ReleaseMerge(unsafe.Pointer(wg))
+		}
+		race.Disable()
+		defer race.Enable()
+	}
+
+    //...
+
+}
+```
+
+如果点开race包, 会发现其中只包含一组函数签名, 而没有任何实现. `race.Enabled`也被直接赋值为false. 实际上, race包是一个特殊的​​桩包(Stub Package). 默认情况下继续代码编译时, Go会把这些函数内联到调用的函数之中, 并且把所有判断`race.Enabled`的分支优化掉, 从而使得这类函数的调用没有任何效果, 也没有任何开销.
+
+`race.Enabled`是一个在​​运行时​​检查是否启用了Go的竞态检测器, 当使用`-race`标记启用测试时, Go编译器会插入一些检测代码, 并且链接一个有具体实现的race包, 从而可以分析一段给定的代码有无竞态问题. Go语言的标准库为了更好的实现这类检测能力, 会在并发相关的组件中调用一些特定的函数来提示竞态检测器. 常见的函数如下
+
+
+| 函数签名                                        | 含义与作用                                                                                                                                                                                                                                                                           |
+| :---------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `func Acquire(addr unsafe.Pointer)`             | **宣告获取**。表示当前 goroutine 即将独占访问 `addr` 所指向的内存区域。这通常用在 `Mutex.Lock()` 或 `RWMutex.LLock()` 等操作之后，告诉检测器：“我刚刚拿到了锁，接下来我对受保护数据的访问是安全的，不要报错”。                                                                       |
+| `func Release(addr unsafe.Pointer)`             | **宣告释放**。表示当前 goroutine 对 `addr` 所指向内存区域的独占访问已经结束。这通常用在 `Mutex.Unlock()` 之前，与 `Acquire` 配对使用。                                                                                                                                               |
+| `func ReleaseMerge(addr unsafe.Pointer)`        | **释放并合并**。这是一个更高级的操作，常用于像 `WaitGroup` 或 `Once` 这样的同步原语。它表示当前 goroutine 完成了一个操作（如 `WaitGroup.Done()`），并且这个操作可能与正在等待的其他 goroutine（如 `WaitGroup.Wait()`）有关。它帮助检测器建立“发生在此之前”（happens-before）的关系。 |
+| `func Disable()`                                | **禁用检测**。暂时关闭当前 goroutine 的竞态检测。这用于一些极其低级的运行时操作，这些操作本身是安全的，但会被检测器误判。**极其罕见，普通代码永远不应使用。**                                                                                                                        |
+| `func Enable()`                                 | **启用检测**。重新开启当前 goroutine 的竞态检测。与 `Disable()` 配对使用。                                                                                                                                                                                                           |
+| `func Read(addr unsafe.Pointer)`                | **手动标记一次内存读**。这是一个底层操作，通常由**编译器自动插入的代码调用**，而不是由程序员手动调用。它告诉运行时：“我这里发生了一次对 `addr` 的内存读取”。                                                                                                                         |
+| `func Write(addr unsafe.Pointer)`               | **手动标记一次内存写**。与 `Read` 类似，由编译器插桩代码调用，标记一次内存写入。                                                                                                                                                                                                     |
+| `func ReadRange(addr unsafe.Pointer, len int)`  | **标记一个内存范围的读**。用于标记对一片连续内存（如切片、数组）的读取。                                                                                                                                                                                                             |
+| `func WriteRange(addr unsafe.Pointer, len int)` | **标记一个内存范围的写**。用于标记对一片连续内存的写入。                                                                                                                                                                                                                             |
 
