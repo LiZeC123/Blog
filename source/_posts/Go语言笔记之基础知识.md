@@ -160,7 +160,23 @@ import (
 
 由于Go语言本身具有跨平台能力, 因此非常适合开发一些小工具. 安装后全局可用也保证了访问的便利性. 一般来说, 一次性工具适合使用Python开发, 而重复使用的工具适合使用Go开发.
 
+### 添加Go可执行文件到PATH
 
+对于zsh, 可使用如下指令使用Vscode打开配置文件
+
+```
+code ~/.zshrc
+```
+
+向其中加入如下内容
+
+```bash
+# Go PATH Configuration
+export GOPATH=$HOME/go
+export PATH=$PATH:$GOPATH/bin
+```
+
+配置完成后, 即可全局的使用安装的Go可执行程序
 
 ### 发布模块
 
