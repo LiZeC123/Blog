@@ -38,10 +38,13 @@ cover_picture:  images/ubuntu.jpg
 - [网络配置与服务](#网络配置与服务)
   - [配置代理服务](#配置代理服务)
     - [Ubuntu全局代理](#ubuntu全局代理)
+    - [Mac全局代理](#mac全局代理)
     - [APT](#apt)
     - [Git](#git)
     - [Docker](#docker)
+  - [配置镜像源](#配置镜像源)
     - [pip](#pip)
+    - [npm](#npm)
   - [配置Samba服务](#配置samba服务)
   - [Openwrt路由器配置Hosts](#openwrt路由器配置hosts)
 - [自动化与计划任务](#自动化与计划任务)
@@ -91,19 +94,11 @@ cover_picture:  images/ubuntu.jpg
 安装node
 ----------------
 
-使用snap工具可以直接安装最新的长期支持版node, 指令为
+使用[官方网站](https://nodejs.org/zh-cn/download)推荐的方式安装. 该页面会自动识别操作系统类型并推荐合适的安装方式.
 
-```
-sudo snap install node --classic
-```
+> 如果无法直接下载安装脚本, 可手动打开该页面并保证到本地. 安装过程可能依赖Github的数据, 需要先确保Git的拉取能力正常.
 
-- [Node | Snap Store](https://snapcraft.io/node)
-
-> snap是Ubuntu公司提出的一种包管理系统, 可以安装大部分的开源软件和部分的非开源软件, 无法使用apt安装的软件都可以考虑使用snap安装
-
----
-
-> 2024年9月更新: 如果在国内无法使用包管理器下载也无法下载预编译文件, 可考虑使用清华大学提供的[镜像加速](https://mirrors.tuna.tsinghua.edu.cn/help/nodejs-release/)
+使用该方式会自动配置环境变量, 并且可以方便的切换node版本.
 
 
 安装OneDrive客户端
@@ -427,6 +422,11 @@ Ubuntu server扩展lvm空间
 
 > Firefox对于Socks5的支持不太好, 有时候代理软件没问题, 但是Firefox就是用不了
 
+
+### Mac全局代理
+
+在设置中搜索`代理`, 即可在弹出的页面中选择配置socks5等代理. 其中IP地址可指定局域网内其他机器, 从而先实现基本的代理能力. 在基于此模式下进一步下载其他的依赖项并编译本地的可执行程序.
+
 ### APT
 
 APT可配置临时使用一次代理,  指令为
@@ -527,6 +527,11 @@ Environment="HTTPS_PROXY=socks5://127.0.0.1:1080"
 
 > 关于Docker镜像仓库的配置, 可以参考笔记[Docker笔记之使用镜像](https://lizec.top/2020/06/19/Docker%E7%AC%94%E8%AE%B0%E4%B9%8B%E4%BD%BF%E7%94%A8%E9%95%9C%E5%83%8F/#%E9%85%8D%E7%BD%AE%E5%9B%BD%E5%86%85%E5%8A%A0%E9%80%9F%E5%99%A8)
 
+
+
+配置镜像源
+----------------
+
 ### pip
 
 pip可以临时指定使用的镜像, 例如
@@ -536,6 +541,22 @@ pip install -i https://pypi.tuna.tsinghua.edu.cn/simple some-package
 ```
 
 - [ubuntu更换安装源和pip镜像源](https://blog.csdn.net/wssywh/article/details/79216437)
+
+也可以直接指定全局永久生效
+
+```
+pip config set global.index-url https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple
+```
+
+
+### npm
+
+```
+npm config set registry http://mirrors.cloud.tencent.com/npm/
+```
+
+
+- [npm使用国内镜像加速的几种方法-腾讯云开发者社区-腾讯云](https://cloud.tencent.com/developer/article/1372949)
 
 
 配置Samba服务
