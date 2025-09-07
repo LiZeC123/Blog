@@ -82,6 +82,8 @@ docker image pull library/hello-world
 
 [Docker Hub](https://hub.docker.com/search?q=&type=image&image_filter=official)是官方的镜像查询网站. 在此网站上可以查询最近的镜像, 以及镜像的使用说明. 
 
+> 25.09.07更新: 官方网站主动封建了很多区域, 因此可能无法再使用官方网站查询, 可使用第三方网站[轩辕镜像](https://xuanyuan.cloud/)查询镜像和版本.
+
 
 
 Docker操作容器
@@ -142,7 +144,7 @@ sudo docker exec -it <containerID> /bin/bash
 
 ### 查看日志
 
-当容器运行情况不符合预期时, 可能需要查看容器内输出的日志, 此时可以执行u如下指令持续的输出容器内的日志
+当容器运行情况不符合预期时, 可能需要查看容器内输出的日志, 此时可以执行如下指令持续的输出容器内的日志
 
 ```
 docker logs -f {{container_name}}
