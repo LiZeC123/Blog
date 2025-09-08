@@ -200,6 +200,34 @@ RANGE分区支持数据表创建后新增分区, 新增操作仅增加规则, �
 
 
 
+数据库变更分析
+---------------
+
+
+### Online DDL 操作特性说明
+
+官方文档 [17.12.1 Online DDL Operations](https://dev.mysql.com/doc/refman/8.0/en/innodb-online-ddl-operations.html) 列出了所有Online DDL, 并进行了详细解释. 文档中表格各列的含义：
+
+| 表头字段 | 含义 | 二级索引示例 | 解释 |
+|----------|------|--------------|------|
+| **Operation** | 操作类型 | Creating or adding a secondary index | 描述具体的 DDL 操作（如创建索引、修改列等） |
+| **Instant** | 是否支持即时操作 | No | ✅ **Yes**：仅修改元数据（毫秒级完成）<br>❌ **No**：需要数据操作（耗时操作） |
+| **In Place** | 是否支持就地执行 | Yes | ✅ **Yes**：在存储引擎内部完成（无需创建临时表）<br>❌ **No**：需复制数据到新表 |
+| **Rebuilds Table** | 是否重建表 | No | ✅ **Yes**：整个表数据需要物理重组（高开销）<br>❌ **No**：仅修改部分结构（低开销） |
+| **Permits Concurrent DML** | 是否允许并发DML | Yes | ✅ **Yes**：操作期间允许`INSERT/UPDATE/DELETE`<br>❌ **No**：会锁表阻塞写操作 |
+| **Only Modifies Metadata** | 是否仅修改元数据 | No | ✅ **Yes**：只改数据字典（极快）<br>❌ **No**：需要读写实际数据 |
+
+
+对于数据量较大的表格, 尤其需要关注是否锁表, 是否阻隔写操作. 一旦错误执行, 必定是严重生成事故.
+
+### 变更字段长度是否需要先删除索引
+
+虽然索引确实受到字段长度的影响, 但在MySQL中变更字段长度并不需要先删除索引再创建索引. MySQL在必要的时候会自动完成索引的重建操作. 对于VARCHAR字段, 如果不改变底层数据结构, 通常也不会触发索引重建. 官方文档解释如下:
+
+> The number of length bytes required by a VARCHAR column must remain the same. For VARCHAR columns of 0 to 255 bytes in size, one length byte is required to encode the value. For VARCHAR columns of 256 bytes in size or more, two length bytes are required. As a result, in-place ALTER TABLE only supports increasing VARCHAR column size from 0 to 255 bytes, or from 256 bytes to a greater size. In-place ALTER TABLE does not support increasing the size of a VARCHAR column from less than 256 bytes to a size equal to or greater than 256 bytes. In this case, the number of required length bytes changes from 1 to 2, which is only supported by a table copy (ALGORITHM=COPY). 
+
+表格中, 变更VACHAR长度也是标记为不锁定表, 不阻隔数据写入. 因此相对来说比较安全
+
 
 
 EXPLAIN语句详解
