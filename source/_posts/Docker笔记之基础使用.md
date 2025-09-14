@@ -34,7 +34,10 @@ sudo systemctl enable docker
 - [How To Install Docker On Ubuntu 18.04 Bionic Beaver](https://phoenixnap.com/kb/how-to-install-docker-on-ubuntu-18-04)
 
 
-### 配置国内加速器
+### (已失效)配置国内加速器
+
+> 25.09更新: 由于相关监管需求, 目前已经没有国内加速器可以使用, DockerHub也主动屏蔽了很多IP. 只能使用特定网站的镜像服务来获取
+> 可考虑使用[毫秒镜像](https://1ms.run/)直接下载镜像. 更多可查看列表[GitHub - dongyubin/DockerHub](https://github.com/dongyubin/DockerHub)
 
 在 /etc/docker/daemon.json 中写入如下内容（如果文件不存在请新建该文件）
 ```json
@@ -59,6 +62,14 @@ sudo systemctl restart docker
 如果需要拉取的进行镜像在国内的加速器中没有, 则还可以考虑对docker配置代理, 使用代理服务器加速. 具体的配置可以参考[Docker代理配置](https://lizec.top/2017/08/10/Ubuntu%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/#Docker)
 
 
+### Docker替代品
+
+除了Linux平台下使用包管理器可以较为简单地安装Docker服务, 对于Windows和Mac平台, 都需要借助于虚拟机才能启动. 而Docker官方早就是一脸死相, 无法正常访问官网. 因此可以考虑使用替代产品.
+
+可使用[Podman Installation | Podman](https://podman.io/docs/installation)替换Docker. 对于本文提到的绝大部分docker指令, 直接替换为podman即可.
+
+> 在安装了Desktop的情况下, 许多指令也可以通过GUI页面点击完成, 操作更简单.
+
 Docker操作镜像
 -----------------
 
@@ -78,11 +89,9 @@ docker image pull library/hello-world
 由于官方的镜像都位于`library/`下, 因此`library/`是默认路径, 也可以省略不写. 此外, 每个镜像还可以具有不同的标签, 例如`UBUNTU:18.04`表示具有`18.04`标签的的`UBUNTU`镜像. 如果不指定标签, 则默认下载`LATEST`标签
 
 
-### 官方镜像
+### 查询镜像列表
 
-[Docker Hub](https://hub.docker.com/search?q=&type=image&image_filter=official)是官方的镜像查询网站. 在此网站上可以查询最近的镜像, 以及镜像的使用说明. 
-
-> 25.09.07更新: 官方网站主动封建了很多区域, 因此可能无法再使用官方网站查询, 可使用第三方网站[轩辕镜像](https://xuanyuan.cloud/)查询镜像和版本.
+可使用第三方网站[毫秒镜像](https://1ms.run/)或者[轩辕镜像](https://xuanyuan.cloud/)查询镜像和版本. 官方提供的[Docker Hub](https://hub.docker.com/search?q=&type=image&image_filter=official)主动屏蔽IP, 导致即使使用代理也难以访问.
 
 
 
