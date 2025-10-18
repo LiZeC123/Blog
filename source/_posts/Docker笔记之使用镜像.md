@@ -141,7 +141,7 @@ services:
 ```
 
 > 注意: 该镜像默认不可被本地的网络访问, 可参考[Error: Protocol error, got "H" as reply type byte](https://cloud.tencent.com/developer/article/1706012)
-
+> 注意: 无密码情况下在公网暴露Redis有严重的安全风险, 基于测试目的的Redis建议限制为仅可本地访问
 
 
 Clickhouse
