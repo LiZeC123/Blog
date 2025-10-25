@@ -4,6 +4,7 @@ date: 2019-01-02 13:42:43
 categories: Python笔记
 tags:
     - Python
+    - 人工智能
 cover_picture: images/python.jpg
 ---
 
