@@ -185,3 +185,13 @@ COMMIT;
    ```sql
    SELECT * FROM sqlite_stat1 WHERE tbl = '锁状态表';
    ```
+
+
+扩展: TCL语言
+---------------
+
+在编译Sqlite时, 文档提到了一个称之为`SQLite TCL extension`的东西. 其中TCL指的是一种脚本语言. 启用该扩展后, 允许通过TCL语言来操作Sqlite.
+
+TCL语言的理念是`一切皆命令`, 风格与bash的指令非常类似.
+
+> 脚本语言已经看的够多了, 有需要的时候再深入学习TCL吧.

@@ -110,7 +110,16 @@ code --install-extension xx.vsix
 
 即可将插件安装到vscode之中
 
-### 参考资料
+参考资料
+-----------
+
+### 文档
 
 - [VSCode 插件开发（三）：插件打包与本地安装](https://www.jianshu.com/p/bb379a628004)
 - [when条件的文档](https://code.visualstudio.com/api/references/when-clause-contexts)
+
+
+### 项目
+
+- [Vscode Go语言插件](https://github.com/golang/vscode-go)
+- [Gopls: The language server for Go](https://go.dev/gopls/)
