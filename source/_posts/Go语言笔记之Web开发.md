@@ -24,7 +24,7 @@ Gin是Go语言的Web框架, 使用此框架需要引入如下的包
 go get -u github.com/gin-gonic/gin
 ```
 
-Gin与Java的Spring框架相比, 主要实现了两个功能, 即 URL与Go函数的绑定 和 Web参数与Go接口体的绑定. 
+Gin与Java的Spring框架相比, 主要实现了两个功能, 即 URL与Go函数的绑定 和 Web参数与Go结构体的绑定. 
 
 虽然只有这两个功能, 但是对于开发一个简单的Web项目来说确实也基本够用了. Gin的大部分用法在README中都有直接的展示, 非常容易上手.
 
