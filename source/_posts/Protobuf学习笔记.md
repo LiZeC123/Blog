@@ -4,7 +4,8 @@ math: false
 date: 2025-10-18 21:32:21
 categories:
 tags:
-cover_picture:
+   - pb
+cover_picture: images/protobuf.png
 ---
 
 protobuf是一种将结构化数据序列化的机制, 可用于内部设备通信或存储. 与JSON格式相比, 基于protobuf协议的二进制文件体积更小, 解析速度更快.
