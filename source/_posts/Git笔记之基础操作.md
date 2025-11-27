@@ -205,6 +205,16 @@ git checkout test -- pom.xml
 可以将当前分支的pom.xml文件替换为test分支上的相应文件. 可查看 [Git reset checkout commit 命令详解](https://halfmoonvic.github.io/2017/07/20/Git-reset-checkout-commit-%E5%91%BD%E4%BB%A4%E8%AF%A6%E8%A7%A3/)获取更多高级用法
 
 
+### 永远都有后悔药
+
+使用如下指令可以列出最近的操作记录, 在本地进行的几乎任何操作, 无论是删除分支还是合并提交, 都可以在该列表中体现, 从而可以回滚任意操作. 
+
+```
+git reflog
+```
+
+对于不可达的引用, Git不会立即删除, 而是会在本地保留90天. 在此时间范围内可以通过reflog找到引用并恢复. 执行`git gc`指令可以清除这些不可达的引用. 因此在本地操作git可以放心大胆的实验, 永远都可以用reflog回滚.
+
 
 分支管理
 ------------------
@@ -403,12 +413,9 @@ Git的监视指令
 ```
 git log
 git log --pretty=oneline
-git reflog
 ```
 
 直接使用log指令会展示详细的提交记录, 如果使用`online`参数, 则只显示提交ID和提交信息. 
-
-reflog相对于对git所有的操作进行了版本控制, 其中展示了所有git指令的哈希值, 从而可以方便的回滚git操作
 
 
 ### 查看更新
