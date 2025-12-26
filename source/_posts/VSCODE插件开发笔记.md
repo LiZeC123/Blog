@@ -26,7 +26,7 @@ nodejs安装完毕后, 执行如下的指令安装vscode插件开发需要的依
 npm install -g yo generator-code
 ```
 
-> yo是一个通用的项目骨架生成工具, generator-code是vscode插件生成工具, 和yo配合生成项目的骨架
+yo是一个通用的项目骨架生成工具, generator-code是vscode插件生成工具, 和yo配合生成项目的骨架. yo指令本身是交互式的, 直接输入yo可以查看其提供的其他功能.
 
 安装依赖需要一些时间, 安装完毕后执行如下指令创建项目
 
