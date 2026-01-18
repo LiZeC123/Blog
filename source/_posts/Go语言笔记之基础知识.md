@@ -355,7 +355,6 @@ func main() {
 
 
 
-
 函数
 -------------
 
@@ -485,6 +484,36 @@ func deferTest2() {
 Go语言的return语句并不是原子的, 具体可以划分为设置返回值和执行`ret`操作两步. defer修饰的语句正好在这两步之间执行. 如果在defer语句中修改了返回值, 则根据返回值的声明方式以及return返回的方式会产生多种不同的情况. 为了避免增加不必要的理解难度, 不建议在defer的语句中进行类似的操作. 具体情况可参考如下的链接
 
 - [Go，一文搞懂 defer 实现原理](https://xie.infoq.cn/article/6f5cc8b14cc60c8985dc7257f)
+
+
+panic与recover
+-----------------
+
+Go语言使用panic和recover函数实现类似异常处理的机制. panic函数调用后会立即中断当前执行逻辑, 并逐层返回, 直到遇到recover函数或者达到最上层函数. recover函数只能在defer函数内执行, 可以捕获panic.
+
+
+```go
+func demoBasicPanic() {
+	fmt.Println("场景1: 在普通函数中处理 panic")
+	
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Printf("✅ 成功捕获到 panic: %v\n", r)
+		}
+	}()
+	
+	fmt.Println("即将触发 panic...")
+	panic("这是测试 panic")
+	
+	// 这行代码永远不会执行
+	fmt.Println("这行不会执行")
+}
+```
+
+当存在多个协程时, 只要任意一个协程产生panic并且没有被recover, 则会导致整个进程终止. 此外每个协程只能recover自己协程产生的panic, 而无法影响其他协程的panic. 因此在开启协程时, 通过会先开启一个defer函数, 捕获对应的panic, 从而避免子协程的panic问题导致整个进程退出.
+
+
+
 
 
 闭包
