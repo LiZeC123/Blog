@@ -64,6 +64,11 @@ Python语言的插件, 对于机器学习场景, 感觉比PyCharm更好用.
 
 - [mac 下命令行启动vscode打开指定文件夹](https://blog.csdn.net/qq_31460257/article/details/81592812)
 
+### 关闭提示音
+
+如果发现操作shell或者在页面编辑时, 出现了奇奇怪怪的提示音, 可以打开配置页面, 搜索`Editor: Accessibility Support`, 选择`off`关闭辅助功能.
+
+
 常见问题修复
 ----------------
 
