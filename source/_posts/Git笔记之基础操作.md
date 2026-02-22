@@ -166,6 +166,7 @@ git reset --mixed HEAD~
 
 HEAD是头指针,表示当前版本. HEAD~表示上一个版本, 如果是之前的第100个版本, 则可写为HEAD~100.  使用`git status`显示当前状态时, Git会提示上面的大部分指令, 因此这些指令并不需要记忆, 了解实现原理即可. 
 
+对于`git checkout`, 既可以使用 `git checkout -- filename`也可以使用`git checkout <loc> <file>`, 两种格式是等价的. 
 
 ### 清理工作区
 
@@ -180,7 +181,6 @@ HEAD是头指针,表示当前版本. HEAD~表示上一个版本, 如果是之前
 | -n   | 模拟执行一次, 显示会删除的文件             |
 | -x   | 删除被.gitignore忽略的文件                 |
 
-对于`git checkout`, 既可以使用 `git checkout -- filename`也可以使用`git checkout <loc> <file>`, 两种格式是等价的. 
 
 
 ### 远程撤销更改
@@ -213,7 +213,7 @@ git checkout test -- pom.xml
 git reflog
 ```
 
-对于不可达的引用, Git不会立即删除, 而是会在本地保留90天. 在此时间范围内可以通过reflog找到引用并恢复. 执行`git gc`指令可以清除这些不可达的引用. 因此在本地操作git可以放心大胆的实验, 永远都可以用reflog回滚.
+对于因为回滚产生的不可达的引用, Git不会立即删除, 而是会在本地保留90天. 在此时间范围内可以通过reflog找到引用并恢复. 执行`git gc`指令可以清除这些不可达的引用. 因此在本地操作git可以放心大胆的实验, 永远都可以用reflog回滚.
 
 
 分支管理
@@ -477,7 +477,7 @@ git clone /g/files
 
 ### Windows下可能的问题
 
-Windows上不能直接在分区跟目录创建公共仓库. 如果执行这一操作, Windows会提示Permission denied. 
+Windows上不能直接在分区根目录创建公共仓库. 如果执行这一操作, Windows会提示Permission denied. 
 
 产生这一错误的原因是Git创建仓库时, Git需要先创建文件夹, 而Windows会认为Git想要创建一个驱动器, 从而拒绝Git的操作. Git的操作被拒绝后, 又会认为是权限不够, 因此返回Permission denied的提示.
 
