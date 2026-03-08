@@ -68,6 +68,14 @@ Python语言的插件, 对于机器学习场景, 感觉比PyCharm更好用.
 
 如果发现操作shell或者在页面编辑时, 出现了奇奇怪怪的提示音, 可以打开配置页面, 搜索`Editor: Accessibility Support`, 选择`off`关闭辅助功能.
 
+### 修复win10输入法不展示候选框
+
+Vscode默认的渲染机制与win10旧版的输入法存在冲突, 会导致不展示文字候选框的问题. 打开设置, 搜索`Editor: Edit Context`, 取消勾选后重启Vscode即可解决该问题.
+
+- [Windows 上 VS Code 中文输入法候选框消失？一文搞定！](https://blog.csdn.net/m0_47346543/article/details/154704448)
+
+使用该方案相当于将vscode的编辑框回退到旧版本的API模式, 可能会对性能有一些影响.
+
 
 常见问题修复
 ----------------
