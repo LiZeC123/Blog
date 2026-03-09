@@ -68,7 +68,6 @@ cover_picture:  images/ubuntu.jpg
 - [多媒体处理](#多媒体处理)
   - [安装ffmpeg](#安装ffmpeg)
   - [视频转码](#视频转码)
-    - [进阶选项](#进阶选项)
     - [调整码率](#调整码率)
     - [任务时间估计](#任务时间估计)
   - [音频提取](#音频提取)
@@ -861,52 +860,50 @@ sudo apt install ffmpeg
 ffmpeg -version
 ```
 
-> 如果感觉版本较旧, 可考虑使用snap安装
+> 如果感觉版本较旧, 可考虑使用snap安装 或者 源码编译
 
 视频转码
 ---------------
 
-要使用FFmpeg将视频转码为1080p分辨率的H.264编码MP4文件, 可以按照以下步骤操作
+要使用FFmpeg将视频转码为H.265编码MP4文件, 可以按照以下步骤操作
 
 
 ```bash
-ffmpeg -i input.mp4 -vf "scale=-1:1080" -c:v libx264 -preset medium -crf 23 -c:a aac -b:a 192k output_1080p.mp4
+ffmpeg -i input.mp4  -c:v libx265 -preset medium -crf 26 -c:a aac -b:a 192k output_1080p.mp4
 ```
 
 
-- `-i input.mp4`: 指定输入文件为 `input.mp4`。请将其替换为你要转码的视频文件路径。
+`-i`参数指定输入文件. 如果仅指定`-i`则ffmpeg仅输出文件的元信息(编码格式, 分辨率, 码率等). `-c:v`指定视频编码格式, 常见选项包含
 
-- `-vf "scale=-1:1080"`: 使用视频滤镜（Video Filter）调整视频分辨率。`scale=-1:1080` 表示将视频的高度设置为1080像素，宽度自动根据原始视频的宽高比进行调整，以避免变形。
+编码器参数名        | 含义
+--------------|------------------------
+libx264       | CPU编码的H.264格式
+libx265       | CPU编码的H.265格式
+libaom-av1    | CPU编码的AV1格式
+h264_nvenc    | NVIDIA显卡编码的H.264格式
+hevc_nvenc    | NVIDIA显卡编码的H.265格式
+av1_nvenc     | NVIDIA显卡编码的AV1格式(40系及以上显卡支持)
 
-- `-c:v libx264`: 指定视频编码器为 `libx264`，这是H.264编码的标准实现。
+在编码前需要读取视频文件并对视频解码, 默认自动选择CPU进行解码, 但也支持使用`-c:v`指定GPU解码(需要在`-i`参数前指定), 具体参数如下
 
-- `-preset medium`: 设置编码速度与压缩效率的平衡。常用的预设包括 `ultrafast`, `superfast`, `veryfast`, `faster`, `fast`, `medium`, `slow`, `slower`, `veryslow`。预设越快，编码速度越快，但压缩效率可能较低；预设越慢，压缩效率越高，但编码时间更长。`medium` 是默认值，适合大多数情况。
+解码器参数名        | 含义
+--------------|------------------------
+h264_cuvid    | NVIDIA显卡解码的H.264格式
+hevc_cuvid    | NVIDIA显卡解码的H.265格式
 
-- `-crf 23`: 设置恒定质量因子（Constant Rate Factor），范围为0-51，数值越小，输出质量越高，文件大小也越大。常用范围是18-28，其中23是默认值。你可以根据需要调整此值以平衡质量和文件大小。
+> 通常情况下, 使用纯CPU编码时, AV1格式比H265格式慢3~5倍. 而使用40系及以上显卡时, 由于显卡硬件支持两种格式的编码, 因此速度相同且相较于CPU转码, 使用显卡可将转码速度提升10倍以上.
 
-- `-c:a aac`: 指定音频编码器为 `aac`，这是MP4容器中常用的音频编码格式。
 
-- `-b:a 192k`: 设置音频比特率为192kbps，以保证良好的音频质量。你可以根据需求调整此值。
+`-preset medium`: 设置编码速度与压缩效率的平衡。常用的预设包括 `ultrafast`, `superfast`, `veryfast`, `faster`, `fast`, `medium`, `slow`, `slower`, `veryslow`。预设越快，编码速度越快，但压缩效率可能较低；预设越慢，压缩效率越高，但编码时间更长。`medium` 是默认值，适合大多数情况。
 
-- `output_1080p.mp4`: 指定输出文件名为 `output_1080p.mp4`。请根据需要更改输出路径和文件名。
+`-crf`: 设置恒定质量因子（Constant Rate Factor），范围为0-51，数值越小，输出质量越高，文件大小也越大。常用范围是18-28，其中23是默认值, 期望减少体积时可以设置为28
 
-### 进阶选项
+`-c:a aac`: 指定音频编码器为 `aac`, 这是MP4容器中常用的音频编码格式.  `-b:a 192k`: 设置音频比特率为192kbps, 以保证良好的音频质量. 如果不需要额外处理音频, 可以使用`-c:a copy`替代这两个参数
 
-1. **调整帧率**: 如果需要设置特定的帧率（例如30fps），可以添加 `-r 30` 参数：
-
-```bash
-ffmpeg -i input.mp4 -vf "scale=-1:1080,fps=30" -c:v libx264 -preset medium -crf 23 -c:a aac -b:a 192k output_1080p.mp4
-```
-
-2. **多线程编码**: 利用多核CPU加快编码速度，可以添加 `-threads` 参数，例如使用4个线程：
-
-```bash
-ffmpeg -i input.mp4 -vf "scale=-1:1080" -c:v libx264 -preset medium -crf 23 -threads 4 -c:a aac -b:a 192k output_1080p.mp4
-```
 
 ### 调整码率
 
-基于质量因子的方法难以预估最终文件的体积大小, 但采用基于码率的方法则可以较为准确的评估. 例如首先使用`ffmpeg -i input.mp4`获取视频的基础信息, 假设输出码率为`6000kb/s`, 其占用的空间为8GB, 则使用相同编码进行转码, 控制码率为`3000kb/s`, 则最终文件体积一定会在4GB左右.
+基于质量因子的方法难以预估最终文件的体积大小, 而采用基于码率的方法则可以较为准确的评估. 例如假设视频当前的码率为`6000kb/s`, 其占用的空间为8GB, 则使用相同编码进行转码, 控制码率为`3000kb/s`, 则最终文件体积一定会在4GB左右.
 
 使用如下指令可将一个给定的视频码率调整为h265格式且码率为`2500kb/s`
 
@@ -924,7 +921,7 @@ ffmpeg -i input.mp4 -c:v libx265 -b:v 2500k -c:a copy output.mp4
 
 对于大部分场景而言, 在`H.264`格式下的1080p视频, 使用`3500k`的码率, 即可获得较好的视觉效果. 对于`H.265`编码和`AV1`编码, 则可以在更低码率下获得相似甚至更好的视觉效果. 
 
-> 但是`AV1`的编码时间远远大于`H.265`, 因此综合来看, 使用`H.265`最平衡
+> 由于显卡有硬件支持, 因此有显卡时优先使用`AV1`格式, 无显卡时优先使用`H.265`格式
 
 
 
@@ -968,12 +965,12 @@ ffmpeg -i input.mp4 -vn -acodec copy output.m4a
 ffmpeg -i input_audio.ext -t 300 -c copy output_clip.ext
 ```
 
-可以指定精确的开始和结束时间
+可以指定精确的开始和结束时间, 使用`-avoid_negative_ts make_zero`可避免截取位置不是关键帧导致的画面错位或者开头黑屏
+
 
 ```bash
-ffmpeg -i input.mp3 -ss 00:01:30 -to 00:06:30 -c copy output.mp3
+ffmpeg -i input.mp4 -ss 00:00:10 -to 00:00:30 -c copy -avoid_negative_ts make_zero output.mp4
 ```
-
 
 
 ubuntu桌面版优化
