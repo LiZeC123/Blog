@@ -83,6 +83,45 @@ CREATE TABLE IF NOT EXISTS users (
 | 模糊查询表结构 | `.tables '%log%'`<br>`.schema '%log%'`                                       |
 
 
+常用功能汇总
+--------------
+
+### 分析表占据空间
+
+```sql
+SELECT
+    name AS 表名,
+    ROUND(SUM(CASE WHEN pageno = 0 THEN pgsize ELSE 0 END) / 1024.0 / 1024.0, 2) AS 数据_MB,
+    ROUND(SUM(CASE WHEN pageno > 0 THEN pgsize ELSE 0 END) / 1024.0 / 1024.0, 2) AS 索引_MB
+FROM dbstat
+WHERE name NOT LIKE 'sqlite_%'
+GROUP BY name
+ORDER BY SUM(pgsize) DESC;
+```
+
+输出结果类似如下
+
+```
+表名                 字节数  MB  
+-------------------  ------  ----
+tomato_task_record   188416  0.18
+credit_log           110592  0.11
+tomato_event         77824   0.07
+idx_owner_time       61440   0.06
+note                 28672   0.03
+```
+
+通常情况下, 将表格中的字节数相加会小于实际占据的文件大小. sqlite的文件分配机制不会主动回收已经分配的页, 只会在后续复用, 因此数据库文件只会增加不会减小, 使用如下的指令可以查看页分配情况
+
+```sql
+PRAGMA page_size;        -- 每页大小（一般 4096）
+PRAGMA page_count;       -- 总页数
+PRAGMA freelist_count;   -- 空闲页数量（空洞）
+```
+
+如果空闲页面数非常大, 占比超过50%, 可以执行`VACUUM;`指令回收空闲页面. 此操作当然会阻塞数据库读写, 因此如果对空间不是特别敏感, 可以不管这个问题, 让sqlite自行复用空闲页.
+
+
 
 线程模型
 ----------
