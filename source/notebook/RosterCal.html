@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>智能日历排班</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            /* 避免拖动文字影响点击，但不影响复制 */
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', 'Noto Sans', system-ui, -apple-system, 'Helvetica Neue', sans-serif;
+            background: linear-gradient(145deg, #e9f0f5 0%, #d9e2ec 100%);
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+        }
+
+        /* 卡片式日历容器 */
+        .calendar-container {
+            max-width: 1300px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 2rem;
+            box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.35), 0 2px 8px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        /* 头部导航 */
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding: 1rem 1.5rem;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border-bottom: 1px solid #e2edf2;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .month-year {
+            font-size: 1.6rem;
+            font-weight: 700;
+            background: linear-gradient(130deg, #1e3c4c, #2b5e6e);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: 1px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .nav-btn {
+            background: #eef3f7;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 6px 16px;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: 0.2s;
+            color: #1f5e6e;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .nav-btn:hover {
+            background: #cbdde6;
+            transform: scale(0.97);
+        }
+
+        /* 星期行 + 日历网格共用相同的列宽规则 */
+        .weekdays,
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+            /* 关键：等宽且允许收缩 */
+        }
+
+        .weekdays {
+            background: #eef2f6;
+            border-bottom: 1px solid #cbdae2;
+            font-weight: 700;
+            color: #2c5f6e;
+        }
+
+        .weekday {
+            text-align: center;
+            padding: 12px 4px;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+            background: #f2f6f9;
+            border-right: 1px solid #dee6ed;
+            white-space: nowrap;
+        }
+
+        .weekday:last-child {
+            border-right: none;
+        }
+
+        /* 日历格子 */
+        .calendar-day {
+            background: white;
+            border-right: 1px solid #e6edf2;
+            border-bottom: 1px solid #e6edf2;
+            padding: 8px 6px 6px 8px;
+            transition: all 0.1s linear;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            /* 允许内容收缩 */
+            word-break: break-word;
+            overflow: hidden;
+        }
+
+        /* 非当前月的淡灰色 */
+        .calendar-day.other-month {
+            background: #f9fbfd;
+            color: #9aaeb9;
+        }
+
+        .calendar-day.other-month .day-number {
+            color: #b9cdda;
+        }
+
+        .calendar-day:hover {
+            background: #fef7e0;
+            transform: scale(0.99);
+            box-shadow: inset 0 0 0 1px #ffcf8a, 0 2px 6px rgba(0, 0, 0, 0.05);
+            z-index: 2;
+        }
+
+        .day-number {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #1e3b44;
+            display: inline-block;
+            line-height: 1.2;
+        }
+
+        .other-month .day-number {
+            font-weight: 400;
+            color: #b2c4cf;
+        }
+
+        /* 表情区域 - 自动换行，适应小屏幕 */
+        .emoji-area {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+            margin-top: 4px;
+            font-size: 1.2rem;
+            line-height: 1.3;
+        }
+
+        .ox-emoji,
+        .pig-combo {
+            display: inline-flex;
+            align-items: center;
+            background: #faf3e0;
+            border-radius: 40px;
+            padding: 2px 8px 2px 6px;
+            font-size: 1rem;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            white-space: nowrap;
+        }
+
+        .ox-emoji {
+            background: #e8f0fe;
+        }
+
+        /* 移动端适配：缩小内边距和字体，确保所有列宽一致 */
+        @media (max-width: 700px) {
+            body {
+                padding: 8px;
+            }
+
+            .calendar-header {
+                padding: 0.8rem 1rem;
+            }
+
+            .month-year {
+                font-size: 1.3rem;
+            }
+
+            .nav-btn {
+                padding: 4px 12px;
+                font-size: 0.85rem;
+            }
+
+            .weekday {
+                padding: 8px 2px;
+                font-size: 0.75rem;
+            }
+
+            .calendar-day {
+                padding: 6px 4px 4px 6px;
+            }
+
+            .day-number {
+                font-size: 1rem;
+                margin-bottom: 4px;
+            }
+
+            .emoji-area {
+                font-size: 1rem;
+                gap: 4px;
+            }
+
+            .ox-emoji,
+            .pig-combo {
+                font-size: 0.85rem;
+                padding: 1px 5px;
+                white-space: nowrap;
+            }
+        }
+
+        /* 极小屏幕（宽度<500px）进一步压缩 */
+        @media (max-width: 500px) {
+            .weekday {
+                font-size: 0.7rem;
+                padding: 6px 1px;
+            }
+
+            .day-number {
+                font-size: 0.9rem;
+            }
+
+            .emoji-area {
+                font-size: 0.85rem;
+                gap: 3px;
+            }
+
+            .ox-emoji,
+            .pig-combo {
+                font-size: 0.75rem;
+                padding: 1px 4px;
+            }
+
+            .calendar-day {
+                padding: 4px 3px 3px 4px;
+            }
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px;
+            font-size: 0.7rem;
+            background: #f6fafd;
+            color: #6f8f9c;
+            border-top: 1px solid #e2eef5;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="calendar-container">
+        <div class="calendar-header">
+            <div class="month-year" id="monthYearDisplay">2026年3月</div>
+            <div class="nav-buttons">
+                <button class="nav-btn" id="prevMonthBtn">◀ 上月</button>
+                <button class="nav-btn" id="nextMonthBtn">下月 ▶</button>
+            </div>
+        </div>
+        <div class="weekdays">
+            <div class="weekday">周日</div>
+            <div class="weekday">周一</div>
+            <div class="weekday">周二</div>
+            <div class="weekday">周三</div>
+            <div class="weekday">周四</div>
+            <div class="weekday">周五</div>
+            <div class="weekday">周六</div>
+        </div>
+        <div id="calendarGrid" class="calendar-grid"></div>
+        <footer>Power By DeepSeek V3.2</footer>
+    </div>
+
+    <script>
+        (function () {
+            // ---------- 核心配置 ----------
+            // 基准日期: 2026年3月29日 (牛头起始 & 猪头起始状态: 猪头+太阳)
+            const BASE_DATE = new Date(Date.UTC(2026, 2, 29)); // 月份 2 = 三月
+            const BASE_YEAR = 2026;
+            const BASE_MONTH = 2;   // 0-index: 2 = March
+            const BASE_DAY = 29;
+
+            // 猪头状态映射 (索引0~3)
+            const PIG_STATES = [
+                { emoji: "🐷🌙", name: "猪头+月亮" },
+                { emoji: "", name: "空白" },
+                { emoji: "🐷🌞", name: "猪头+太阳" },
+                { emoji: "🐷🌞🌙", name: "猪头+太阳+月亮" },
+            ];
+
+            // 辅助函数: 计算任意日期距离基准日期的天数差 (带符号, 基于UTC)
+            function getDaysDiffFromBase(year, month, day) {
+                const targetUtc = Date.UTC(year, month, day);
+                const baseUtc = Date.UTC(BASE_YEAR, BASE_MONTH, BASE_DAY);
+                const diffMillis = targetUtc - baseUtc;
+                return Math.round(diffMillis / (1000 * 60 * 60 * 24));
+            }
+
+            // 获取牛头表情 (每隔三天出现一次, 从2026-03-29含当天开始)
+            function getOxEmoji(year, month, day) {
+                const diff = getDaysDiffFromBase(year, month, day);
+                if (diff >= 0 && diff % 3 === 0) {
+                    return "🐮";
+                }
+                return "";
+            }
+
+            // 获取猪头组合表情 (按照 猪头+太阳, 猪头+太阳+月亮, 猪头+月亮, 空白 循环)
+            function getPigComboEmoji(year, month, day) {
+                const diff = getDaysDiffFromBase(year, month, day);
+                let index = diff % 4;
+                if (index < 0) index += 4;
+                index = ((index % 4) + 4) % 4;
+                return PIG_STATES[index].emoji;
+            }
+
+            // ---------- 日历渲染核心 ----------
+            let currentYear = 2026;
+            let currentMonth = 2;   // 初始显示三月，包含2026-03-29
+
+            const monthYearDisplay = document.getElementById('monthYearDisplay');
+            const calendarGrid = document.getElementById('calendarGrid');
+            const prevBtn = document.getElementById('prevMonthBtn');
+            const nextBtn = document.getElementById('nextMonthBtn');
+
+            function getDaysInMonth(year, month) {
+                return new Date(year, month + 1, 0).getDate();
+            }
+
+            function getFirstDayWeekIndex(year, month) {
+                return new Date(year, month, 1).getDay();
+            }
+
+            function renderCalendar() {
+                const monthNames = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+                monthYearDisplay.innerText = `${currentYear}年${monthNames[currentMonth]}`;
+
+                const daysInCurrentMonth = getDaysInMonth(currentYear, currentMonth);
+                const firstDayWeek = getFirstDayWeekIndex(currentYear, currentMonth);
+                const totalCells = 42;
+
+                const startDate = new Date(currentYear, currentMonth, 1);
+                startDate.setDate(1 - firstDayWeek);
+
+                calendarGrid.innerHTML = '';
+
+                for (let i = 0; i < totalCells; i++) {
+                    const cellDate = new Date(startDate);
+                    cellDate.setDate(startDate.getDate() + i);
+                    const year = cellDate.getFullYear();
+                    const month = cellDate.getMonth();
+                    const day = cellDate.getDate();
+
+                    const isCurrentMonth = (year === currentYear && month === currentMonth);
+
+                    const dayDiv = document.createElement('div');
+                    dayDiv.className = 'calendar-day';
+                    if (!isCurrentMonth) {
+                        dayDiv.classList.add('other-month');
+                    } else {
+                        dayDiv.classList.add('current-month');
+                    }
+
+                    const dayNumberSpan = document.createElement('div');
+                    dayNumberSpan.className = 'day-number';
+                    dayNumberSpan.innerText = day;
+                    dayDiv.appendChild(dayNumberSpan);
+
+                    const emojiArea = document.createElement('div');
+                    emojiArea.className = 'emoji-area';
+
+                    if (isCurrentMonth) {
+                        const ox = getOxEmoji(year, month, day);
+                        const pigCombo = getPigComboEmoji(year, month, day);
+
+                        if (ox) {
+                            const oxSpan = document.createElement('span');
+                            oxSpan.className = 'ox-emoji';
+                            oxSpan.innerText = ox;
+                            oxSpan.title = '牛头排班日 (每三天一次)';
+                            emojiArea.appendChild(oxSpan);
+                        }
+                        if (pigCombo) {
+                            const pigSpan = document.createElement('span');
+                            pigSpan.className = 'pig-combo';
+                            pigSpan.innerText = pigCombo;
+                            let titleText = '';
+                            if (pigCombo === '🐷🌞') titleText = '猪头+太阳';
+                            else if (pigCombo === '🐷🌞🌙') titleText = '猪头+太阳+月亮';
+                            else if (pigCombo === '🐷🌙') titleText = '猪头+月亮';
+                            if (titleText) pigSpan.title = titleText;
+                            emojiArea.appendChild(pigSpan);
+                        }
+                    }
+
+                    // 保持布局稳定
+                    if (emojiArea.children.length === 0) {
+                        emojiArea.style.minHeight = '28px';
+                    } else {
+                        emojiArea.style.minHeight = 'auto';
+                    }
+
+                    dayDiv.appendChild(emojiArea);
+                    calendarGrid.appendChild(dayDiv);
+                }
+
+                highlightToday();
+            }
+
+            function highlightToday() {
+                const today = new Date();
+                const todayYear = today.getFullYear();
+                const todayMonth = today.getMonth();
+                const todayDate = today.getDate();
+
+                if (currentYear === todayYear && currentMonth === todayMonth) {
+                    const dayElements = document.querySelectorAll('.calendar-day');
+                    for (let i = 0; i < dayElements.length; i++) {
+                        const dayDiv = dayElements[i];
+                        const dayNumberSpan = dayDiv.querySelector('.day-number');
+                        if (!dayNumberSpan) continue;
+                        const dayNum = parseInt(dayNumberSpan.innerText, 10);
+                        const isCurMonth = dayDiv.classList.contains('current-month');
+                        if (isCurMonth && dayNum === todayDate) {
+                            dayDiv.style.backgroundColor = '#fff2df';
+                            dayDiv.style.boxShadow = 'inset 0 0 0 2px #ffb347';
+                            dayDiv.style.borderRadius = '12px';
+                        } else {
+                            if (!dayDiv.classList.contains('other-month')) {
+                                dayDiv.style.backgroundColor = '';
+                                dayDiv.style.boxShadow = '';
+                            }
+                        }
+                    }
+                }
+            }
+
+            function goPrevMonth() {
+                let newMonth = currentMonth - 1;
+                let newYear = currentYear;
+                if (newMonth < 0) {
+                    newMonth = 11;
+                    newYear--;
+                }
+                currentYear = newYear;
+                currentMonth = newMonth;
+                renderCalendar();
+            }
+
+            function goNextMonth() {
+                let newMonth = currentMonth + 1;
+                let newYear = currentYear;
+                if (newMonth > 11) {
+                    newMonth = 0;
+                    newYear++;
+                }
+                currentYear = newYear;
+                currentMonth = newMonth;
+                renderCalendar();
+            }
+
+            prevBtn.addEventListener('click', goPrevMonth);
+            nextBtn.addEventListener('click', goNextMonth);
+
+            renderCalendar();
+
+            // 控制台校验（可选，保留原逻辑）
+            if (typeof console !== 'undefined') {
+                console.log('✅ 移动端适配完成：日历网格使用 minmax(0,1fr) 确保列宽一致，表情区域自动换行。');
+            }
+        })();
+    </script>
+</body>
+
+</html>

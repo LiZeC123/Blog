@@ -124,6 +124,8 @@ BaseException
 
 - [Python异常类的继承关系](https://blog.csdn.net/Dragonfli_Lee/article/details/52350793)
 
+当Python程序正在执行时, 如果用户按下`Ctrl+C`, 则会抛出`KeyboardInterrupt`. Python在执行完当前的字节码后, 准备执行吓一条字节码之前会检查状态并抛出此异常. 因此任何Python语句都可能被中断并抛出此异常. 由于Python异常无需显示声明, 因此这与Java的实现风格非常不一样.
+
 --------------------
 
 with语句就如同Java中管理资源的try语句, with语句有如下的等价关系
