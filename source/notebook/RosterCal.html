@@ -288,13 +288,13 @@
             <div class="weekday">周六</div>
         </div>
         <div id="calendarGrid" class="calendar-grid"></div>
-        <footer>Power By DeepSeek V3.2</footer>
+        <footer>DeepSeek V3.2 提供计算支持</footer>
     </div>
 
     <script>
         (function () {
             // ---------- 核心配置 ----------
-            // 基准日期: 2026年3月29日 (牛头起始 & 猪头起始状态: 猪头+太阳)
+            // 基准日期: 2026年3月29日 (牛头起始 & 猪头起始状态)
             const BASE_DATE = new Date(Date.UTC(2026, 2, 29)); // 月份 2 = 三月
             const BASE_YEAR = 2026;
             const BASE_MONTH = 2;   // 0-index: 2 = March
@@ -483,11 +483,6 @@
             nextBtn.addEventListener('click', goNextMonth);
 
             renderCalendar();
-
-            // 控制台校验（可选，保留原逻辑）
-            if (typeof console !== 'undefined') {
-                console.log('✅ 移动端适配完成：日历网格使用 minmax(0,1fr) 确保列宽一致，表情区域自动换行。');
-            }
         })();
     </script>
 </body>
