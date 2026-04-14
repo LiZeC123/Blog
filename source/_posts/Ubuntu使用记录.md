@@ -73,6 +73,7 @@ cover_picture:  images/ubuntu.jpg
     - [任务时间估计](#任务时间估计)
   - [音频提取](#音频提取)
     - [截取片段](#截取片段)
+    - [合并多个文件](#合并多个文件)
 - [ubuntu桌面版优化](#ubuntu桌面版优化)
   - [注意事项](#注意事项)
   - [安装搜狗输入法](#安装搜狗输入法)
@@ -924,6 +925,8 @@ ffmpeg -i input.mp4  -c:v libx265 -preset medium -crf 26 -c:a copy output_1080p.
 
 `-c:a copy`: 音频部分直接复制, 不进行转码处理
 
+>注意: 转码操作前需要先确认原视频的码率, 如果原视频码率已经非常低了, 那么即使转换为其他格式, 收益也不大(甚至可能视频文件会变大)
+
 > 注意: Mac平台硬件编码不支持恒定质量因子, 必须手动指定码率
 
 
@@ -997,6 +1000,33 @@ ffmpeg -i input_audio.ext -t 300 -c copy output_clip.ext
 ```bash
 ffmpeg -i input.mp4 -ss 00:00:10 -to 00:00:30 -c copy -avoid_negative_ts make_zero output.mp4
 ```
+
+
+### 合并多个文件
+
+```bash
+#!/bin/bash
+
+# 生成文件列表
+file_list="file_list.txt"
+> $file_list
+
+# 遍历当前目录所有 MP4，写入列表
+for file in *.mp4; do
+    echo "file '$file'" >> $file_list
+done
+
+# 无损合并
+ffmpeg -f concat -safe 0 -i $file_list \
+-map 0:v:0 -map 0:a:0 \
+-c copy merged_output.mp4
+
+# 清理临时文件
+# rm -f $file_list
+
+echo -e "\n合并完成！输出文件：merged_output.mp4"
+```
+
 
 
 ubuntu桌面版优化
