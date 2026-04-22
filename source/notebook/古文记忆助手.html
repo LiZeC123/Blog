@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
-    <title>文章记忆辅助器 | 逐字逐句背诵</title>
+    <title>基于序列步进解码的认知记忆拟合终端</title>
     <style>
         * {
             margin: 0;
@@ -25,7 +25,7 @@
         .app {
             display: flex;
             flex-direction: column;
-            height: 100vh;      /* 移动端全高 */
+            height: 100dvh;   
             width: 100%;
             background-color: #ffffff;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
@@ -203,8 +203,10 @@
 <body>
 <div class="app">
     <div class="header">
-        📖 文章记忆助手
-        <small>逐字核对 · 背诵利器</small>
+        📖 基于序列步进解码的认知记忆拟合终端
+         <div class="progress-tip" id="progressTip">
+            <!-- 动态显示记忆进度 -->
+        </div>
     </div>
 
     <!-- 文本展示区，滚动容器 -->
@@ -216,14 +218,12 @@
 
     <div class="button-bar">
         <div class="button-grid">
-            <button class="btn btn-primary" id="nextCharBtn">📝 下一字</button>
-            <button class="btn btn-primary" id="nextSentenceBtn">📄 下一句</button>
             <button class="btn btn-warning" id="resetBtn">🔄 重置</button>
             <button class="btn btn-full" id="fullTextBtn">📖 全文</button>
+            <button class="btn btn-primary" id="nextSentenceBtn">📄 下一句</button>
+            <button class="btn btn-primary" id="nextCharBtn">📝 下一字</button>
         </div>
-        <div class="progress-tip" id="progressTip">
-            <!-- 动态显示记忆进度 -->
-        </div>
+        
     </div>
 </div>
 
@@ -305,7 +305,7 @@
         
         // 更新进度百分比
         const percent = totalLength === 0 ? 0 : Math.floor((currentIndex / totalLength) * 100);
-        progressTipSpan.innerText = `📌 记忆进度: ${currentIndex} / ${totalLength} 字  (${percent}%)`;
+        progressTipSpan.innerText = `📌 训练进度: ${currentIndex} / ${totalLength} 字  (${percent}%)`;
         
         // 自动滚动文本区域到底部，最新输出的内容可见
         if (textAreaContainer) {
@@ -339,7 +339,7 @@
                 progressTipSpan.innerText = '🎉 已完成全文！点击重置可重新背诵 🎉';
                 setTimeout(() => {
                     if (currentIndex >= totalLength) {
-                        progressTipSpan.innerText = `📌 记忆进度: ${currentIndex} / ${totalLength} 字 (100%)`;
+                        progressTipSpan.innerText = `📌 训练进度: ${currentIndex} / ${totalLength} 字 (100%)`;
                     }
                 }, 1500);
             }
@@ -357,7 +357,7 @@
             progressTipSpan.innerText = '🎉 全文已完成，无需继续下一句 🎉';
             setTimeout(() => {
                 if (currentIndex >= totalLength) {
-                    progressTipSpan.innerText = `📌 记忆进度: ${currentIndex} / ${totalLength} 字 (100%)`;
+                    progressTipSpan.innerText = `📌 训练进度: ${currentIndex} / ${totalLength} 字 (100%)`;
                 }
             }, 1200);
             return;
@@ -387,7 +387,7 @@
         updateButtonsState();
         // 可选：额外清除提示样式
         progressTipSpan.style.opacity = '1';
-        progressTipSpan.innerText = `📌 记忆进度: 0 / ${totalLength} 字 (0%)`;
+        progressTipSpan.innerText = `📌 训练进度: 0 / ${totalLength} 字 (0%)`;
         // 让滚动条回到顶部（符合重置后看空白区域期待）
         if (textAreaContainer) {
             textAreaContainer.scrollTop = 0;
@@ -404,7 +404,7 @@
         if (textAreaContainer) {
             textAreaContainer.scrollTop = textAreaContainer.scrollHeight;
         }
-        progressTipSpan.innerText = `📌 记忆进度: ${totalLength} / ${totalLength} 字 (100%) 全文已展开`;
+        progressTipSpan.innerText = `📌 训练进度: ${totalLength} / ${totalLength} 字 (100%) 全文已展开`;
     }
     
     // ---------- 文章变更时的重新初始化（预留扩展，便于后续通过配置更换文章） ----------
