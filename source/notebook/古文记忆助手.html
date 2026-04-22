@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <title>文章记忆辅助器 | 逐字逐句背诵</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none; /* 避免移动端长按菜单，提升点击体验，不影响文本选择，但记忆工具无妨 */
+        }
+
+        /* 整体容器：占满整个视口，flex 列布局，防止高度溢出 */
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #f7f9fc;
+            font-family: system-ui, -apple-system, 'Segoe UI', 'Noto Sans CJK SC', Roboto, 'Helvetica Neue', sans-serif;
+            
+        }
+
+        .app {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;      /* 移动端全高 */
+            width: 100%;
+            background-color: #ffffff;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        /* 顶部简洁标题栏，不占用过多空间，但提供语义 */
+        .header {
+            flex-shrink: 0;
+            padding: 14px 20px 8px;
+            background: linear-gradient(135deg, #2c3e66 0%, #1a2a44 100%);
+            color: white;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        .header small {
+            font-size: 0.7rem;
+            opacity: 0.8;
+            display: block;
+            margin-top: 4px;
+            font-weight: normal;
+        }
+
+        /* 文本输出区域：占用剩余所有高度，内部滚动 */
+        .text-display {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 18px;
+            background: #fefef7;
+            background-image: radial-gradient(circle at 10% 20%, rgba(245, 245, 240, 0.4) 2%, transparent 2.5%);
+            background-size: 24px 24px;
+            line-height: 1.75;
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #1e2a3e;
+            transition: all 0.1s ease;
+            scroll-behavior: smooth;
+        }
+
+        /* 内容区文本样式：保留换行和空格，舒适阅读 */
+        .memory-text {
+            white-space: pre-wrap;
+            word-break: break-word;
+            font-family: 'Noto Serif SC', 'Times New Roman', '宋体', Georgia, serif;
+            letter-spacing: 0.02em;
+        }
+
+        /* 自定义滚动条 (移动端优雅) */
+        .text-display::-webkit-scrollbar {
+            width: 4px;
+        }
+        .text-display::-webkit-scrollbar-track {
+            background: #e9ecef;
+            border-radius: 4px;
+        }
+        .text-display::-webkit-scrollbar-thumb {
+            background: #b9c2d0;
+            border-radius: 4px;
+        }
+
+        /* 底部按钮区：固定高度，网格布局适配手指 */
+        .button-bar {
+            flex-shrink: 0;
+            background: #ffffff;
+            padding: 12px 16px 20px;
+            border-top: 1px solid #e2e8f0;
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.02);
+        }
+
+        .button-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        /* 按钮通用样式，手指触摸区域足够大 */
+        .btn {
+            flex: 1;
+            min-width: 70px;
+            background: #f1f5f9;
+            border: none;
+            padding: 12px 0;
+            border-radius: 56px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1e293b;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            letter-spacing: 1px;
+            backdrop-filter: blur(2px);
+            background: #f8fafc;
+            border: 1px solid #e2edf2;
+        }
+
+        .btn:active {
+            transform: scale(0.96);
+            background: #e6edf4;
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 不同按钮主题，视觉区分 */
+        .btn-primary {
+            background: #2c5f8a;
+            border-color: #1f4a6e;
+            color: white;
+            box-shadow: 0 2px 6px rgba(44, 95, 138, 0.2);
+        }
+        .btn-primary:active {
+            background: #1f4462;
+        }
+        .btn-warning {
+            background: #f4b942;
+            border-color: #e0a12e;
+            color: #2d2b26;
+        }
+        .btn-warning:active {
+            background: #e6a82e;
+        }
+        .btn-secondary {
+            background: #eef2f6;
+            color: #2c3e66;
+        }
+        .btn-full {
+            background: #4c7a5c;
+            border-color: #3c6248;
+            color: white;
+        }
+
+        /* 进度指示器小标签（可选，提升体验） */
+        .progress-tip {
+            text-align: center;
+            font-size: 0.7rem;
+            color: #6c7a8e;
+            margin-top: 10px;
+            letter-spacing: 0.5px;
+            font-weight: 400;
+        }
+
+        /* 适应超小屏幕，按钮文字稍小 */
+        @media (max-width: 480px) {
+            .btn {
+                font-size: 0.9rem;
+                padding: 10px 0;
+                min-width: 65px;
+            }
+            .text-display {
+                padding: 18px 14px;
+                font-size: 1.6rem;
+                line-height: 1.65;
+            }
+            .header {
+                padding: 10px 16px 6px;
+                font-size: 1rem;
+            }
+        }
+
+        /* 禁用样式 (可选，但通过逻辑控制) */
+        .btn-disabled {
+            opacity: 0.5;
+            transform: none;
+            pointer-events: none;
+        }
+
+        footer {
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+    <div class="header">
+        📖 文章记忆助手
+        <small>逐字核对 · 背诵利器</small>
+    </div>
+
+    <!-- 文本展示区，滚动容器 -->
+    <div class="text-display" id="textDisplayArea">
+        <div class="memory-text" id="memoryContent">
+            <!-- 动态显示已输出的文本内容 -->
+        </div>
+    </div>
+
+    <div class="button-bar">
+        <div class="button-grid">
+            <button class="btn btn-primary" id="nextCharBtn">📝 下一字</button>
+            <button class="btn btn-primary" id="nextSentenceBtn">📄 下一句</button>
+            <button class="btn btn-warning" id="resetBtn">🔄 重置</button>
+            <button class="btn btn-full" id="fullTextBtn">📖 全文</button>
+        </div>
+        <div class="progress-tip" id="progressTip">
+            <!-- 动态显示记忆进度 -->
+        </div>
+    </div>
+</div>
+
+<script>
+    // ======================= 核心文章内容变量 =======================
+    // 可根据需求自由修改为其他文章（如《岳阳楼记》《出师表》等）
+    // 注意：标点符号（句号、逗号、分号、感叹号、问号）均作为分句依据
+    // 为了体验，文章使用《滕王阁序》经典段落（完整展示功能且富有韵律）
+    const FULL_ARTICLE = `豫章故郡，洪都新府。星分翼轸，地接衡庐。襟三江而带五湖，控蛮荆而引瓯越。物华天宝，龙光射牛斗之墟；人杰地灵，徐孺下陈蕃之榻。雄州雾列，俊采星驰。台隍枕夷夏之交，宾主尽东南之美。都督阎公之雅望，棨戟遥临；宇文新州之懿范，襜帷暂驻。十旬休假，胜友如云；千里逢迎，高朋满座。腾蛟起凤，孟学士之词宗；紫电青霜，王将军之武库。家君作宰，路出名区；童子何知，躬逢胜饯。
+时维九月，序属三秋。潦水尽而寒潭清，烟光凝而暮山紫。俨骖騑于上路，访风景于崇阿。临帝子之长洲，得天人之旧馆。层峦耸翠，上出重霄；飞阁流丹，下临无地。鹤汀凫渚，穷岛屿之萦回；桂殿兰宫，即冈峦之体势。
+披绣闼，俯雕甍，山原旷其盈视，川泽纡其骇瞩。闾阎扑地，钟鸣鼎食之家；舸舰弥津，青雀黄龙之舳。云销雨霁，彩彻区明。落霞与孤鹜齐飞，秋水共长天一色。渔舟唱晚，响穷彭蠡之滨，雁阵惊寒，声断衡阳之浦。
+遥襟甫畅，逸兴遄飞。爽籁发而清风生，纤歌凝而白云遏。睢园绿竹，气凌彭泽之樽；邺水朱华，光照临川之笔。四美具，二难并。穷睇眄于中天，极娱游于暇日。天高地迥，觉宇宙之无穷；兴尽悲来，识盈虚之有数。望长安于日下，目吴会于云间。地势极而南溟深，天柱高而北辰远。关山难越，谁悲失路之人；萍水相逢，尽是他乡之客。怀帝阍而不见，奉宣室以何年？
+嗟乎！时运不齐，命途多舛。冯唐易老，李广难封。屈贾谊于长沙，非无圣主；窜梁鸿于海曲，岂乏明时？所赖君子见机，达人知命。老当益壮，宁移白首之心？穷且益坚，不坠青云之志。酌贪泉而觉爽，处涸辙以犹欢。北海虽赊，扶摇可接；东隅已逝，桑榆非晚。孟尝高洁，空余报国之情；阮籍猖狂，岂效穷途之哭！
+勃，三尺微命，一介书生。无路请缨，等终军之弱冠；有怀投笔，慕宗悫之长风。舍簪笏于百龄，奉晨昏于万里。非谢家之宝树，接孟氏之芳邻。他日趋庭，叨陪鲤对；今兹捧袂，喜托龙门。杨意不逢，抚凌云而自惜；钟期既遇，奏流水以何惭？
+呜呼！胜地不常，盛筵难再；兰亭已矣，梓泽丘墟。临别赠言，幸承恩于伟饯；登高作赋，是所望于群公。敢竭鄙怀，恭疏短引；一言均赋，四韵俱成。请洒潘江，各倾陆海云尔。
+
+滕王高阁临江渚，佩玉鸣鸾罢歌舞。
+画栋朝飞南浦云，珠帘暮卷西山雨。
+闲云潭影日悠悠，物换星移几度秋。
+阁中帝子今何在？槛外长江空自流。`;
+    
+    // ---------- 全局状态 ----------
+    let fullText = FULL_ARTICLE;            // 原始文章
+    let currentIndex = 0;                  // 下一个要输出的字符索引（已输出字符数 = currentIndex）
+    let totalLength = fullText.length;      // 文章总字符数
+    
+    // DOM 元素
+    const memoryContentDiv = document.getElementById('memoryContent');
+    const textAreaContainer = document.getElementById('textDisplayArea');
+    const progressTipSpan = document.getElementById('progressTip');
+    
+    // 按钮元素
+    const nextCharBtn = document.getElementById('nextCharBtn');
+    const nextSentenceBtn = document.getElementById('nextSentenceBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const fullTextBtn = document.getElementById('fullTextBtn');
+    
+    // ---------- 辅助函数：检测标点符号（用于分句）----------
+    // 判断字符是否为句子分隔符（支持中文及常见英文标点，满足记忆需求）
+    function isSentenceSeparator(ch) {
+        // 句号、逗号、分号、感叹号、问号、冒号（中文和英文常见变体）
+        // 为了严谨包含 。 ， ； ： ！ ？ 以及 . , ; : ! ?
+        const separators = new Set([
+            '。', '，', '；', '：', '！', '？',   // 中文全角
+            '.', ',', ';', ':', '!', '?'          // 英文半角
+        ]);
+        return separators.has(ch);
+    }
+    
+    /**
+     * 从指定起始索引 start 开始，获取下一个“完整句子”的结束索引（包含末尾分隔符）
+     * 规则：从 start 开始扫描，遇到第一个分隔符（句号、逗号等）时，返回该分隔符的索引+1（包含该标点）
+     * 若扫描到末尾都没有分隔符，则返回全文长度（即输出剩余全部）
+     * @param {string} text 全文
+     * @param {number} start 起始索引（包含）
+     * @returns {number} 下一句结束索引（slice end 参数，不包含的索引边界）
+     */
+    function getNextSentenceEndIndex(text, start) {
+        const len = text.length;
+        if (start >= len) return len;
+        for (let i = start; i < len; i++) {
+            if (isSentenceSeparator(text[i])) {
+                // 包含当前分隔符字符，所以结束索引为 i+1
+                return i + 1;
+            }
+        }
+        // 未找到任何分隔符，返回全文长度
+        return len;
+    }
+    
+    /**
+     * 更新UI：基于 currentIndex 渲染已输出的文本内容
+     * 同时更新进度提示、自动滚动到底部
+     */
+    function renderDisplay() {
+        // 已输出文本 = 全文 slice(0, currentIndex)
+        const displayedText = fullText.slice(0, currentIndex);
+        memoryContentDiv.innerText = displayedText || '✨ 点击下方按钮开始记忆 ✨';
+        
+        // 更新进度百分比
+        const percent = totalLength === 0 ? 0 : Math.floor((currentIndex / totalLength) * 100);
+        progressTipSpan.innerText = `📌 记忆进度: ${currentIndex} / ${totalLength} 字  (${percent}%)`;
+        
+        // 自动滚动文本区域到底部，最新输出的内容可见
+        if (textAreaContainer) {
+            textAreaContainer.scrollTop = textAreaContainer.scrollHeight;
+        }
+    }
+    
+    /**
+     * 更新按钮的可用样式（视觉提示，但功能主要靠逻辑限制）
+     * 如果已显示全文，对“下一字”“下一句”添加禁用类（可选视觉优化）
+     */
+    function updateButtonsState() {
+        const isCompleted = currentIndex >= totalLength;
+        if (isCompleted) {
+            nextCharBtn.classList.add('btn-disabled');
+            nextSentenceBtn.classList.add('btn-disabled');
+        } else {
+            nextCharBtn.classList.remove('btn-disabled');
+            nextSentenceBtn.classList.remove('btn-disabled');
+        }
+        // 重置和全文始终可用，但全文在已完成时逻辑里也会自动限制（但无需禁用）
+    }
+    
+    // ---------- 核心操作方法 ----------
+    // 1. 下一字：输出下一个字符（仅当未完成时）
+    function nextCharacter() {
+        if (currentIndex >= totalLength) {
+            // 提示已完成全文，轻提醒但不骚扰
+            if (totalLength > 0) {
+                // 短震动感（仅支持部分浏览器，但不影响主要功能）
+                progressTipSpan.innerText = '🎉 已完成全文！点击重置可重新背诵 🎉';
+                setTimeout(() => {
+                    if (currentIndex >= totalLength) {
+                        progressTipSpan.innerText = `📌 记忆进度: ${currentIndex} / ${totalLength} 字 (100%)`;
+                    }
+                }, 1500);
+            }
+            return;
+        }
+        // 增加一个字符
+        currentIndex++;
+        renderDisplay();
+        updateButtonsState();
+    }
+    
+    // 2. 下一句：从 currentIndex 开始，输出到下一个分隔符（句号/逗号等）
+    function nextSentence() {
+        if (currentIndex >= totalLength) {
+            progressTipSpan.innerText = '🎉 全文已完成，无需继续下一句 🎉';
+            setTimeout(() => {
+                if (currentIndex >= totalLength) {
+                    progressTipSpan.innerText = `📌 记忆进度: ${currentIndex} / ${totalLength} 字 (100%)`;
+                }
+            }, 1200);
+            return;
+        }
+        
+        // 获取下一个句子的结束位置
+        const endIndex = getNextSentenceEndIndex(fullText, currentIndex);
+        if (endIndex === currentIndex) {
+            // 理论不会出现，但避免死循环：如果当前索引就是结束边界（特殊符号等情况），直接推进一位
+            if (currentIndex < totalLength) {
+                currentIndex++;
+                renderDisplay();
+                updateButtonsState();
+            }
+            return;
+        }
+        // 将索引推进到该句结束位置
+        currentIndex = endIndex;
+        renderDisplay();
+        updateButtonsState();
+    }
+    
+    // 3. 重置：清空输出，索引归零
+    function resetMemory() {
+        currentIndex = 0;
+        renderDisplay();
+        updateButtonsState();
+        // 可选：额外清除提示样式
+        progressTipSpan.style.opacity = '1';
+        progressTipSpan.innerText = `📌 记忆进度: 0 / ${totalLength} 字 (0%)`;
+        // 让滚动条回到顶部（符合重置后看空白区域期待）
+        if (textAreaContainer) {
+            textAreaContainer.scrollTop = 0;
+        }
+    }
+    
+    // 4. 全文：一次性输出整篇文章
+    function fullTextOutput() {
+        if (totalLength === 0) return;
+        currentIndex = totalLength;
+        renderDisplay();
+        updateButtonsState();
+        // 滚动到底部，展示全文效果
+        if (textAreaContainer) {
+            textAreaContainer.scrollTop = textAreaContainer.scrollHeight;
+        }
+        progressTipSpan.innerText = `📌 记忆进度: ${totalLength} / ${totalLength} 字 (100%) 全文已展开`;
+    }
+    
+    // ---------- 文章变更时的重新初始化（预留扩展，便于后续通过配置更换文章） ----------
+    /**
+     * 如果使用者需要动态更换文章（比如通过url参数或localStorage），可以调用此函数
+     * 但目前为纯静态变量，为了方便以后修改，提供一个统一的重置文章方法。
+     * 核心需求：“文章内容使用变量在文件中存储，以便于后续可修改文件更换为其他文章”
+     * 使用者只需修改 FULL_ARTICLE 常量即可，无需改动逻辑。
+     */
+    function reloadArticle(newArticle) {
+        if (!newArticle || typeof newArticle !== 'string') return;
+        fullText = newArticle;
+        totalLength = fullText.length;
+        currentIndex = 0;
+        renderDisplay();
+        updateButtonsState();
+        // 滚动至顶部
+        if (textAreaContainer) textAreaContainer.scrollTop = 0;
+        progressTipSpan.innerText = `📌 已更换文章，共 ${totalLength} 字，重新开始记忆`;
+    }
+    
+    // 可选: 为方便开发者调试，挂载一个全局更换文章函数 (非必须，但符合扩展)
+    window.updateArticle = function(newText) {
+        if (newText && newText.trim().length > 0) {
+            reloadArticle(newText.trim());
+        } else {
+            console.warn('文章内容不能为空');
+        }
+    };
+    
+    // ---------- 绑定事件与触摸优化 (移动端避免300ms延迟，现代浏览器已优化) ----------
+    function bindEvents() {
+        nextCharBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            nextCharacter();
+        });
+        
+        nextSentenceBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            nextSentence();
+        });
+        
+        resetBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            resetMemory();
+        });
+        
+        fullTextBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            fullTextOutput();
+        });
+        
+        // 键盘快捷键辅助（可选，方便调试/平板外接键盘）：按方向右键下一字，下键下一句（不强制但增加便利）
+        window.addEventListener('keydown', (e) => {
+            // 避免与输入框冲突，无输入框，全局可用
+            if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                nextCharacter();
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                nextSentence();
+            } else if (e.key === 'Home') {
+                e.preventDefault();
+                resetMemory();
+            } else if (e.key === 'End') {
+                e.preventDefault();
+                fullTextOutput();
+            }
+        });
+    }
+    
+    // ---------- 初始化页面：确保文本区域，文章预处理（移除可能导致歧义的连续空白但不破坏原文结构）----------
+    function init() {
+        // 可选预处理：确保文章没有奇奇怪怪的 \r 影响分句，但是保留原本换行不影响显示和分句逻辑（因为我们基于字符逐个索引）
+        // 为了分句更加精准，保留原文本内容即可，分隔符检测函数已经支持常见标点。
+        // 如果用户配置的文章里包含换行符，换行符不会干扰标点分割逻辑，而且显示上保留原格式更友好。
+        // 但为了不影响“字”的计数，换行符也是字符，但是记忆辅助通常可以接受。不过如果换行过多，可清理但保留原始更好。
+        // 确保全文非空
+        if (!fullText || fullText.length === 0) {
+            // 后备默认文本
+            fullText = "豫章故郡，洪都新府。星分翼轸，地接衡庐。";
+            totalLength = fullText.length;
+        }
+        totalLength = fullText.length;
+        currentIndex = 0;
+        renderDisplay();
+        updateButtonsState();
+        bindEvents();
+    }
+    
+    // 启动应用
+    init();
+</script>
+</body>
+</html>
