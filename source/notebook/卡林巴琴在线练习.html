@@ -588,12 +588,17 @@
             let testCurrentNote = null;
             let testCorrectCount = 0;
             let testFeedbackTimeout = null;
+            let randomIdx = 0
+            let randomArray = []
             // 跟踪每个pointerId当前按下的键索引
             const pointerKeyMap = new Map(); // pointerId -> keyIndex
             // 键的SVG path元素引用
             const keyPathElements = [];
             // 键的边界信息（用于elementFromPoint回退）
             const keyBounds = [];
+            // 错误按键名字空间
+            const errorKeyName = "ErrorKey";
+            const randomArrayMaxLen = 200;
 
             // ============ 初始化AudioContext ============
             function getAudioContext() {
@@ -916,8 +921,132 @@
             });
 
             // ============ 测试模式 ============
+
+            // 内部工具：获取指定命名空间的存储数据
+            function _getNamespaceData(namespace) {
+                const key = `freqStore_${namespace}`;
+                const raw = localStorage.getItem(key);
+                if (!raw) return {};
+                try {
+                    return JSON.parse(raw);
+                } catch (e) {
+                    console.warn(`Failed to parse data for namespace "${namespace}"`, e);
+                    return {};
+                }
+            }
+
+            // 内部工具：保存指定命名空间的存储数据
+            function _saveNamespaceData(namespace, data) {
+                const key = `freqStore_${namespace}`;
+                localStorage.setItem(key, JSON.stringify(data));
+            }
+
+            /**
+             * 对象频率存取函数
+             * @param {string} namespace - 命名空间，用于隔离不同实例
+             * @param {string} objectName - 对象名（仅字符串）
+             * @param {number} count - 增加的出现次数（大于0的整数）
+             * @throws {Error} 参数类型或数值非法时抛出错误
+             */
+            function recordFrequency(namespace, objectName, count) {
+                // 参数校验
+                if (typeof namespace !== 'string') {
+                    throw new Error('namespace must be a string');
+                }
+                if (typeof objectName !== 'string') {
+                    throw new Error('objectName must be a string');
+                }
+                if (!Number.isInteger(count) || count <= 0) {
+                    throw new Error('count must be a positive integer');
+                }
+
+                const data = _getNamespaceData(namespace);
+                const prev = data[objectName] || 0;
+                data[objectName] = prev + count;
+                _saveNamespaceData(namespace, data);
+            }
+
+            /**
+             * 清空指定命名空间下的所有频率数据
+             * @param {string} namespace - 命名空间
+             * @throws {Error} namespace不是字符串时抛出错误
+             */
+            function clearNamespace(namespace) {
+                if (typeof namespace !== 'string') {
+                    throw new Error('namespace must be a string');
+                }
+                const key = `freqStore_${namespace}`;
+                localStorage.removeItem(key);
+            }
+
+            /**
+             * 基于频次的随机抽取函数
+             * @param {string} namespace - 命名空间
+             * @param {number} n - 要抽取的数据条数（非负整数）
+             * @returns {string[]} 长度为n的对象名数组，元素可重复，概率与频率成正比
+             * @throws {Error} 参数非法时抛出错误
+             */
+            function randomExtract(namespace, n) {
+                if (typeof namespace !== 'string') {
+                    throw new Error('namespace must be a string');
+                }
+                if (!Number.isInteger(n) || n < 0) {
+                    throw new Error('n must be a non-negative integer');
+                }
+
+                const data = _getNamespaceData(namespace);
+                const entries = Object.entries(data); // [[name, freq], ...]
+
+                if (entries.length === 0 || n === 0) {
+                    return [];
+                }
+
+                // 提取频率数组并计算总频次
+                const freqs = entries.map(item => item[1]);
+                const total = freqs.reduce((sum, f) => sum + f, 0);
+                if (total === 0) return [];
+
+                // 构建前缀和数组（用于二分查找）
+                const prefix = [];
+                let runningSum = 0;
+                for (const freq of freqs) {
+                    runningSum += freq;
+                    prefix.push(runningSum);
+                }
+
+                const result = [];
+                for (let i = 0; i < n; i++) {
+                    const rand = Math.random() * total; // [0, total)
+                    // 二分查找第一个大于 rand 的前缀和索引
+                    let left = 0, right = prefix.length - 1;
+                    while (left < right) {
+                        const mid = Math.floor((left + right) / 2);
+                        if (prefix[mid] <= rand) {
+                            left = mid + 1;
+                        } else {
+                            right = mid;
+                        }
+                    }
+                    result.push(entries[left][0]);
+                }
+                return result;
+            }
+
+
+
             function getRandomNote() {
-                const idx = Math.floor(Math.random() * noteData.length);
+                if (testCorrectCount < 5) {
+                    const idx = Math.floor(Math.random() * noteData.length);
+                    return noteData[idx];
+                }
+
+                if (randomIdx >= randomArrayMaxLen) {
+                    randomIdx = 0;
+                    randomArray = randomExtract(errorKeyName, randomArrayMaxLen);
+                    console.log('刷新随机数组');
+                }
+                const idx = parseInt(randomArray[randomIdx++]);
+                console.log('返回随机数组第', randomIdx, '个元素, 取值为', idx);
                 return noteData[idx];
             }
 
@@ -979,6 +1108,8 @@
                     }, 600);
                 } else {
                     // 错误
+                    recordFrequency(errorKeyName, pressedNote.index.toString(), 1)
+                    recordFrequency(errorKeyName, testCurrentNote.index.toString(), 1)
                     testFeedback.textContent = '✗ 再试一次';
                     testFeedback.className = 'test-feedback wrong';
                     if (testFeedbackTimeout) clearTimeout(testFeedbackTimeout);
@@ -1140,13 +1271,15 @@
                 } catch (e) {
                     // 忽略
                 }
-                console.log('🎵 卡林巴琴练习已就绪');
-                console.log('  - 17键布局 (C4中央最低音)');
-                console.log('  - 点击琴键发声，滑动相邻键体验滑音');
-                console.log('  - 多指触控支持和弦');
-                console.log('  - 按 T 键切换测试模式');
-                console.log('  - 按 F 键切换全屏模式');
-                console.log('  - 点击右上角按钮切换全屏');
+
+                // 初始化统计数据模块, 给每个key默认添加1次, 避免出现异常数据
+                for (let idx = 0; idx < noteData.length; idx++) {
+                    const e = noteData[idx];
+                    recordFrequency(errorKeyName, e.index.toString(), 1);
+                }
+  
+                randomArray = randomExtract(errorKeyName, 200);
+                console.log('随机抽取数据', randomArray);
             }
 
             init();
