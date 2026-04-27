@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>卡林巴琴在线练习 - 17键</title>
+    <style>
+        :root {
+            --bg: #1a1a2e;
+            --surface: #16213e;
+            --text: #e0e0e0;
+            --accent: #d4a574;
+            --key-default: #c8c8d4;
+            --key-hover: #b0b0bc;
+            --key-active: #909098;
+            --key-pressed: #787880;
+            --bar-color: #5a5040;
+            --correct: #4caf84;
+            --wrong: #e05555;
+            --golden: #d4a574;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'PingFang SC', 'Noto Sans SC', 'Helvetica Neue', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            min-height: 100dvh;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            transition: background 0.3s;
+        }
+
+        /* 头部 */
+        .header {
+            text-align: center;
+            padding: 16px 20px 8px;
+            transition: all 0.35s ease;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .header .title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            color: var(--accent);
+            text-shadow: 0 2px 8px rgba(212, 167, 116, 0.3);
+        }
+
+        .header .subtitle {
+            font-size: 0.85rem;
+            color: #999;
+            margin-top: 2px;
+            letter-spacing: 0.03em;
+        }
+
+        /* 尾部 */
+        .footer {
+            text-align: center;
+            padding: 10px 20px 20px;
+            font-size: 0.75rem;
+            color: #666;
+            transition: all 0.35s ease;
+            width: 100%;
+            max-width: 900px;
+            letter-spacing: 0.02em;
+        }
+
+        /* 主体容器 */
+        .main-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 900px;
+            padding: 8px 12px;
+            position: relative;
+            transition: all 0.35s ease;
+        }
+
+        /* 琴体包装 */
+        .kalimba-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 850px;
+            aspect-ratio: 850 / 500;
+            cursor: pointer;
+            touch-action: none;
+            -webkit-touch-callout: none;
+            transition: all 0.3s ease;
+        }
+
+        .kalimba-wrapper svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+            filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.4));
+        }
+
+        /* 琴键样式 */
+        .key-path {
+            fill: #c8c8d4;
+            stroke: #b0b0b8;
+            stroke-width: 1.2;
+            cursor: pointer;
+            transition: fill 0.08s ease;
+            vector-effect: non-scaling-stroke;
+        }
+
+        .key-path:hover {
+            fill: #b8b8c4;
+            stroke: #a0a0a8;
+        }
+
+        .key-path:active {
+            fill: #9696a0;
+        }
+
+        .key-path.pressed {
+            fill: #888894;
+            stroke: #777780;
+        }
+
+        /* 简谱文字 */
+        .jianpu-text {
+            fill: #3a3a44;
+            font-family: 'PingFang SC', 'Noto Sans SC', 'Helvetica Neue', sans-serif;
+            text-anchor: middle;
+            pointer-events: none;
+            font-weight: 600;
+            transition: opacity 0.25s;
+        }
+
+        .jianpu-dot {
+            fill: #3a3a44;
+            pointer-events: none;
+            transition: opacity 0.25s;
+        }
+
+        /* 测试模式隐藏标记 */
+        .test-mode-active .jianpu-text,
+        .test-mode-active .jianpu-dot {
+            opacity: 0;
+        }
+
+        /* 顶部压条 */
+        .clamp-bar {
+            fill: #5a5040;
+            stroke: #3d3528;
+            stroke-width: 1.5;
+            vector-effect: non-scaling-stroke;
+        }
+
+        .clamp-screw {
+            fill: #3d3528;
+            pointer-events: none;
+        }
+
+        /* 测试模式信息面板 */
+        .test-panel {
+            position: absolute;
+            top: 2%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(22, 33, 62, 0.92);
+            border: 1.5px solid rgba(212, 167, 116, 0.5);
+            border-radius: 20px;
+            padding: 6px 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 20;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            flex-wrap: wrap;
+            justify-content: center;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+        }
+
+        .test-panel.hidden {
+            display: none;
+        }
+
+        .test-target {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 0.05em;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .test-target .note-name {
+            color: var(--accent);
+            font-size: 1.1rem;
+            background: rgba(212, 167, 116, 0.15);
+            padding: 3px 10px;
+            border-radius: 12px;
+            letter-spacing: 0.03em;
+        }
+
+        .test-target .jianpu-display {
+            font-size: 1.5rem;
+            color: #fff;
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 28px;
+        }
+
+        .test-target .dot-above {
+            position: absolute;
+            top: -8px;
+            font-size: 0.55rem;
+            color: #ffcc80;
+            letter-spacing: 1px;
+            line-height: 1;
+        }
+
+        .test-feedback {
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 10px;
+            letter-spacing: 0.03em;
+            animation: fadeInOut 0.6s ease;
+        }
+
+        .test-feedback.correct {
+            color: #4caf84;
+            background: rgba(76, 175, 132, 0.15);
+        }
+
+        .test-feedback.wrong {
+            color: #e05555;
+            background: rgba(224, 85, 85, 0.15);
+        }
+
+        .test-score {
+            font-size: 0.8rem;
+            color: #aaa;
+            letter-spacing: 0.03em;
+        }
+
+        @keyframes fadeInOut {
+            0% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+
+            30% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+
+            100% {
+                opacity: 0.9;
+                transform: scale(1);
+            }
+        }
+
+        /* 按钮 */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 7px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+            cursor: pointer;
+            border: 1.5px solid transparent;
+            transition: all 0.2s ease;
+            background: rgba(255, 255, 255, 0.06);
+            color: #ccc;
+            white-space: nowrap;
+            touch-action: manipulation;
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn:active {
+            background: rgba(255, 255, 255, 0.18);
+            transform: scale(0.96);
+        }
+
+        .btn.accent {
+            background: rgba(212, 167, 116, 0.2);
+            border-color: rgba(212, 167, 116, 0.5);
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .btn.accent:hover {
+            background: rgba(212, 167, 116, 0.3);
+        }
+
+        .btn.small {
+            padding: 5px 10px;
+            font-size: 0.7rem;
+            border-radius: 14px;
+        }
+
+        /* 全屏按钮 */
+        .fullscreen-btn {
+            position: absolute;
+            top: 10px;
+            right: 14px;
+            z-index: 25;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1.5px solid rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            color: #ccc;
+            font-size: 1rem;
+            touch-action: manipulation;
+        }
+
+        .fullscreen-btn:hover {
+            background: rgba(255, 255, 255, 0.14);
+            border-color: rgba(255, 255, 255, 0.35);
+        }
+
+        .fullscreen-btn:active {
+            transform: scale(0.9);
+        }
+
+        /* 全屏模式 */
+        body.fullscreen-mode .header {
+            opacity: 0;
+            max-height: 0;
+            padding: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        body.fullscreen-mode .footer {
+            opacity: 0;
+            max-height: 0;
+            padding: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        body.fullscreen-mode .main-container {
+            padding: 4px;
+            flex: 1;
+            max-width: 100%;
+        }
+
+        body.fullscreen-mode .kalimba-wrapper {
+            max-width: 100%;
+            aspect-ratio: auto;
+            height: 100%;
+            max-height: 100vh;
+            max-height: 100dvh;
+        }
+
+        body.fullscreen-mode {
+            background: #0d0d18;
+        }
+
+        /* 横屏优化 */
+        @media (orientation: landscape) and (max-height: 600px) {
+            .kalimba-wrapper {
+                max-width: 95vw;
+                aspect-ratio: 850 / 480;
+            }
+
+            .header {
+                padding: 4px 10px;
+            }
+
+            .header .title {
+                font-size: 1.2rem;
+            }
+
+            .header .subtitle {
+                font-size: 0.7rem;
+            }
+
+            .test-panel {
+                padding: 4px 12px;
+                gap: 8px;
+                border-radius: 14px;
+                top: 1%;
+            }
+
+            .test-target {
+                font-size: 1rem;
+            }
+
+            .test-target .jianpu-display {
+                font-size: 1.1rem;
+            }
+
+            .test-target .note-name {
+                font-size: 0.85rem;
+                padding: 2px 8px;
+            }
+
+            .btn {
+                padding: 5px 10px;
+                font-size: 0.7rem;
+            }
+
+            .fullscreen-btn {
+                width: 28px;
+                height: 28px;
+                top: 6px;
+                right: 8px;
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header .title {
+                font-size: 1.3rem;
+            }
+
+            .test-panel {
+                padding: 4px 10px;
+                gap: 6px;
+                border-radius: 14px;
+            }
+
+            .test-target {
+                font-size: 0.95rem;
+            }
+
+            .test-target .jianpu-display {
+                font-size: 1.1rem;
+                min-width: 22px;
+            }
+
+            .test-target .note-name {
+                font-size: 0.8rem;
+                padding: 2px 7px;
+            }
+
+            .btn {
+                padding: 4px 8px;
+                font-size: 0.68rem;
+            }
+
+            .fullscreen-btn {
+                width: 28px;
+                height: 28px;
+                top: 6px;
+                right: 6px;
+            }
+
+            .kalimba-wrapper {
+                aspect-ratio: 850 / 480;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- 头部 -->
+    <header class="header" id="header">
+        <div class="title">🎵 卡林巴琴练习</div>
+        <div class="subtitle">17键 · 点击琴键发声 · 支持滑音与和弦</div>
+
+    </header>
+
+
+    <!-- 主体 -->
+    <div class="main-container" id="mainContainer">
+        <div class="kalimba-wrapper" id="kalimbaWrapper">
+            <!-- 全屏按钮 -->
+            <button class="fullscreen-btn" id="fullscreenBtn" title="切换全屏模式" aria-label="全屏切换">
+                ⛶
+            </button>
+
+            <!-- 测试面板 -->
+            <div class="test-panel hidden" id="testPanel">
+                <span style="font-size:0.75rem;color:#999;">📋 测试</span>
+                <span class="test-target" id="testTarget">
+                    <span class="note-name">C4</span>
+                    <span class="jianpu-display">1<span class="dot-above"></span></span>
+                </span>
+                <span class="test-feedback" id="testFeedback"></span>
+                <span class="test-score" id="testScore">✅ 0</span>
+                <button class="btn small accent" id="testToggleBtn" title="退出测试">退出测试</button>
+            </div>
+
+            <!-- SVG琴体 -->
+            <svg id="kalimbaSvg" viewBox="0 0 850 500" xmlns="http://www.w3.org/2000/svg">
+                <!-- 背景面板 -->
+                <rect x="15" y="60" width="820" height="420" rx="16" ry="16" fill="#2a2218" stroke="#3d3528"
+                    stroke-width="2" />
+                <!-- 木纹装饰 -->
+                <rect x="25" y="68" width="800" height="404" rx="12" ry="12" fill="#3d3222" opacity="0.7" />
+                <!-- 顶部压条 -->
+                <rect class="clamp-bar" x="20" y="68" width="810" height="22" rx="10" ry="10" />
+                <!-- 压条螺丝 -->
+                <circle class="clamp-screw" cx="55" cy="79" r="5" />
+                <circle class="clamp-screw" cx="220" cy="79" r="5" />
+                <circle class="clamp-screw" cx="385" cy="79" r="5" />
+                <circle class="clamp-screw" cx="550" cy="79" r="5" />
+                <circle class="clamp-screw" cx="715" cy="79" r="5" />
+                <circle class="clamp-screw" cx="795" cy="79" r="5" />
+
+                <!-- 琴键将由JS动态生成 -->
+                <g id="keysGroup"></g>
+                <g id="labelsGroup"></g>
+            </svg>
+        </div>
+    </div>
+
+    <!-- 尾部 -->
+    <footer class="footer" id="footer">Deepseek V4 Pro提供计算支持</footer>
+
+    <script>
+        (function () {
+            // ============ 音符数据定义 ============
+            // 17键从左到右，音高从中间C4向两边递增
+            const noteData = [
+                { index: 0, name: 'D6', freq: 1174.66, jianpuNum: '2', dotsAbove: 2, semitoneFromC4: 26 },
+                { index: 1, name: 'B5', freq: 987.77, jianpuNum: '7', dotsAbove: 1, semitoneFromC4: 23 },
+                { index: 2, name: 'G5', freq: 783.99, jianpuNum: '5', dotsAbove: 1, semitoneFromC4: 19 },
+                { index: 3, name: 'E5', freq: 659.25, jianpuNum: '3', dotsAbove: 1, semitoneFromC4: 16 },
+                { index: 4, name: 'C5', freq: 523.25, jianpuNum: '1', dotsAbove: 1, semitoneFromC4: 12 },
+                { index: 5, name: 'A4', freq: 440.00, jianpuNum: '6', dotsAbove: 0, semitoneFromC4: 9 },
+                { index: 6, name: 'F4', freq: 349.23, jianpuNum: '4', dotsAbove: 0, semitoneFromC4: 5 },
+                { index: 7, name: 'D4', freq: 293.66, jianpuNum: '2', dotsAbove: 0, semitoneFromC4: 2 },
+                { index: 8, name: 'C4', freq: 261.63, jianpuNum: '1', dotsAbove: 0, semitoneFromC4: 0 },
+                { index: 9, name: 'E4', freq: 329.63, jianpuNum: '3', dotsAbove: 0, semitoneFromC4: 4 },
+                { index: 10, name: 'G4', freq: 392.00, jianpuNum: '5', dotsAbove: 0, semitoneFromC4: 7 },
+                { index: 11, name: 'B4', freq: 493.88, jianpuNum: '7', dotsAbove: 0, semitoneFromC4: 11 },
+                { index: 12, name: 'D5', freq: 587.33, jianpuNum: '2', dotsAbove: 1, semitoneFromC4: 14 },
+                { index: 13, name: 'F5', freq: 698.46, jianpuNum: '4', dotsAbove: 1, semitoneFromC4: 17 },
+                { index: 14, name: 'A5', freq: 880.00, jianpuNum: '6', dotsAbove: 1, semitoneFromC4: 21 },
+                { index: 15, name: 'C6', freq: 1046.50, jianpuNum: '1', dotsAbove: 2, semitoneFromC4: 24 },
+                { index: 16, name: 'E6', freq: 1318.51, jianpuNum: '3', dotsAbove: 2, semitoneFromC4: 28 },
+            ];
+
+            // ============ DOM引用 ============
+            const kalimbaWrapper = document.getElementById('kalimbaWrapper');
+            const kalimbaSvg = document.getElementById('kalimbaSvg');
+            const keysGroup = document.getElementById('keysGroup');
+            const labelsGroup = document.getElementById('labelsGroup');
+            const fullscreenBtn = document.getElementById('fullscreenBtn');
+            const testPanel = document.getElementById('testPanel');
+            const testTarget = document.getElementById('testTarget');
+            const testFeedback = document.getElementById('testFeedback');
+            const testScore = document.getElementById('testScore');
+            const testToggleBtn = document.getElementById('testToggleBtn');
+            const TestModeBtn = document.getElementById('TestModeBtn')
+            const header = document.getElementById('header');
+            const footer = document.getElementById('footer');
+            const mainContainer = document.getElementById('mainContainer');
+
+            // ============ 状态变量 ============
+            let audioCtx = null;
+            let isTestMode = false;
+            let testCurrentNote = null;
+            let testCorrectCount = 0;
+            let testFeedbackTimeout = null;
+            // 跟踪每个pointerId当前按下的键索引
+            const pointerKeyMap = new Map(); // pointerId -> keyIndex
+            // 键的SVG path元素引用
+            const keyPathElements = [];
+            // 键的边界信息（用于elementFromPoint回退）
+            const keyBounds = [];
+
+            // ============ 初始化AudioContext ============
+            function getAudioContext() {
+                if (!audioCtx) {
+                    try {
+                        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    } catch (e) {
+                        console.warn('无法创建AudioContext:', e);
+                        return null;
+                    }
+                }
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume().catch(e => console.warn('AudioContext resume失败:', e));
+                }
+                return audioCtx;
+            }
+
+            // ============ 声音合成 ============
+            function playKalimbaNote(frequency) {
+                const ctx = getAudioContext();
+                if (!ctx) return;
+
+                const now = ctx.currentTime;
+                const duration = 1.0; // 总持续时间
+                const attackTime = 0.004; // 4ms快速起音
+
+                // 主增益节点
+                const masterGain = ctx.createGain();
+                masterGain.gain.setValueAtTime(0, now);
+                masterGain.gain.linearRampToValueAtTime(1.0, now + attackTime);
+                masterGain.gain.setTargetAtTime(0.001, now + attackTime + 0.02, duration * 0.35);
+                masterGain.connect(ctx.destination);
+
+                // 基频 - 两个略微失谐的振荡器模拟拍音
+                const detuneAmount = 1.8; // Hz
+                const osc1 = ctx.createOscillator();
+                osc1.type = 'sine';
+                osc1.frequency.setValueAtTime(frequency - detuneAmount / 2, now);
+                const osc1Gain = ctx.createGain();
+                osc1Gain.gain.setValueAtTime(0.55, now);
+                osc1.connect(osc1Gain);
+                osc1Gain.connect(masterGain);
+                osc1.start(now);
+                osc1.stop(now + duration + 0.3);
+
+                const osc2 = ctx.createOscillator();
+                osc2.type = 'sine';
+                osc2.frequency.setValueAtTime(frequency + detuneAmount / 2, now);
+                const osc2Gain = ctx.createGain();
+                osc2Gain.gain.setValueAtTime(0.45, now);
+                osc2.connect(osc2Gain);
+                osc2Gain.connect(masterGain);
+                osc2.start(now);
+                osc2.stop(now + duration + 0.3);
+
+                // // 第一泛音（2倍频）
+                // const osc3 = ctx.createOscillator();
+                // osc3.type = 'sine';
+                // osc3.frequency.setValueAtTime(frequency * 2, now);
+                // const osc3Gain = ctx.createGain();
+                // osc3Gain.gain.setValueAtTime(0.22, now);
+                // osc3Gain.gain.setTargetAtTime(0.001, now + attackTime, duration * 0.25);
+                // osc3.connect(osc3Gain);
+                // osc3Gain.connect(masterGain);
+                // osc3.start(now);
+                // osc3.stop(now + duration + 0.3);
+
+                // // 第二泛音（3倍频）
+                // const osc4 = ctx.createOscillator();
+                // osc4.type = 'sine';
+                // osc4.frequency.setValueAtTime(frequency * 3, now);
+                // const osc4Gain = ctx.createGain();
+                // osc4Gain.gain.setValueAtTime(0.08, now);
+                // osc4Gain.gain.setTargetAtTime(0.001, now + attackTime, duration * 0.18);
+                // osc4.connect(osc4Gain);
+                // osc4Gain.connect(masterGain);
+                // osc4.start(now);
+                // osc4.stop(now + duration + 0.3);
+
+                // // 轻微的三角波泛音增加温暖感
+                // const osc5 = ctx.createOscillator();
+                // osc5.type = 'triangle';
+                // osc5.frequency.setValueAtTime(frequency, now);
+                // const osc5Gain = ctx.createGain();
+                // osc5Gain.gain.setValueAtTime(0.06, now);
+                // osc5Gain.gain.setTargetAtTime(0.001, now + attackTime, duration * 0.3);
+                // osc5.connect(osc5Gain);
+                // osc5Gain.connect(masterGain);
+                // osc5.start(now);
+                // osc5.stop(now + duration + 0.3);
+
+                // 清理
+                setTimeout(() => {
+                    try { masterGain.disconnect(); } catch (e) { }
+                }, (duration + 0.5) * 1000);
+            }
+
+            // ============ 构建琴键几何 ============
+            const KEY_WIDTH = 46; // 每个键宽度
+            const KEY_GAP = 4; // 键间隙
+            const KEY_STEP = KEY_WIDTH + KEY_GAP; // 键步距50
+            const TOP_Y = 92; // 所有键顶部对齐的Y坐标
+            const MAX_LENGTH = 330; // C4最长键的长度
+            const MIN_LENGTH = 140; // 最短键长度
+            const SEMITONE_RANGE = 28; // 最大半音偏移
+            const LENGTH_PER_SEMITONE = (MAX_LENGTH - MIN_LENGTH) / SEMITONE_RANGE;
+            const RADIUS = KEY_WIDTH / 2; // 底部圆弧半径23
+            const TOTAL_WIDTH = 17 * KEY_STEP; // 850
+
+            function getKeyBottomY(semitoneOffset) {
+                return TOP_Y + MAX_LENGTH - semitoneOffset * LENGTH_PER_SEMITONE;
+            }
+
+            function getKeyX(index) {
+                return (TOTAL_WIDTH - 17 * KEY_STEP) / 2 + index * KEY_STEP + KEY_GAP / 2;
+                // 居中：起始偏移 + index * 50 + 2
+            }
+
+            // 计算起始偏移使17键居中
+            const startX = (850 - 17 * KEY_STEP) / 2 + KEY_GAP / 2; // = (850-850)/2 + 2 = 2
+
+            function buildKeyPath(index) {
+                const note = noteData[index];
+                const x = startX + index * KEY_STEP;
+                const bottomY = getKeyBottomY(note.semitoneFromC4);
+                const arcStartY = bottomY - RADIUS;
+                const xLeft = x;
+                const xRight = x + KEY_WIDTH;
+                // path: 顶部矩形 + 底部半圆
+                const d =
+                    `M ${xLeft} ${TOP_Y} ` +
+                    `L ${xLeft} ${arcStartY} ` +
+                    `A ${RADIUS} ${RADIUS} 0 0 0 ${xRight} ${arcStartY} ` +
+                    `L ${xRight} ${TOP_Y} ` +
+                    `Z`;
+                return { d, x, bottomY, arcStartY, xLeft, xRight, note };
+            }
+
+            function createKeyElements() {
+                keysGroup.innerHTML = '';
+                labelsGroup.innerHTML = '';
+                keyPathElements.length = 0;
+                keyBounds.length = 0;
+
+                noteData.forEach((note, index) => {
+                    const keyInfo = buildKeyPath(index);
+                    keyBounds.push({
+                        xLeft: keyInfo.xLeft,
+                        xRight: keyInfo.xRight,
+                        topY: TOP_Y,
+                        bottomY: keyInfo.bottomY,
+                        index: index,
+                    });
+
+                    // 创建琴键path
+                    const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    pathEl.setAttribute('d', keyInfo.d);
+                    pathEl.setAttribute('class', 'key-path');
+                    pathEl.setAttribute('data-key-index', index);
+                    pathEl.setAttribute('data-note-name', note.name);
+                    pathEl.setAttribute('id', `key-${index}`);
+                    // 添加微妙的渐变
+                    const gradId = `keyGrad-${index}`;
+                    const grad = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
+                    grad.setAttribute('id', gradId);
+                    grad.setAttribute('x1', '0');
+                    grad.setAttribute('y1', '0');
+                    grad.setAttribute('x2', '1');
+                    grad.setAttribute('y2', '0');
+                    const stop1 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+                    stop1.setAttribute('offset', '0%');
+                    stop1.setAttribute('stop-color', '#d4d4dc');
+                    const stop2 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+                    stop2.setAttribute('offset', '50%');
+                    stop2.setAttribute('stop-color', '#e8e8f0');
+                    const stop3 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+                    stop3.setAttribute('offset', '100%');
+                    stop3.setAttribute('stop-color', '#c0c0ca');
+                    grad.appendChild(stop1);
+                    grad.appendChild(stop2);
+                    grad.appendChild(stop3);
+                    keysGroup.appendChild(grad);
+                    pathEl.setAttribute('fill', `url(#${gradId})`);
+                    pathEl.setAttribute('stroke', '#b0b0b8');
+                    pathEl.setAttribute('stroke-width', '1');
+                    keysGroup.appendChild(pathEl);
+                    keyPathElements.push(pathEl);
+
+                    // 创建简谱标签
+                    const labelY = keyInfo.bottomY - RADIUS - 18;
+                    const labelX = keyInfo.x + KEY_WIDTH / 2;
+
+                    // 数字
+                    const textEl = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    textEl.setAttribute('x', labelX);
+                    textEl.setAttribute('y', labelY);
+                    textEl.setAttribute('class', 'jianpu-text');
+                    textEl.setAttribute('font-size', '17');
+                    textEl.setAttribute('data-key-index', index);
+                    textEl.textContent = note.jianpuNum;
+                    labelsGroup.appendChild(textEl);
+
+                    // 点（在数字上方）
+                    if (note.dotsAbove > 0) {
+                        const dotSpacing = 8;
+                        const dotStartX = labelX - (note.dotsAbove - 1) * dotSpacing / 2;
+                        for (let d = 0; d < note.dotsAbove; d++) {
+                            const dotEl = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                            dotEl.setAttribute('cx', dotStartX + d * dotSpacing);
+                            dotEl.setAttribute('cy', labelY - 16);
+                            dotEl.setAttribute('r', '3');
+                            dotEl.setAttribute('class', 'jianpu-dot');
+                            dotEl.setAttribute('data-key-index', index);
+                            labelsGroup.appendChild(dotEl);
+                        }
+                    }
+                });
+            }
+
+            createKeyElements();
+
+            // ============ 琴键视觉反馈 ============
+            function flashKey(index) {
+                const pathEl = keyPathElements[index];
+                if (!pathEl) return;
+                pathEl.classList.add('pressed');
+                setTimeout(() => {
+                    pathEl.classList.remove('pressed');
+                }, 120);
+            }
+
+            // ============ 触发音符 ============
+            function triggerNote(index) {
+                const note = noteData[index];
+                playKalimbaNote(note.freq);
+                flashKey(index);
+
+                // 测试模式检测
+                if (isTestMode && testCurrentNote) {
+                    handleTestAnswer(index);
+                }
+            }
+
+            // ============ 获取指针下的键索引 ============
+            function getKeyIndexFromPoint(clientX, clientY) {
+                // 使用elementFromPoint获取SVG元素
+                const el = document.elementFromPoint(clientX, clientY);
+                if (el && el.hasAttribute && el.hasAttribute('data-key-index')) {
+                    return parseInt(el.getAttribute('data-key-index'), 10);
+                }
+                // 回退：使用边界检测
+                const svgRect = kalimbaSvg.getBoundingClientRect();
+                const svgX = clientX - svgRect.left;
+                const svgY = clientY - svgRect.top;
+                // 转换到viewBox坐标
+                const vbX = (svgX / svgRect.width) * 850;
+                const vbY = (svgY / svgRect.height) * 500;
+                for (const bound of keyBounds) {
+                    if (
+                        vbX >= bound.xLeft &&
+                        vbX <= bound.xRight &&
+                        vbY >= bound.topY &&
+                        vbY <= bound.bottomY
+                    ) {
+                        return bound.index;
+                    }
+                }
+                return -1;
+            }
+
+            // ============ 指针事件处理 ============
+            function handlePointerDown(e) {
+                e.preventDefault();
+                const ctx = getAudioContext();
+                if (ctx && ctx.state === 'suspended') {
+                    ctx.resume();
+                }
+                const keyIndex = getKeyIndexFromPoint(e.clientX, e.clientY);
+                if (keyIndex >= 0) {
+                    pointerKeyMap.set(e.pointerId, keyIndex);
+                    triggerNote(keyIndex);
+                }
+            }
+
+            function handlePointerMove(e) {
+                e.preventDefault();
+                if (!pointerKeyMap.has(e.pointerId)) return;
+                const keyIndex = getKeyIndexFromPoint(e.clientX, e.clientY);
+                const prevKeyIndex = pointerKeyMap.get(e.pointerId);
+                if (keyIndex >= 0 && keyIndex !== prevKeyIndex) {
+                    // 滑到了新键
+                    pointerKeyMap.set(e.pointerId, keyIndex);
+                    triggerNote(keyIndex);
+                }
+            }
+
+            function handlePointerUp(e) {
+                e.preventDefault();
+                pointerKeyMap.delete(e.pointerId);
+            }
+
+            function handlePointerLeave(e) {
+                // 指针离开琴体区域
+                if (pointerKeyMap.has(e.pointerId)) {
+                    pointerKeyMap.delete(e.pointerId);
+                }
+            }
+
+            // 绑定事件到琴体wrapper
+            kalimbaWrapper.addEventListener('pointerdown', handlePointerDown, { passive: false });
+            kalimbaWrapper.addEventListener('pointermove', handlePointerMove, { passive: false });
+            kalimbaWrapper.addEventListener('pointerup', handlePointerUp, { passive: false });
+            kalimbaWrapper.addEventListener('pointerleave', handlePointerLeave);
+            kalimbaWrapper.addEventListener('pointercancel', handlePointerUp, { passive: false });
+            // 防止丢失pointerup
+            document.addEventListener('pointerup', (e) => {
+                if (pointerKeyMap.has(e.pointerId)) {
+                    pointerKeyMap.delete(e.pointerId);
+                }
+            });
+
+            // ============ 测试模式 ============
+            function getRandomNote() {
+                const idx = Math.floor(Math.random() * noteData.length);
+                return noteData[idx];
+            }
+
+            function updateTestDisplay() {
+                if (!testCurrentNote) return;
+                const note = testCurrentNote;
+                // 更新音符名
+                const noteNameSpan = testTarget.querySelector('.note-name');
+                if (noteNameSpan) noteNameSpan.textContent = note.name;
+                // 更新简谱显示
+                const jianpuSpan = testTarget.querySelector('.jianpu-display');
+                const dotSpan = testTarget.querySelector('.dot-above');
+                if (jianpuSpan) {
+                    // 清除内容但保留dot-above
+                    jianpuSpan.childNodes.forEach(child => {
+                        if (child === dotSpan) return;
+                        child.remove();
+                    });
+                    jianpuSpan.insertBefore(document.createTextNode(note.jianpuNum), dotSpan || jianpuSpan
+                        .firstChild);
+                }
+                if (dotSpan) {
+                    dotSpan.textContent = '·'.repeat(note.dotsAbove);
+                }
+                // 更新分数
+                testScore.textContent = `✅ ${testCorrectCount}`;
+                // 清除反馈
+                testFeedback.textContent = '';
+                testFeedback.className = 'test-feedback';
+            }
+
+            function pickNewTestNote() {
+                let newNote;
+                do {
+                    newNote = getRandomNote();
+                } while (testCurrentNote && newNote.index === testCurrentNote.index && noteData.length > 1);
+                testCurrentNote = newNote;
+                updateTestDisplay();
+            }
+
+            function handleTestAnswer(keyIndex) {
+                const pressedNote = noteData[keyIndex];
+                if (!pressedNote || !testCurrentNote) return;
+
+                if (pressedNote.index === testCurrentNote.index) {
+                    // 正确
+                    testCorrectCount++;
+                    testScore.textContent = `✅ ${testCorrectCount}`;
+                    testFeedback.textContent = '✓ 正确！';
+                    testFeedback.className = 'test-feedback correct';
+                    if (testFeedbackTimeout) clearTimeout(testFeedbackTimeout);
+                    testFeedbackTimeout = setTimeout(() => {
+                        testFeedback.textContent = '';
+                        testFeedback.className = 'test-feedback';
+                    }, 800);
+                    // 短暂延迟后换下一个
+                    setTimeout(() => {
+                        if (isTestMode) pickNewTestNote();
+                    }, 600);
+                } else {
+                    // 错误
+                    testFeedback.textContent = '✗ 再试一次';
+                    testFeedback.className = 'test-feedback wrong';
+                    if (testFeedbackTimeout) clearTimeout(testFeedbackTimeout);
+                    testFeedbackTimeout = setTimeout(() => {
+                        testFeedback.textContent = '';
+                        testFeedback.className = 'test-feedback';
+                    }, 900);
+                }
+            }
+
+            function enterTestMode() {
+                isTestMode = true;
+                testCorrectCount = 0;
+                testCurrentNote = null;
+                kalimbaWrapper.classList.add('test-mode-active');
+                testPanel.classList.remove('hidden');
+                testToggleBtn.textContent = '退出测试';
+                testFeedback.textContent = '';
+                testFeedback.className = 'test-feedback';
+                testScore.textContent = '✅ 0';
+                pickNewTestNote();
+                // 更新按钮样式
+                testToggleBtn.classList.add('accent');
+            }
+
+            function exitTestMode() {
+                isTestMode = false;
+                testCurrentNote = null;
+                kalimbaWrapper.classList.remove('test-mode-active');
+                testPanel.classList.add('hidden');
+                testFeedback.textContent = '';
+                testFeedback.className = 'test-feedback';
+                if (testFeedbackTimeout) clearTimeout(testFeedbackTimeout);
+                testToggleBtn.textContent = '测试模式';
+                testToggleBtn.classList.remove('accent');
+            }
+
+            function toggleTestMode() {
+                if (isTestMode) {
+                    exitTestMode();
+                } else {
+                    enterTestMode();
+                }
+            }
+
+            // 测试面板按钮
+            testToggleBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleTestMode();
+            });
+
+            // 也允许通过点击测试面板中的其他区域来不做操作
+            testPanel.addEventListener('pointerdown', (e) => {
+                e.stopPropagation();
+            });
+
+            // ============ 全屏模式 ============
+            function isFullscreen() {
+                return !!(
+                    document.fullscreenElement ||
+                    document.webkitFullscreenElement ||
+                    document.msFullscreenElement
+                );
+            }
+
+            function enterFullscreen() {
+                const el = document.documentElement;
+                if (el.requestFullscreen) {
+                    el.requestFullscreen().catch(() => { });
+                } else if (el.webkitRequestFullscreen) {
+                    el.webkitRequestFullscreen();
+                } else if (el.msRequestFullscreen) {
+                    el.msRequestFullscreen();
+                }
+            }
+
+            function exitFullscreen() {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen().catch(() => { });
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+            }
+
+            function toggleFullscreen() {
+                if (isFullscreen()) {
+                    exitFullscreen();
+                } else {
+                    enterFullscreen();
+                }
+            }
+
+            function updateFullscreenUI() {
+                const fs = isFullscreen();
+                if (fs) {
+                    document.body.classList.add('fullscreen-mode');
+                    fullscreenBtn.innerHTML = '⛶';
+                    fullscreenBtn.title = '退出全屏';
+                } else {
+                    document.body.classList.remove('fullscreen-mode');
+                    fullscreenBtn.innerHTML = '⛶';
+                    fullscreenBtn.title = '全屏模式（推荐横屏）';
+                }
+            }
+
+            fullscreenBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleFullscreen();
+                enterTestMode();
+            });
+
+            fullscreenBtn.addEventListener('pointerdown', (e) => {
+                e.stopPropagation();
+            });
+
+            document.addEventListener('fullscreenchange', updateFullscreenUI);
+            document.addEventListener('webkitfullscreenchange', updateFullscreenUI);
+            document.addEventListener('msfullscreenchange', updateFullscreenUI);
+            updateFullscreenUI();
+
+            // ============ 键盘快捷键 ============
+            document.addEventListener('keydown', (e) => {
+                // 按键映射：使用键盘模拟部分琴键（可选功能）
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target
+                    .isContentEditable) return;
+                if (e.key === 't' || e.key === 'T') {
+                    // T键切换测试模式
+                    if (!e.ctrlKey && !e.metaKey && !e.altKey) {
+                        toggleTestMode();
+                    }
+                } else if (e.key === 'f' || e.key === 'F') {
+                    // F键切换全屏
+                    if (!e.ctrlKey && !e.metaKey && !e.altKey) {
+                        toggleFullscreen();
+                    }
+                }
+                // 数字键1-7可以触发中间部分琴键（C4-B4）
+                const keyMap = {
+                    '1': 8,
+                    '2': 7,
+                    '3': 9,
+                    '4': 6,
+                    '5': 10,
+                    '6': 5,
+                    '7': 11
+                }; // 近似映射
+                if (keyMap[e.key] !== undefined && !e.ctrlKey && !e.metaKey && !e.altKey) {
+                    triggerNote(keyMap[e.key]);
+                }
+            });
+
+            // ============ 初始化 ============
+            function init() {
+                // 尝试预初始化音频上下文
+                try {
+                    getAudioContext();
+                } catch (e) {
+                    // 忽略
+                }
+                console.log('🎵 卡林巴琴练习已就绪');
+                console.log('  - 17键布局 (C4中央最低音)');
+                console.log('  - 点击琴键发声，滑动相邻键体验滑音');
+                console.log('  - 多指触控支持和弦');
+                console.log('  - 按 T 键切换测试模式');
+                console.log('  - 按 F 键切换全屏模式');
+                console.log('  - 点击右上角按钮切换全屏');
+            }
+
+            init();
+
+            // ============ 窗口大小变化时更新（响应式） ============
+            function handleResize() {
+                updateFullscreenUI();
+                // 在横屏全屏时微调
+                const isLandscape = window.innerWidth > window.innerHeight;
+                if (isFullscreen() && isLandscape) {
+                    kalimbaWrapper.style.maxWidth = '95vw';
+                } else if (isFullscreen()) {
+                    kalimbaWrapper.style.maxWidth = '100%';
+                } else {
+                    kalimbaWrapper.style.maxWidth = '850px';
+                }
+            }
+
+            window.addEventListener('resize', handleResize);
+            window.addEventListener('orientationchange', () => {
+                setTimeout(handleResize, 300);
+            });
+            handleResize();
+
+        })();
+    </script>
+</body>
+
+</html>
