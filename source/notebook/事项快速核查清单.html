@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>事项快速核查清单</title>
+    <style>
+        :root {
+            --bg: #f5f5f7;
+            --card-bg: #ffffff;
+            --text: #1c1c1e;
+            --text-secondary: #6e6e73;
+            --text-muted: #a1a1a6;
+            --border: #e5e5ea;
+            --accent: #007aff;
+            --accent-green: #34c759;
+            --accent-orange: #ff9500;
+            --accent-purple: #af52de;
+            --accent-pink: #ff2d55;
+            --accent-teal: #5ac8fa;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.10);
+            --radius-sm: 10px;
+            --radius: 16px;
+            --radius-lg: 20px;
+            --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-stack: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            --safe-bottom: env(safe-area-inset-bottom, 16px);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 16px;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-stack);
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            line-height: 1.5;
+            padding: 16px;
+            padding-bottom: calc(24px + var(--safe-bottom));
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        /* ========== 主容器 ========== */
+        .app-container {
+            width: 100%;
+            max-width: 560px;
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            position: relative;
+        }
+
+        /* ========== 头部 ========== */
+        .app-header {
+            text-align: center;
+            padding: 20px 8px 10px;
+            flex-shrink: 0;
+        }
+
+        .app-header .logo-icon {
+            font-size: 2.6rem;
+            display: block;
+            margin-bottom: 2px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
+        .app-header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--text);
+        }
+
+        .app-header .subtitle {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        /* 尾部 */
+        .footer {
+            text-align: center;
+            padding: 10px 20px 20px;
+            font-size: 0.75rem;
+            color: #666;
+            transition: all 0.35s ease;
+            width: 100%;
+            max-width: 900px;
+            letter-spacing: 0.02em;
+        }
+
+        /* ========== 视图容器 ========== */
+        .view {
+            display: none;
+            flex-direction: column;
+            gap: 14px;
+            width: 100%;
+            animation: fadeSlideIn 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .view.active {
+            display: flex;
+        }
+
+        @keyframes fadeSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ========== 卡片列表视图 ========== */
+        .card-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .checklist-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 16px 18px;
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+            border: 1.5px solid transparent;
+            transition: all var(--transition);
+            position: relative;
+            overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            min-height: 72px;
+        }
+
+        .checklist-card:active {
+            transform: scale(0.975);
+            box-shadow: var(--shadow-md);
+            background: #f9f9fb;
+        }
+
+        .checklist-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 12px;
+            bottom: 12px;
+            width: 4px;
+            border-radius: 0 3px 3px 0;
+            background: var(--card-color, var(--accent));
+            transition: all var(--transition);
+        }
+
+        .checklist-card:active::before {
+            top: 6px;
+            bottom: 6px;
+            width: 5px;
+        }
+
+        .card-icon {
+            font-size: 2.2rem;
+            flex-shrink: 0;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 14px;
+            background: color-mix(in srgb, var(--card-color, var(--accent)) 12%, transparent);
+        }
+
+        .card-info {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .card-info .card-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--text);
+            letter-spacing: -0.01em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .card-info .card-desc {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .card-info .card-meta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 1px;
+        }
+
+        .card-arrow {
+            flex-shrink: 0;
+            color: var(--text-muted);
+            font-size: 1.3rem;
+            transition: transform var(--transition);
+        }
+
+        .checklist-card:active .card-arrow {
+            transform: translateX(4px);
+        }
+
+        /* ========== 核查详情视图 ========== */
+        .detail-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 4px 0;
+        }
+
+        .btn-back {
+            flex-shrink: 0;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: 1.5px solid var(--border);
+            background: var(--card-bg);
+            font-size: 1.3rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text);
+            transition: all var(--transition);
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-back:active {
+            background: #f0f0f5;
+            transform: scale(0.93);
+            box-shadow: var(--shadow-md);
+        }
+
+        .detail-title-area {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .detail-title-area .detail-icon {
+            font-size: 1.8rem;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 6px;
+        }
+
+        .detail-title-area .detail-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--text);
+            vertical-align: middle;
+        }
+
+        .detail-title-area .detail-desc {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            margin-top: 1px;
+        }
+
+        /* 进度区域 */
+        .progress-section {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 14px 16px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .progress-count {
+            color: var(--text);
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .progress-percent {
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 0.9rem;
+            transition: color var(--transition);
+        }
+
+        .progress-percent.done {
+            color: var(--accent-green);
+        }
+
+        .progress-bar {
+            height: 8px;
+            border-radius: 4px;
+            background: #e9e9ef;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            background: var(--accent);
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), background 0.4s;
+            width: 0%;
+        }
+
+        .progress-bar-fill.done {
+            background: var(--accent-green);
+        }
+
+        /* 核查列表 */
+        .checklist-items {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            list-style: none;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--card-bg);
+            border-radius: var(--radius-sm);
+            padding: 14px 16px;
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+            border: 1.5px solid transparent;
+            transition: all var(--transition);
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            min-height: 52px;
+            position: relative;
+        }
+
+        .checklist-item:active {
+            background: #fafafc;
+            box-shadow: var(--shadow-md);
+        }
+
+        .checklist-item.checked {
+            border-color: #d1d1d6;
+            background: #fafafb;
+        }
+
+        .checklist-item.checked .item-text {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        /* 自定义 checkbox */
+        .custom-checkbox {
+            flex-shrink: 0;
+            width: 26px;
+            height: 26px;
+            border-radius: 7px;
+            border: 2px solid #c7c7cc;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .checklist-item.checked .custom-checkbox {
+            background: var(--accent-green);
+            border-color: var(--accent-green);
+            animation: popCheck 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popCheck {
+            0% {
+                transform: scale(1);
+            }
+
+            40% {
+                transform: scale(1.25);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .custom-checkbox svg {
+            width: 14px;
+            height: 14px;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            color: #fff;
+        }
+
+        .checklist-item.checked .custom-checkbox svg {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .item-text {
+            flex: 1;
+            font-size: 0.95rem;
+            color: var(--text);
+            transition: color var(--transition), text-decoration var(--transition);
+            letter-spacing: -0.01em;
+            line-height: 1.4;
+        }
+
+        /* 底部操作栏 */
+        .detail-actions {
+            display: flex;
+            gap: 10px;
+            padding-top: 4px;
+        }
+
+        .btn-action {
+            flex: 1;
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            border: 1.5px solid var(--border);
+            background: var(--card-bg);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--text);
+            transition: all var(--transition);
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            text-align: center;
+            letter-spacing: -0.01em;
+            box-shadow: var(--shadow-sm);
+            font-family: var(--font-stack);
+        }
+
+        .btn-action:active {
+            transform: scale(0.96);
+            box-shadow: var(--shadow-md);
+            background: #f0f0f5;
+        }
+
+        .btn-action.btn-primary {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+            font-weight: 600;
+        }
+
+        .btn-action.btn-primary:active {
+            background: #0069d9;
+            border-color: #0069d9;
+        }
+
+        .btn-action.btn-done-all {
+            background: var(--accent-green);
+            color: #fff;
+            border-color: var(--accent-green);
+        }
+
+        .btn-action.btn-done-all:active {
+            background: #2db84d;
+            border-color: #2db84d;
+        }
+
+        /* 完成提示 */
+        .completion-banner {
+            display: none;
+            text-align: center;
+            padding: 18px;
+            background: #e8f8ed;
+            border-radius: var(--radius);
+            color: #1a7a34;
+            font-weight: 600;
+            font-size: 0.95rem;
+            animation: fadeSlideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            letter-spacing: -0.01em;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .completion-banner.visible {
+            display: block;
+        }
+
+        .completion-banner .banner-emoji {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 4px;
+            animation: bounceOnce 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes bounceOnce {
+            0% {
+                transform: scale(0);
+            }
+
+            60% {
+                transform: scale(1.3);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* ========== 空状态 / 错误 ========== */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state .empty-icon {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            font-size: 0.9rem;
+            margin-bottom: 6px;
+        }
+
+        /* ========== 响应式：桌面端微调 ========== */
+        @media (min-width: 640px) {
+            body {
+                padding: 32px 20px;
+            }
+
+            .app-container {
+                max-width: 600px;
+            }
+
+            .card-list {
+                gap: 14px;
+            }
+
+            .checklist-card {
+                padding: 18px 20px;
+                border-radius: var(--radius-lg);
+            }
+
+            .checklist-card:hover {
+                box-shadow: var(--shadow-lg);
+                border-color: #d9d9df;
+                transform: translateY(-1px);
+            }
+
+            .checklist-card:active {
+                transform: scale(0.98);
+            }
+
+            .checklist-item {
+                padding: 15px 18px;
+                border-radius: 12px;
+            }
+
+            .checklist-item:hover {
+                box-shadow: var(--shadow-md);
+                border-color: #e0e0e6;
+            }
+
+            .btn-back:hover {
+                background: #f5f5f8;
+                box-shadow: var(--shadow-md);
+            }
+
+            .btn-action:hover {
+                background: #f5f5f8;
+                box-shadow: var(--shadow-md);
+            }
+
+            .btn-action.btn-primary:hover {
+                background: #0069d9;
+            }
+
+            .btn-action.btn-done-all:hover {
+                background: #2db84d;
+            }
+
+            .app-header h1 {
+                font-size: 1.7rem;
+            }
+
+            .detail-title-area .detail-name {
+                font-size: 1.3rem;
+            }
+        }
+
+        @media (min-width: 900px) {
+            .app-container {
+                max-width: 640px;
+            }
+
+            .card-list {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
+            }
+
+            .checklist-card {
+                min-height: 90px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- 头部 -->
+        <header class="app-header">
+            <span class="logo-icon">📋</span>
+            <h1>事项核查清单</h1>
+            <p class="subtitle">选择需要核查的事项，逐一确认</p>
+        </header>
+
+        <!-- 卡片列表视图 -->
+        <div class="view active" id="view-cards">
+            <div class="card-list" id="cardList">
+                <!-- 动态生成 -->
+            </div>
+        </div>
+
+        <!-- 核查详情视图 -->
+        <div class="view" id="view-detail">
+            <div class="detail-header">
+                <button class="btn-back" id="btnBack" aria-label="返回事项列表" title="返回">
+                    ←
+                </button>
+                <div class="detail-title-area">
+                    <span class="detail-icon" id="detailIcon"></span>
+                    <span class="detail-name" id="detailName"></span>
+                    <div class="detail-desc" id="detailDesc"></div>
+                </div>
+            </div>
+            <!-- 进度条 -->
+            <div class="progress-section">
+                <div class="progress-info">
+                    <span class="progress-count" id="progressCount">0 / 0 已完成</span>
+                    <span class="progress-percent" id="progressPercent">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-bar-fill" id="progressBarFill"></div>
+                </div>
+            </div>
+            <!-- 完成提示横幅 -->
+            <div class="completion-banner" id="completionBanner">
+                <span class="banner-emoji">🎉</span>
+                全部完成！太棒了！
+            </div>
+            <!-- 核查项目列表 -->
+            <ul class="checklist-items" id="checklistItems">
+                <!-- 动态生成 -->
+            </ul>
+            <!-- 操作按钮 -->
+            <div class="detail-actions">
+                <button class="btn-action" id="btnReset">🔄 全部重置</button>
+                <button class="btn-action btn-done-all" id="btnDoneAll">✅ 全部完成</button>
+            </div>
+        </div>
+
+        <!-- 空状态 -->
+        <div class="view" id="view-empty">
+            <div class="empty-state">
+                <span class="empty-icon">🔍</span>
+                <p>未找到该核查事项</p>
+                <p style="font-size:0.8rem;color:var(--text-muted);">请检查链接是否正确，或返回列表选择</p>
+            </div>
+        </div>
+    </div>
+
+     <footer class="footer" id="footer">Deepseek V4提供计算支持</footer>
+
+    <script>
+        (function () {
+            // ==================== 数据定义 ====================
+            // 候选颜色列表
+            const colorPalette = [
+                '#4A90D9', // 柔和蓝
+                '#FF9500', // 活力橙
+                '#34C759', // 清新绿
+                '#FF2D55', // 醒目红
+                '#AF52DE', // 优雅紫
+                '#5856D6', // 深紫蓝
+                '#0A84FF', // 亮天蓝
+                '#30D158', // 翠绿
+                '#FF3B30', // 经典红
+                '#FFD60A'  // 明黄
+            ];
+            // Ctrl+Cmd+Space 可启用搜索页面, 查询emoji图标
+            // 常用图标如下
+            // 开发/技术：💻 ⌨️ 🖥️ 🚀 ⚙️ 🧪 🔒 🐛 📦 ☁️
+            // 办公/会议：📅 📊 📈 🗂️ ✏️ 📝 🖊️ 🤝 📎 🏢
+            // 旅行/出行：🧳 ✈️ 🚗 🗺️ 🏨 🌴 🧭 🎒 📸 🧴
+            // 生活/活动：🎉 🎂 🎪 🎤 🎧 🍽️ 🏀 🎮 🧘 📚
+
+            // 在此处修改/扩展核查事项和条目
+            const checklistData = [{
+                id: 'publish',
+                name: '发布前检查清单',
+                icon: '🚀',
+                color: '#4A90D9',
+                description: '软件发布前需完成的各项检查',
+                items: [
+                    '代码已通过所有单元测试',
+                    '集成测试全部通过',
+                    '版本号已正确更新（package.json / 构建配置）',
+                    'CHANGELOG 已更新并记录所有变更',
+                    '数据库迁移脚本已准备且经过测试',
+                    '性能测试已完成，无性能回退',
+                    '安全扫描已通过，无高危漏洞',
+                    'API 文档已同步更新',
+                    '发布说明（Release Notes）已撰写',
+                    '回滚方案已确认并可执行',
+                    '相关团队成员已收到发布通知',
+                ],
+            }, {
+                id: 'meeting',
+                name: '会议准备清单',
+                icon: '📅',
+                color: '#ff9500',
+                description: '重要会议前的准备工作',
+                items: [
+                    '会议议程已拟定并提前发送',
+                    '会议时间、地点（或线上链接）已确认',
+                    '参会人员已确认并发送邀请',
+                    '所需演示文稿（PPT/文档）已准备',
+                    '会议室设备已检查（投影/音响/网络）',
+                    '会议资料已打印或共享',
+                    '上次会议纪要已回顾',
+                    '会议记录人已指定',
+                    '茶水或茶歇已安排（如需）',
+                    '备用方案已准备（如线上会议备选平台）',
+                ],
+            }, {
+                id: 'travel',
+                name: '旅行打包清单',
+                icon: '🧳',
+                color: '#34c759',
+                description: '出行前检查行李与必备物品',
+                items: [
+                    '身份证/护照/签证（确认有效期）',
+                    '机票/火车票/酒店预订确认',
+                    '手机及充电器、充电宝',
+                    '换洗衣物（根据天气和天数准备）',
+                    '洗漱用品（牙刷、毛巾、护肤品）',
+                    '常用药品（感冒药、肠胃药、创可贴）',
+                    '现金及银行卡（适量）',
+                    '雨伞或防晒用品',
+                    '相机/耳机等电子设备',
+                    '家门钥匙已携带，门窗已锁好',
+                    '宠物/植物已安排照料',
+                    '旅行保险已购买',
+                ],
+            }, {
+                id: 'deploy',
+                name: '代码上线检查清单',
+                icon: '💻',
+                color: '#af52de',
+                description: '生产环境部署前的最终确认',
+                items: [
+                    '代码已合并到发布分支',
+                    'CI/CD 流水线全部通过',
+                    '环境变量已正确配置',
+                    '数据库备份已完成',
+                    '静态资源已上传 CDN',
+                    '缓存策略已确认（如需要刷新缓存）',
+                    '监控和告警规则已配置',
+                    '灰度发布策略已制定',
+                    '值班人员已确认',
+                    '上线时间窗口已沟通',
+                ],
+            }, {
+                id: 'event',
+                name: '活动策划清单',
+                icon: '🎪',
+                color: '#ff2d55',
+                description: '线下/线上活动的策划与执行',
+                items: [
+                    '活动目标与主题已明确',
+                    '预算已审批并到位',
+                    '场地已预订并确认档期',
+                    '活动流程和时间表已制定',
+                    '嘉宾/讲师已确认并沟通',
+                    '宣传物料已设计（海报/推文/邮件）',
+                    '报名渠道已开通并测试',
+                    '现场工作人员已分工',
+                    '设备与物资清单已核对',
+                    '应急预案已准备',
+                    '活动后反馈问卷已设计',
+                ],
+            }, {
+                id: 'onboarding',
+                name: '新员工入职清单',
+                icon: '👋',
+                color: '#5ac8fa',
+                description: '新成员顺利入职的准备工作',
+                items: [
+                    '办公设备已准备（电脑/显示器/配件）',
+                    '系统账号已创建（邮箱/IM/代码仓库等）',
+                    '工位已清理并准备好',
+                    '门禁卡/工牌已办理',
+                    '入职培训日程已安排',
+                    '团队欢迎邮件已发送',
+                    '导师或Buddy已指定',
+                    '项目文档和Wiki权限已开通',
+                    '第一天午餐安排已确认',
+                    '入职表格和合同已签署归档',
+                ],
+            },];
+
+            // ==================== DOM引用 ====================
+            const viewCards = document.getElementById('view-cards');
+            const viewDetail = document.getElementById('view-detail');
+            const viewEmpty = document.getElementById('view-empty');
+            const cardListEl = document.getElementById('cardList');
+            const btnBack = document.getElementById('btnBack');
+            const detailIcon = document.getElementById('detailIcon');
+            const detailName = document.getElementById('detailName');
+            const detailDesc = document.getElementById('detailDesc');
+            const progressCount = document.getElementById('progressCount');
+            const progressPercent = document.getElementById('progressPercent');
+            const progressBarFill = document.getElementById('progressBarFill');
+            const completionBanner = document.getElementById('completionBanner');
+            const checklistItemsEl = document.getElementById('checklistItems');
+            const btnReset = document.getElementById('btnReset');
+            const btnDoneAll = document.getElementById('btnDoneAll');
+
+            // 当前选中的事项ID
+            let currentChecklistId = null;
+
+            // ==================== 工具函数 ====================
+            /** 根据ID查找事项数据 */
+            function findChecklistById(id) {
+                return checklistData.find(c => c.id === id) || null;
+            }
+
+            /** 更新URL hash */
+            function setHash(id) {
+                if (id) {
+                    window.location.hash = '#' + id;
+                } else {
+                    // 清除hash
+                    if (window.location.hash) {
+                        history.replaceState(null, '', window.location.pathname + window.location.search);
+                    }
+                }
+            }
+
+            /** 获取当前hash中的事项ID */
+            function getHashId() {
+                const hash = window.location.hash;
+                if (hash && hash.startsWith('#')) {
+                    return hash.slice(1).trim();
+                }
+                return null;
+            }
+
+            /** 显示指定视图 */
+            function showView(viewElement) {
+                [viewCards, viewDetail, viewEmpty].forEach(v => v.classList.remove('active'));
+                if (viewElement) {
+                    viewElement.classList.add('active');
+                }
+            }
+
+            // ==================== 渲染卡片列表 ====================
+            function renderCards() {
+                cardListEl.innerHTML = '';
+                checklistData.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'checklist-card';
+                    card.style.setProperty('--card-color', item.color);
+                    card.setAttribute('data-id', item.id);
+                    card.setAttribute('role', 'button');
+                    card.setAttribute('tabindex', '0');
+                    card.setAttribute('aria-label', `查看 "${item.name}" 核查清单`);
+                    card.innerHTML = `
+                                <div class="card-icon">${item.icon}</div>
+                                <div class="card-info">
+                                    <div class="card-title">${escapeHTML(item.name)}</div>
+                                    <div class="card-desc">${escapeHTML(item.description)}</div>
+                                    <div class="card-meta">${item.items.length} 个检查项</div>
+                                </div>
+                                <div class="card-arrow">›</div>
+                            `;
+                    card.addEventListener('click', () => {
+                        navigateToChecklist(item.id);
+                    });
+                    // 键盘可访问性
+                    card.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            navigateToChecklist(item.id);
+                        }
+                    });
+                    cardListEl.appendChild(card);
+                });
+            }
+
+            function escapeHTML(str) {
+                const div = document.createElement('div');
+                div.textContent = str;
+                return div.innerHTML;
+            }
+
+            // ==================== 渲染核查详情 ====================
+            function renderDetail(checklist) {
+                currentChecklistId = checklist.id;
+                detailIcon.textContent = checklist.icon;
+                detailName.textContent = checklist.name;
+                detailDesc.textContent = checklist.description;
+
+                // 生成检查项列表
+                checklistItemsEl.innerHTML = '';
+                checklist.items.forEach((itemText, index) => {
+                    const li = document.createElement('li');
+                    li.className = 'checklist-item';
+                    li.setAttribute('data-index', index);
+                    li.setAttribute('role', 'checkbox');
+                    li.setAttribute('aria-checked', 'false');
+                    li.setAttribute('tabindex', '0');
+                    li.innerHTML = `
+                                <div class="custom-checkbox">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                </div>
+                                <span class="item-text">${escapeHTML(itemText)}</span>
+                            `;
+                    // 点击切换
+                    li.addEventListener('click', (e) => {
+                        toggleItem(li);
+                    });
+                    li.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            toggleItem(li);
+                        }
+                    });
+                    checklistItemsEl.appendChild(li);
+                });
+
+                // 重置进度
+                updateProgress();
+                completionBanner.classList.remove('visible');
+
+                // 更新视图
+                showView(viewDetail);
+                // 滚动到顶部
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            /** 切换单个项目的勾选状态 */
+            function toggleItem(li) {
+                const isChecked = li.classList.contains('checked');
+                if (isChecked) {
+                    li.classList.remove('checked');
+                    li.setAttribute('aria-checked', 'false');
+                } else {
+                    li.classList.add('checked');
+                    li.setAttribute('aria-checked', 'true');
+                }
+                updateProgress();
+            }
+
+            /** 更新进度条和统计 */
+            function updateProgress() {
+                const allItems = checklistItemsEl.querySelectorAll('.checklist-item');
+                const total = allItems.length;
+                const checked = checklistItemsEl.querySelectorAll('.checklist-item.checked').length;
+                const percent = total > 0 ? Math.round((checked / total) * 100) : 0;
+
+                progressCount.textContent = `${checked} / ${total} 已完成`;
+                progressPercent.textContent = `${percent}%`;
+                progressBarFill.style.width = `${percent}%`;
+
+                // 进度条颜色
+                if (percent >= 100) {
+                    progressPercent.classList.add('done');
+                    progressBarFill.classList.add('done');
+                    completionBanner.classList.add('visible');
+                } else {
+                    progressPercent.classList.remove('done');
+                    progressBarFill.classList.remove('done');
+                    completionBanner.classList.remove('visible');
+                }
+            }
+
+            /** 全部勾选 */
+            function checkAll() {
+                const allItems = checklistItemsEl.querySelectorAll('.checklist-item');
+                allItems.forEach(li => {
+                    li.classList.add('checked');
+                    li.setAttribute('aria-checked', 'true');
+                });
+                updateProgress();
+            }
+
+            /** 全部取消勾选 */
+            function resetAll() {
+                const allItems = checklistItemsEl.querySelectorAll('.checklist-item');
+                allItems.forEach(li => {
+                    li.classList.remove('checked');
+                    li.setAttribute('aria-checked', 'false');
+                });
+                updateProgress();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            // ==================== 导航逻辑 ====================
+            function navigateToChecklist(id) {
+                const checklist = findChecklistById(id);
+                if (checklist) {
+                    setHash(id);
+                    renderDetail(checklist);
+                } else {
+                    // 无效ID，显示空状态
+                    setHash(null);
+                    showView(viewEmpty);
+                    currentChecklistId = null;
+                }
+            }
+
+            function navigateToCards() {
+                setHash(null);
+                showView(viewCards);
+                currentChecklistId = null;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            // ==================== 事件处理 ====================
+            // 返回按钮
+            btnBack.addEventListener('click', () => {
+                navigateToCards();
+            });
+
+            // 全部重置按钮
+            btnReset.addEventListener('click', () => {
+                resetAll();
+            });
+
+            // 全部完成按钮
+            btnDoneAll.addEventListener('click', () => {
+                checkAll();
+            });
+
+            // 监听浏览器hash变化（前进/后退/手动修改）
+            window.addEventListener('hashchange', () => {
+                const hashId = getHashId();
+                if (hashId) {
+                    const checklist = findChecklistById(hashId);
+                    if (checklist) {
+                        // 如果当前已经在同一事项中，不重新渲染（保留勾选状态）
+                        if (currentChecklistId !== hashId) {
+                            renderDetail(checklist);
+                        }
+                    } else {
+                        showView(viewEmpty);
+                        currentChecklistId = null;
+                    }
+                } else {
+                    showView(viewCards);
+                    currentChecklistId = null;
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            });
+
+            // ==================== 初始化 ====================
+            function init() {
+                // 渲染卡片列表
+                renderCards();
+
+                // 检查URL hash
+                const hashId = getHashId();
+                if (hashId) {
+                    const checklist = findChecklistById(hashId);
+                    if (checklist) {
+                        renderDetail(checklist);
+                    } else {
+                        showView(viewEmpty);
+                    }
+                } else {
+                    showView(viewCards);
+                }
+            }
+
+            // 启动应用
+            init();
+
+            console.log('✅ 事项核查清单已就绪');
+            console.log(`   共 ${checklistData.length} 个核查事项可供选择`);
+            console.log('   URL hash 示例: #publish | #meeting | #travel | #deploy | #event | #onboarding');
+            console.log('   刷新页面后勾选状态自动重置，通过URL可直接定位到指定事项');
+        })();
+    </script>
+</body>
+
+</html>
