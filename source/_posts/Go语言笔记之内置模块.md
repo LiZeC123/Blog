@@ -801,6 +801,131 @@ func (g *Group) Do(key string, fn func() (interface{}, error)) (v interface{}, e
 ```
 
 
+文件嵌入
+---------
+
+GO语言可将任意文件在编译时嵌入二进制文件中, 并提供一些接口像直接访问文件系统一样读取这些嵌入的文件. 使用这一方法可以将一些资源文件和代码打包到一起, 从而实现单一文件即可分发的效果.
+
+### 嵌入单个文件
+
+```go
+package main
+
+import (
+    _ "embed"  // 必须导入
+    "fmt"
+)
+
+//go:embed config.json
+var configData string   // 也可以使用 []byte
+
+func main() {
+    fmt.Println(configData)
+}
+```
+
+在注释中使用`go:embed`指定需要嵌入的文件. 之后可以直接访问这个变量, Go会自动将变量填充为文件的内容.
+
+### 嵌入多个文件
+
+```go
+package main
+
+import (
+    "embed"
+    "fmt"
+)
+
+//go:embed assets/*
+var assetsFS embed.FS
+
+func main() {
+    data, _ := assetsFS.ReadFile("assets/logo.png")
+    // 或列出目录
+    entries, _ := assetsFS.ReadDir("assets")
+    for _, e := range entries {
+        fmt.Println(e.Name())
+    }
+}
+```
+
+嵌入多个文件时, 相当于内置了一个文件系统, 可以按照文件系统的方式读取这些文件.
+
+
+
+手动指定DNS服务
+---------------
+
+通常情况下Go关于网络的操作使用C语言相关的库, 从而在不同的操作系统中使用各自的实现. 但如果使用交叉编译, 则会禁用CGO特性, 改为使用纯GO实现. 纯GO实现对于各种细节的支持远低于C语言库, 因此偶尔会出现各类异常情况. 此时可以手动设置DNS服务器, 绕过本地操作系统的问题. 具体代码为
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "net"
+    "net/http"
+    "time"
+)
+
+func main() {
+    // 1. 创建自定义 DNS 解析器，强制使用公共 DNS 
+    resolver := &net.Resolver{
+        PreferGo: true, // 强制纯 Go 解析器（交叉编译环境必须）
+        Dial: func(ctx context.Context, network, address string) (net.Conn, error) {
+            d := net.Dialer{Timeout: 5 * time.Second}
+            // 忽略传入的 address，直接连接我们指定的公共 DNS
+            return d.DialContext(ctx, "udp", "223.5.5.5:53")
+        },
+    }
+
+    // 2. 自定义 DialContext，使用上述解析器将域名解析为 IP
+    dialContext := func(ctx context.Context, network, addr string) (net.Conn, error) {
+        host, port, err := net.SplitHostPort(addr)
+        if err != nil {
+            return nil, err
+        }
+
+        // 使用自定义解析器查找主机 IP
+        ips, err := resolver.LookupIPAddr(ctx, host)
+        if err != nil {
+            return nil, fmt.Errorf("DNS lookup failed for %s: %w", host, err)
+        }
+        if len(ips) == 0 {
+            return nil, fmt.Errorf("no IP address found for %s", host)
+        }
+
+        // 取第一个 IP（可根据需要扩展，如 IPv4 优先）
+        ip := ips[0]
+        target := net.JoinHostPort(ip.String(), port)
+        dialer := net.Dialer{Timeout: 10 * time.Second}
+        return dialer.DialContext(ctx, network, target)
+    }
+
+    // 3. 创建自定义 HTTP Transport 并注入 DialContext
+    transport := &http.Transport{
+        DialContext: dialContext,
+        // 可保留其他默认值或根据需求调整
+        ForceAttemptHTTP2: true,
+    }
+
+    client := &http.Client{
+        Transport: transport,
+        Timeout:   30 * time.Second,
+    }
+
+    // 4. 使用该客户端发起请求
+    resp, err := client.Get("https://www.google.com")
+    if err != nil {
+        panic(err)
+    }
+    defer resp.Body.Close()
+    fmt.Println("Status:", resp.Status)
+}
+```
+
+
 
 参考资料与扩展阅读
 -------------------------

@@ -488,13 +488,18 @@ Python虚拟环境
 从Python3.6开始, 可以使用内置的模块创建虚拟环境, 例如
 
 ``` bash
-python3 -m venv /path/to/new/virtual/environment
+python3 -m venv .venv
 ```
 
-由于已经明确指定了Python的版本, 因此不会产生虚拟环境是那个Python版本的问题. 创建完成后, 进入创建的目录, 执行Script目录下的activate文件即可激活环境.
+由于已经明确指定了Python的版本, 因此不会产生虚拟环境是那个Python版本的问题. 此操作会在当前目录下创建一个`.venv`目录, 其中包含虚拟环境相关的全部内容. 
+
+> 由于该目录以`.`开头, 因此通常情况下对于shell来说是不可见的.
+
+创建完成后, 进入创建的目录, 执行`bin`目录(Linix/Mac)或者`Script`目录(WIndows)下的activate文件即可激活环境. 对于Vscode, 如果其识别到当前项目存在虚拟环境, 那么在打开shell时会自动执行对应的`activate`指令
 
 注意: 如果使用Power Shell, 应该执行`Script/activate.ps1`文件, 如果提示不能执行脚本, 可以先执行`set-executionpolicy remotesigned`
 
+- [Virtual Environments and Packages](https://docs.python.org/3/tutorial/venv.html)
 
 
 
