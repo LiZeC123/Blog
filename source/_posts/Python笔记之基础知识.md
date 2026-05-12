@@ -550,16 +550,14 @@ def add(a: int, b: int) -> int:
     return a + b
 ```
 
-如果是集合类型, 可以导入相关的集合类型, 并且可以根据这些类型定义新的类型名称, 例如
+从Python 3.9开始, 如果是集合类型, 可以直接使用内置类型定义, 例如
 
 ```py
-from typing import List
-def read(names : List[str]) -> str :
+
+def read(names : list[str]) -> str :
     return names[0]
 
-Vector = List[str]
-
-def write(names: Vector) -> int:
+def write(data: dict[str, str]) -> int:
     pass
 ```
 
@@ -580,11 +578,13 @@ def f() -> Optional[str]:
     return None
 ```
 
-则f函数的返回值类型为`str`并且允许返回None.
-
---------------
+则f函数的返回值类型为`str`并且允许返回None. 或者也可以简单的将类型标记为`str | None`.
 
 Python还提供了两种新的类型`Any`和`NoReturn`, 其中`Any`表示可以返回任意类型, 而`NoReturn`表示函数没有返回值. 这两个标记都有助于IDE对函数的调用情况进行检查.
+
+----
+
+Python的类型推导系统在Python 3.14版本时和3.6版本相比已经非常强大了, 尤其是还支持了许多字面值的约束, 使用起来可以可以说就是一个有类型的语言了. 因此使用Vscode也可以获得完全不输Pycharm的体验了, 甚至对于调试和远程开发方面, 比Pycharm不知道高到哪里去了.
 
 
 - [Python官方文档: 26.1. typing — 类型标注支持](https://docs.python.org/zh-cn/3.6/library/typing.html)
