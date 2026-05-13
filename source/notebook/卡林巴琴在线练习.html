@@ -19,6 +19,8 @@
             --correct: #4caf84;
             --wrong: #e05555;
             --golden: #d4a574;
+            --highlight: #ffb74d;
+            --highlight-glow: #ff9800;
         }
 
         * {
@@ -43,13 +45,16 @@
             transition: background 0.3s;
         }
 
-        /* 头部 */
         .header {
             text-align: center;
             padding: 16px 20px 8px;
             transition: all 0.35s ease;
             width: 100%;
             max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
         }
 
         .header .title {
@@ -63,11 +68,16 @@
         .header .subtitle {
             font-size: 0.85rem;
             color: #999;
-            margin-top: 2px;
             letter-spacing: 0.03em;
         }
 
-        /* 尾部 */
+        .header .mode-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
         .footer {
             text-align: center;
             padding: 10px 20px 20px;
@@ -79,7 +89,6 @@
             letter-spacing: 0.02em;
         }
 
-        /* 主体容器 */
         .main-container {
             flex: 1;
             display: flex;
@@ -92,7 +101,6 @@
             transition: all 0.35s ease;
         }
 
-        /* 琴体包装 */
         .kalimba-wrapper {
             position: relative;
             width: 100%;
@@ -111,7 +119,6 @@
             filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.4));
         }
 
-        /* 琴键样式 */
         .key-path {
             fill: #c8c8d4;
             stroke: #b0b0b8;
@@ -135,7 +142,25 @@
             stroke: #777780;
         }
 
-        /* 简谱文字 */
+        /* 曲谱高亮 */
+        .key-path.score-highlight {
+            fill: #ffcc80;
+            stroke: #ff9800;
+            stroke-width: 2.5;
+            filter: drop-shadow(0 0 8px #ff9800);
+            animation: pulse-glow 1.2s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulse-glow {
+            from {
+                filter: drop-shadow(0 0 6px #ff9800);
+            }
+
+            to {
+                filter: drop-shadow(0 0 14px #ffb74d);
+            }
+        }
+
         .jianpu-text {
             fill: #3a3a44;
             font-family: 'PingFang SC', 'Noto Sans SC', 'Helvetica Neue', sans-serif;
@@ -151,13 +176,11 @@
             transition: opacity 0.25s;
         }
 
-        /* 测试模式隐藏标记 */
         .test-mode-active .jianpu-text,
         .test-mode-active .jianpu-dot {
             opacity: 0;
         }
 
-        /* 顶部压条 */
         .clamp-bar {
             fill: #5a5040;
             stroke: #3d3528;
@@ -170,8 +193,8 @@
             pointer-events: none;
         }
 
-        /* 测试模式信息面板 */
-        .test-panel {
+        /* 面板通用样式 */
+        .panel {
             position: absolute;
             top: 2%;
             left: 50%;
@@ -193,11 +216,12 @@
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
         }
 
-        .test-panel.hidden {
+        .panel.hidden {
             display: none;
         }
 
-        .test-target {
+        .test-target,
+        .score-target {
             font-size: 1.3rem;
             font-weight: 700;
             color: #fff;
@@ -207,7 +231,8 @@
             gap: 6px;
         }
 
-        .test-target .note-name {
+        .test-target .note-name,
+        .score-target .note-names {
             color: var(--accent);
             font-size: 1.1rem;
             background: rgba(212, 167, 116, 0.15);
@@ -216,7 +241,13 @@
             letter-spacing: 0.03em;
         }
 
-        .test-target .jianpu-display {
+        .score-target .note-names {
+            display: flex;
+            gap: 4px;
+        }
+
+        .test-target .jianpu-display,
+        .score-target .jianpu-display {
             font-size: 1.5rem;
             color: #fff;
             position: relative;
@@ -226,7 +257,8 @@
             min-width: 28px;
         }
 
-        .test-target .dot-above {
+        .test-target .dot-above,
+        .score-target .dot-above {
             position: absolute;
             top: -8px;
             font-size: 0.55rem;
@@ -235,7 +267,8 @@
             line-height: 1;
         }
 
-        .test-feedback {
+        .test-feedback,
+        .score-feedback {
             font-size: 0.85rem;
             font-weight: 600;
             padding: 3px 10px;
@@ -244,17 +277,20 @@
             animation: fadeInOut 0.6s ease;
         }
 
-        .test-feedback.correct {
+        .test-feedback.correct,
+        .score-feedback.correct {
             color: #4caf84;
             background: rgba(76, 175, 132, 0.15);
         }
 
-        .test-feedback.wrong {
+        .test-feedback.wrong,
+        .score-feedback.wrong {
             color: #e05555;
             background: rgba(224, 85, 85, 0.15);
         }
 
-        .test-score {
+        .test-score,
+        .score-progress {
             font-size: 0.8rem;
             color: #aaa;
             letter-spacing: 0.03em;
@@ -277,7 +313,6 @@
             }
         }
 
-        /* 按钮 */
         .btn {
             display: inline-flex;
             align-items: center;
@@ -323,7 +358,6 @@
             border-radius: 14px;
         }
 
-        /* 全屏按钮 */
         .fullscreen-btn {
             position: absolute;
             top: 10px;
@@ -353,7 +387,6 @@
             transform: scale(0.9);
         }
 
-        /* 全屏模式 */
         body.fullscreen-mode .header {
             opacity: 0;
             max-height: 0;
@@ -388,7 +421,6 @@
             background: #0d0d18;
         }
 
-        /* 横屏优化 */
         @media (orientation: landscape) and (max-height: 600px) {
             .kalimba-wrapper {
                 max-width: 95vw;
@@ -407,22 +439,25 @@
                 font-size: 0.7rem;
             }
 
-            .test-panel {
+            .panel {
                 padding: 4px 12px;
                 gap: 8px;
                 border-radius: 14px;
                 top: 1%;
             }
 
-            .test-target {
+            .test-target,
+            .score-target {
                 font-size: 1rem;
             }
 
-            .test-target .jianpu-display {
+            .test-target .jianpu-display,
+            .score-target .jianpu-display {
                 font-size: 1.1rem;
             }
 
-            .test-target .note-name {
+            .test-target .note-name,
+            .score-target .note-names {
                 font-size: 0.85rem;
                 padding: 2px 8px;
             }
@@ -446,22 +481,25 @@
                 font-size: 1.3rem;
             }
 
-            .test-panel {
+            .panel {
                 padding: 4px 10px;
                 gap: 6px;
                 border-radius: 14px;
             }
 
-            .test-target {
+            .test-target,
+            .score-target {
                 font-size: 0.95rem;
             }
 
-            .test-target .jianpu-display {
+            .test-target .jianpu-display,
+            .score-target .jianpu-display {
                 font-size: 1.1rem;
                 min-width: 22px;
             }
 
-            .test-target .note-name {
+            .test-target .note-name,
+            .score-target .note-names {
                 font-size: 0.8rem;
                 padding: 2px 7px;
             }
@@ -487,24 +525,21 @@
 
 <body>
 
-    <!-- 头部 -->
     <header class="header" id="header">
         <div class="title">🎵 卡林巴琴练习</div>
         <div class="subtitle">17键 · 点击琴键发声 · 支持滑音与和弦</div>
-
+        <div class="mode-buttons">
+            <button class="btn" id="testModeBtn">🎯 练习模式</button>
+            <button class="btn" id="scoreModeBtn">🎼 曲谱模式</button>
+        </div>
     </header>
 
-
-    <!-- 主体 -->
     <div class="main-container" id="mainContainer">
         <div class="kalimba-wrapper" id="kalimbaWrapper">
-            <!-- 全屏按钮 -->
-            <button class="fullscreen-btn" id="fullscreenBtn" title="切换全屏模式" aria-label="全屏切换">
-                ⛶
-            </button>
+            <button class="fullscreen-btn" id="fullscreenBtn" title="切换全屏模式" aria-label="全屏切换">⛶</button>
 
             <!-- 测试面板 -->
-            <div class="test-panel hidden" id="testPanel">
+            <div class="panel hidden" id="testPanel">
                 <span style="font-size:0.75rem;color:#999;">📋 测试</span>
                 <span class="test-target" id="testTarget">
                     <span class="note-name">C4</span>
@@ -512,40 +547,43 @@
                 </span>
                 <span class="test-feedback" id="testFeedback"></span>
                 <span class="test-score" id="testScore">✅ 0</span>
-                <button class="btn small accent" id="testToggleBtn" title="退出测试">退出测试</button>
+                <button class="btn small accent" id="testToggleBtn">退出测试</button>
             </div>
 
-            <!-- SVG琴体 -->
+            <!-- 曲谱面板 -->
+            <div class="panel hidden" id="scorePanel">
+                <span style="font-size:0.75rem;color:#999;">🎼 曲谱</span>
+                <span class="score-target" id="scoreTarget">
+                    <span class="note-names">C4</span>
+                    <span class="jianpu-display">1<span class="dot-above"></span></span>
+                </span>
+                <span class="score-feedback" id="scoreFeedback"></span>
+                <span class="score-progress" id="scoreProgress">0/0</span>
+                <button class="btn small accent" id="scoreExitBtn">退出曲谱</button>
+            </div>
+
             <svg id="kalimbaSvg" viewBox="0 0 850 500" xmlns="http://www.w3.org/2000/svg">
-                <!-- 背景面板 -->
                 <rect x="15" y="60" width="820" height="420" rx="16" ry="16" fill="#2a2218" stroke="#3d3528"
                     stroke-width="2" />
-                <!-- 木纹装饰 -->
                 <rect x="25" y="68" width="800" height="404" rx="12" ry="12" fill="#3d3222" opacity="0.7" />
-                <!-- 顶部压条 -->
                 <rect class="clamp-bar" x="20" y="68" width="810" height="22" rx="10" ry="10" />
-                <!-- 压条螺丝 -->
                 <circle class="clamp-screw" cx="55" cy="79" r="5" />
                 <circle class="clamp-screw" cx="220" cy="79" r="5" />
                 <circle class="clamp-screw" cx="385" cy="79" r="5" />
                 <circle class="clamp-screw" cx="550" cy="79" r="5" />
                 <circle class="clamp-screw" cx="715" cy="79" r="5" />
                 <circle class="clamp-screw" cx="795" cy="79" r="5" />
-
-                <!-- 琴键将由JS动态生成 -->
                 <g id="keysGroup"></g>
                 <g id="labelsGroup"></g>
             </svg>
         </div>
     </div>
 
-    <!-- 尾部 -->
     <footer class="footer" id="footer">Deepseek V4 Pro提供计算支持</footer>
 
     <script>
         (function () {
-            // ============ 音符数据定义 ============
-            // 17键从左到右，音高从中间C4向两边递增
+            // ============ 音符数据 ============
             const noteData = [
                 { index: 0, name: 'D6', freq: 1174.66, jianpuNum: '2', dotsAbove: 2, semitoneFromC4: 26 },
                 { index: 1, name: 'B5', freq: 987.77, jianpuNum: '7', dotsAbove: 1, semitoneFromC4: 23 },
@@ -566,6 +604,110 @@
                 { index: 16, name: 'E6', freq: 1318.51, jianpuNum: '3', dotsAbove: 2, semitoneFromC4: 28 },
             ];
 
+
+            // 构建简谱字符串到索引的映射表
+            const jianpuToIndexMap = (() => {
+                const map = {};
+                for (const item of noteData) {
+                    const key = item.jianpuNum + '.'.repeat(item.dotsAbove);
+                    map[key] = item.index;
+                }
+                return map;
+            })();
+
+            /**
+             * 将简谱字符串（或包含简谱字符串的嵌套数组）转换为对应的索引数字
+             * @param {string|Array} input - 简谱字符串或者包含简谱字符串的数组（可嵌套）
+             * @returns {number|Array} 转换后的索引数字或数组（结构保持不变）
+             */
+            function convertJianpuToIndex(input) {
+                if (typeof input === 'string') {
+                    // 单个简谱字符串转换
+                    if (jianpuToIndexMap.hasOwnProperty(input)) {
+                        console.log(input)
+                        return jianpuToIndexMap[input];
+                    } else {
+                        throw new Error(`无效的简谱字符串: "${input}"`);
+                    }
+                } else if (Array.isArray(input)) {
+                    // 递归处理数组的每个元素
+                    console.log(input)
+                    return input.map(item => convertJianpuToIndex(item));
+                } else {
+                    throw new Error(`无效的简谱字符串: "${input}"`);
+                    // return input;
+                }
+            }
+
+            // ============ 曲谱数据（示例：《小星星》片段，含和弦） ============
+            // 格式: number (单音) 或 number[] (同时按下的多个键)
+            const demoScore = convertJianpuToIndex([
+                "4", "1.", "6.",
+                "5", "2.", "7.",
+                "4", "1.", "6.",
+                "5", "2.", "5.",
+                // 
+                ["4", '4.'], "1.", "6.",
+                '5.', '6.', ['7.', '5'], '2.', '7.',
+                '1..', '7.', '6.', '5.', ['6.', '4'], '1.', '6',
+                '5.', '4.', ['5.', '5'], '2', ['2.', '7'],
+                // --
+                ["4", '4.'], "1.", "6.",
+                '4.', '5.', ['3.', '1'], '5', '4.', '3.', '2.',
+                '1.', ['2.', '4'], '1.', ['6.', '6'],
+                // --
+                '4', '2.', '5.',
+                '1.',
+                ["4", '4.'], "1.", "6.",
+                '5.', '6.', ['7.', '5'], '2.', '7.',
+                '1..', '7.', '6.', '5.', ['6.', '4'], '1.', '6',
+                '5.',
+                '5.', '4.', ['5.', '5'], '2', ['2.', '7'],
+                ["4", '4.'], "1.", "6.",
+                '4.', '4.', '5.', ['3.', '1'], '5', '2.',
+                '1.', ['7', '5', '2.'], '2', '7',
+                '2', '5', '2.',
+                '6.', '7.', ['1..', '4'], '1', '6',
+                '1..', '2..', ['7.', '5'], '2', '6.',
+                '5.',
+                "4", "1.", "6.",
+                '3..',
+                ['7.', '5'], '2.', '1..', '7.', '6.',
+                '5.', ['6.', '4'], '1', '6',
+                '5.', '4.', ['3.', '1'], '3', '5',
+                '4.', '3.', '2.', '1.', ['7', '5', '2.'], '2', '7',
+                // --
+                '2', '5', '2.',
+                '6.', '7.', ['1..', '4'], '1', '6',
+                '1..', '2..', ['7.', '5'], '2', '6.',
+                '5.',
+                "4", "1.", "6.",
+                '3..',
+                ['7.', '5'], '2.', '1..', '7.', '6.',
+                '5.', ['6.', '4'], '1', '6',
+                '5.', '5.', '4.', ['3.', '1'], '5', '4.', '3.', '2.',
+                '1.', '2.', '2', '6',
+                // --
+                '2', '5', '7',
+                '1.',
+                ["4", '4.'], "1.", "6.",
+                '5.', '6.', ['7.', '5'], '2.', '7.',
+                '1..', '7.', '6.', '5.', ['6.', '4'], '1.', '6',
+                '5.', '4.', ['5.', '5'], '2', ['2.', '7'],
+                ["4", '4.'], "1.", "6.",
+                '4.', '5.', ['3.', '1'], '5', '4.', '3.', '2.',
+                '1.', ['2.', '4'], '1', ['6.', '6'],
+                // --
+                '2', '5', '2.', '1.',
+                ["4", '4.'], "1.", "6.",
+                '5.', '6.', ['7.', '5'], '2.', ['7.', '7'],
+                '1..', '7.', '6.', '5.', ['6.', '4'], '1.', '6',
+                '5.', '5.', '4.', ['5.', '5'], '2', ['2.', '7'],
+                ["4", '4.'], "1.", "6.",
+                '4.', '4.', '5.', ['3.', '1'], '5', '2.',
+                '1.', ['7', '5', '2.'], '2', '7',
+            ]);
+
             // ============ DOM引用 ============
             const kalimbaWrapper = document.getElementById('kalimbaWrapper');
             const kalimbaSvg = document.getElementById('kalimbaSvg');
@@ -577,63 +719,66 @@
             const testFeedback = document.getElementById('testFeedback');
             const testScore = document.getElementById('testScore');
             const testToggleBtn = document.getElementById('testToggleBtn');
-            const TestModeBtn = document.getElementById('TestModeBtn')
+            const testModeBtn = document.getElementById('testModeBtn');
+            const scoreModeBtn = document.getElementById('scoreModeBtn');
+            const scorePanel = document.getElementById('scorePanel');
+            const scoreTarget = document.getElementById('scoreTarget');
+            const scoreFeedback = document.getElementById('scoreFeedback');
+            const scoreProgress = document.getElementById('scoreProgress');
+            const scoreExitBtn = document.getElementById('scoreExitBtn');
             const header = document.getElementById('header');
             const footer = document.getElementById('footer');
-            const mainContainer = document.getElementById('mainContainer');
 
-            // ============ 状态变量 ============
+            // ============ 全局状态 ============
             let audioCtx = null;
-            let isTestMode = false;
+            let currentMode = 'free'; // 'free' | 'test' | 'score'
+            const pointerKeyMap = new Map(); // pointerId -> keyIndex
+            const keyPathElements = [];
+            const keyBounds = [];
+
+            // 测试模式状态
             let testCurrentNote = null;
             let testCorrectCount = 0;
             let testFeedbackTimeout = null;
-            let randomIdx = 0
-            let randomArray = []
-            // 跟踪每个pointerId当前按下的键索引
-            const pointerKeyMap = new Map(); // pointerId -> keyIndex
-            // 键的SVG path元素引用
-            const keyPathElements = [];
-            // 键的边界信息（用于elementFromPoint回退）
-            const keyBounds = [];
-            // 错误按键名字空间
+            let randomIdx = 0;
+            let randomArray = [];
             const errorKeyName = "ErrorKey";
             const randomArrayMaxLen = 200;
 
-            // ============ 初始化AudioContext ============
+            // 曲谱模式状态
+            let scoreIndex = 0;
+            let targetIndices = [];          // 当前目标的索引数组（已排序）
+            let pressedIndices = new Set();  // 当前按下的所有键索引
+            let waitingForRelease = false;   // 匹配成功后等待所有按键释放
+            let canMatch = true;             // 是否允许进行匹配
+            let matchingPointers = new Set();// 触发匹配的pointerId集合
+
+            // ============ Audio ============
             function getAudioContext() {
                 if (!audioCtx) {
                     try {
                         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                    } catch (e) {
-                        console.warn('无法创建AudioContext:', e);
-                        return null;
-                    }
+                    } catch (e) { return null; }
                 }
                 if (audioCtx.state === 'suspended') {
-                    audioCtx.resume().catch(e => console.warn('AudioContext resume失败:', e));
+                    audioCtx.resume().catch(() => { });
                 }
                 return audioCtx;
             }
 
-            // ============ 声音合成 ============
             function playKalimbaNote(frequency) {
                 const ctx = getAudioContext();
                 if (!ctx) return;
-
                 const now = ctx.currentTime;
-                const duration = 1.0; // 总持续时间
-                const attackTime = 0.004; // 4ms快速起音
-
-                // 主增益节点
+                const duration = 1.0;
+                const attackTime = 0.004;
                 const masterGain = ctx.createGain();
                 masterGain.gain.setValueAtTime(0, now);
                 masterGain.gain.linearRampToValueAtTime(1.0, now + attackTime);
                 masterGain.gain.setTargetAtTime(0.001, now + attackTime + 0.02, duration * 0.35);
                 masterGain.connect(ctx.destination);
 
-                // 基频 - 两个略微失谐的振荡器模拟拍音
-                const detuneAmount = 1.8; // Hz
+                const detuneAmount = 1.8;
                 const osc1 = ctx.createOscillator();
                 osc1.type = 'sine';
                 osc1.frequency.setValueAtTime(frequency - detuneAmount / 2, now);
@@ -654,86 +799,33 @@
                 osc2.start(now);
                 osc2.stop(now + duration + 0.3);
 
-                // // 第一泛音（2倍频）
-                // const osc3 = ctx.createOscillator();
-                // osc3.type = 'sine';
-                // osc3.frequency.setValueAtTime(frequency * 2, now);
-                // const osc3Gain = ctx.createGain();
-                // osc3Gain.gain.setValueAtTime(0.22, now);
-                // osc3Gain.gain.setTargetAtTime(0.001, now + attackTime, duration * 0.25);
-                // osc3.connect(osc3Gain);
-                // osc3Gain.connect(masterGain);
-                // osc3.start(now);
-                // osc3.stop(now + duration + 0.3);
-
-                // // 第二泛音（3倍频）
-                // const osc4 = ctx.createOscillator();
-                // osc4.type = 'sine';
-                // osc4.frequency.setValueAtTime(frequency * 3, now);
-                // const osc4Gain = ctx.createGain();
-                // osc4Gain.gain.setValueAtTime(0.08, now);
-                // osc4Gain.gain.setTargetAtTime(0.001, now + attackTime, duration * 0.18);
-                // osc4.connect(osc4Gain);
-                // osc4Gain.connect(masterGain);
-                // osc4.start(now);
-                // osc4.stop(now + duration + 0.3);
-
-                // // 轻微的三角波泛音增加温暖感
-                // const osc5 = ctx.createOscillator();
-                // osc5.type = 'triangle';
-                // osc5.frequency.setValueAtTime(frequency, now);
-                // const osc5Gain = ctx.createGain();
-                // osc5Gain.gain.setValueAtTime(0.06, now);
-                // osc5Gain.gain.setTargetAtTime(0.001, now + attackTime, duration * 0.3);
-                // osc5.connect(osc5Gain);
-                // osc5Gain.connect(masterGain);
-                // osc5.start(now);
-                // osc5.stop(now + duration + 0.3);
-
-                // 清理
-                setTimeout(() => {
-                    try { masterGain.disconnect(); } catch (e) { }
-                }, (duration + 0.5) * 1000);
+                setTimeout(() => { try { masterGain.disconnect(); } catch (e) { } }, (duration + 0.5) * 1000);
             }
 
-            // ============ 构建琴键几何 ============
-            const KEY_WIDTH = 46; // 每个键宽度
-            const KEY_GAP = 4; // 键间隙
-            const KEY_STEP = KEY_WIDTH + KEY_GAP; // 键步距50
-            const TOP_Y = 92; // 所有键顶部对齐的Y坐标
-            const MAX_LENGTH = 330; // C4最长键的长度
-            const MIN_LENGTH = 140; // 最短键长度
-            const SEMITONE_RANGE = 28; // 最大半音偏移
+            // ============ 琴键构建 ============
+            const KEY_WIDTH = 46;
+            const KEY_GAP = 4;
+            const KEY_STEP = KEY_WIDTH + KEY_GAP;
+            const TOP_Y = 92;
+            const MAX_LENGTH = 330;
+            const MIN_LENGTH = 140;
+            const SEMITONE_RANGE = 28;
             const LENGTH_PER_SEMITONE = (MAX_LENGTH - MIN_LENGTH) / SEMITONE_RANGE;
-            const RADIUS = KEY_WIDTH / 2; // 底部圆弧半径23
-            const TOTAL_WIDTH = 17 * KEY_STEP; // 850
+            const TOTAL_WIDTH = 17 * KEY_STEP;
+            const startX = (850 - 17 * KEY_STEP) / 2 + KEY_GAP / 2;
 
             function getKeyBottomY(semitoneOffset) {
                 return TOP_Y + MAX_LENGTH - semitoneOffset * LENGTH_PER_SEMITONE;
             }
 
-            function getKeyX(index) {
-                return (TOTAL_WIDTH - 17 * KEY_STEP) / 2 + index * KEY_STEP + KEY_GAP / 2;
-                // 居中：起始偏移 + index * 50 + 2
-            }
-
-            // 计算起始偏移使17键居中
-            const startX = (850 - 17 * KEY_STEP) / 2 + KEY_GAP / 2; // = (850-850)/2 + 2 = 2
-
             function buildKeyPath(index) {
                 const note = noteData[index];
                 const x = startX + index * KEY_STEP;
                 const bottomY = getKeyBottomY(note.semitoneFromC4);
-                const arcStartY = bottomY - RADIUS;
+                const arcStartY = bottomY - KEY_WIDTH / 2;
                 const xLeft = x;
                 const xRight = x + KEY_WIDTH;
-                // path: 顶部矩形 + 底部半圆
-                const d =
-                    `M ${xLeft} ${TOP_Y} ` +
-                    `L ${xLeft} ${arcStartY} ` +
-                    `A ${RADIUS} ${RADIUS} 0 0 0 ${xRight} ${arcStartY} ` +
-                    `L ${xRight} ${TOP_Y} ` +
-                    `Z`;
+                const d = `M ${xLeft} ${TOP_Y} L ${xLeft} ${arcStartY} A ${KEY_WIDTH / 2} ${KEY_WIDTH / 2} 0 0 0 ${xRight} ${arcStartY} L ${xRight} ${TOP_Y} Z`;
                 return { d, x, bottomY, arcStartY, xLeft, xRight, note };
             }
 
@@ -753,45 +845,18 @@
                         index: index,
                     });
 
-                    // 创建琴键path
                     const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
                     pathEl.setAttribute('d', keyInfo.d);
                     pathEl.setAttribute('class', 'key-path');
                     pathEl.setAttribute('data-key-index', index);
                     pathEl.setAttribute('data-note-name', note.name);
                     pathEl.setAttribute('id', `key-${index}`);
-                    // 添加微妙的渐变
-                    const gradId = `keyGrad-${index}`;
-                    const grad = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
-                    grad.setAttribute('id', gradId);
-                    grad.setAttribute('x1', '0');
-                    grad.setAttribute('y1', '0');
-                    grad.setAttribute('x2', '1');
-                    grad.setAttribute('y2', '0');
-                    const stop1 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
-                    stop1.setAttribute('offset', '0%');
-                    stop1.setAttribute('stop-color', '#d4d4dc');
-                    const stop2 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
-                    stop2.setAttribute('offset', '50%');
-                    stop2.setAttribute('stop-color', '#e8e8f0');
-                    const stop3 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
-                    stop3.setAttribute('offset', '100%');
-                    stop3.setAttribute('stop-color', '#c0c0ca');
-                    grad.appendChild(stop1);
-                    grad.appendChild(stop2);
-                    grad.appendChild(stop3);
-                    keysGroup.appendChild(grad);
-                    pathEl.setAttribute('fill', `url(#${gradId})`);
-                    pathEl.setAttribute('stroke', '#b0b0b8');
-                    pathEl.setAttribute('stroke-width', '1');
                     keysGroup.appendChild(pathEl);
                     keyPathElements.push(pathEl);
 
-                    // 创建简谱标签
-                    const labelY = keyInfo.bottomY - RADIUS - 18;
+                    // 简谱标签
+                    const labelY = keyInfo.bottomY - KEY_WIDTH / 2 - 18;
                     const labelX = keyInfo.x + KEY_WIDTH / 2;
-
-                    // 数字
                     const textEl = document.createElementNS('http://www.w3.org/2000/svg', 'text');
                     textEl.setAttribute('x', labelX);
                     textEl.setAttribute('y', labelY);
@@ -801,7 +866,6 @@
                     textEl.textContent = note.jianpuNum;
                     labelsGroup.appendChild(textEl);
 
-                    // 点（在数字上方）
                     if (note.dotsAbove > 0) {
                         const dotSpacing = 8;
                         const dotStartX = labelX - (note.dotsAbove - 1) * dotSpacing / 2;
@@ -820,66 +884,58 @@
 
             createKeyElements();
 
-            // ============ 琴键视觉反馈 ============
             function flashKey(index) {
-                const pathEl = keyPathElements[index];
-                if (!pathEl) return;
-                pathEl.classList.add('pressed');
-                setTimeout(() => {
-                    pathEl.classList.remove('pressed');
-                }, 120);
+                const el = keyPathElements[index];
+                if (!el) return;
+                el.classList.add('pressed');
+                setTimeout(() => el.classList.remove('pressed'), 120);
             }
 
-            // ============ 触发音符 ============
             function triggerNote(index) {
                 const note = noteData[index];
                 playKalimbaNote(note.freq);
                 flashKey(index);
 
-                // 测试模式检测
-                if (isTestMode && testCurrentNote) {
+                if (currentMode === 'test' && testCurrentNote) {
                     handleTestAnswer(index);
                 }
             }
 
-            // ============ 获取指针下的键索引 ============
+            // ============ 指针与坐标 ============
             function getKeyIndexFromPoint(clientX, clientY) {
-                // 使用elementFromPoint获取SVG元素
                 const el = document.elementFromPoint(clientX, clientY);
                 if (el && el.hasAttribute && el.hasAttribute('data-key-index')) {
                     return parseInt(el.getAttribute('data-key-index'), 10);
                 }
-                // 回退：使用边界检测
                 const svgRect = kalimbaSvg.getBoundingClientRect();
                 const svgX = clientX - svgRect.left;
                 const svgY = clientY - svgRect.top;
-                // 转换到viewBox坐标
                 const vbX = (svgX / svgRect.width) * 850;
                 const vbY = (svgY / svgRect.height) * 500;
                 for (const bound of keyBounds) {
-                    if (
-                        vbX >= bound.xLeft &&
-                        vbX <= bound.xRight &&
-                        vbY >= bound.topY &&
-                        vbY <= bound.bottomY
-                    ) {
+                    if (vbX >= bound.xLeft && vbX <= bound.xRight &&
+                        vbY >= bound.topY && vbY <= bound.bottomY) {
                         return bound.index;
                     }
                 }
                 return -1;
             }
 
-            // ============ 指针事件处理 ============
+            // ============ 事件处理 ============
             function handlePointerDown(e) {
                 e.preventDefault();
                 const ctx = getAudioContext();
-                if (ctx && ctx.state === 'suspended') {
-                    ctx.resume();
-                }
+                if (ctx && ctx.state === 'suspended') ctx.resume();
+
                 const keyIndex = getKeyIndexFromPoint(e.clientX, e.clientY);
                 if (keyIndex >= 0) {
                     pointerKeyMap.set(e.pointerId, keyIndex);
                     triggerNote(keyIndex);
+
+                    if (currentMode === 'score') {
+                        pressedIndices.add(keyIndex);
+                        onScoreInputChange();
+                    }
                 }
             }
 
@@ -889,191 +945,141 @@
                 const keyIndex = getKeyIndexFromPoint(e.clientX, e.clientY);
                 const prevKeyIndex = pointerKeyMap.get(e.pointerId);
                 if (keyIndex >= 0 && keyIndex !== prevKeyIndex) {
-                    // 滑到了新键
                     pointerKeyMap.set(e.pointerId, keyIndex);
                     triggerNote(keyIndex);
+
+                    if (currentMode === 'score') {
+                        pressedIndices.delete(prevKeyIndex);
+                        pressedIndices.add(keyIndex);
+                        onScoreInputChange();
+                    }
                 }
             }
 
             function handlePointerUp(e) {
                 e.preventDefault();
+                const keyIndex = pointerKeyMap.get(e.pointerId);
                 pointerKeyMap.delete(e.pointerId);
-            }
 
-            function handlePointerLeave(e) {
-                // 指针离开琴体区域
-                if (pointerKeyMap.has(e.pointerId)) {
-                    pointerKeyMap.delete(e.pointerId);
+                if (currentMode === 'score' && keyIndex !== undefined) {
+                    pressedIndices.delete(keyIndex);
+                    onScoreInputChange();
+                    // 检查是否释放了匹配指针
+                    if (matchingPointers.has(e.pointerId)) {
+                        matchingPointers.delete(e.pointerId);
+                        if (matchingPointers.size === 0) {
+                            waitingForRelease = false;
+                            // 如果此时还有键按着，保持 canMatch = false 直到下一次主动按下
+                            if (pressedIndices.size === 0) {
+                                canMatch = true;
+                            }
+                            // 否则等待新的 pointerdown 来设置 canMatch = true
+                        }
+                    }
                 }
             }
 
-            // 绑定事件到琴体wrapper
+            function handlePointerLeave(e) {
+                if (pointerKeyMap.has(e.pointerId)) {
+                    const keyIndex = pointerKeyMap.get(e.pointerId);
+                    pointerKeyMap.delete(e.pointerId);
+                    if (currentMode === 'score' && keyIndex !== undefined) {
+                        pressedIndices.delete(keyIndex);
+                        onScoreInputChange();
+                    }
+                }
+            }
+
             kalimbaWrapper.addEventListener('pointerdown', handlePointerDown, { passive: false });
             kalimbaWrapper.addEventListener('pointermove', handlePointerMove, { passive: false });
             kalimbaWrapper.addEventListener('pointerup', handlePointerUp, { passive: false });
             kalimbaWrapper.addEventListener('pointerleave', handlePointerLeave);
             kalimbaWrapper.addEventListener('pointercancel', handlePointerUp, { passive: false });
-            // 防止丢失pointerup
             document.addEventListener('pointerup', (e) => {
                 if (pointerKeyMap.has(e.pointerId)) {
+                    const keyIndex = pointerKeyMap.get(e.pointerId);
                     pointerKeyMap.delete(e.pointerId);
+                    if (currentMode === 'score' && keyIndex !== undefined) {
+                        pressedIndices.delete(keyIndex);
+                        onScoreInputChange();
+                    }
                 }
             });
 
-            // ============ 测试模式 ============
-
-            // 内部工具：获取指定命名空间的存储数据
+            // ============ 测试模式（保留原有逻辑） ============
             function _getNamespaceData(namespace) {
                 const key = `freqStore_${namespace}`;
                 const raw = localStorage.getItem(key);
                 if (!raw) return {};
-                try {
-                    return JSON.parse(raw);
-                } catch (e) {
-                    console.warn(`Failed to parse data for namespace "${namespace}"`, e);
-                    return {};
-                }
+                try { return JSON.parse(raw); } catch (e) { return {}; }
             }
 
-            // 内部工具：保存指定命名空间的存储数据
             function _saveNamespaceData(namespace, data) {
                 const key = `freqStore_${namespace}`;
                 localStorage.setItem(key, JSON.stringify(data));
             }
 
-            /**
-             * 对象频率存取函数
-             * @param {string} namespace - 命名空间，用于隔离不同实例
-             * @param {string} objectName - 对象名（仅字符串）
-             * @param {number} count - 增加的出现次数（大于0的整数）
-             * @throws {Error} 参数类型或数值非法时抛出错误
-             */
             function recordFrequency(namespace, objectName, count) {
-                // 参数校验
-                if (typeof namespace !== 'string') {
-                    throw new Error('namespace must be a string');
+                if (typeof namespace !== 'string' || typeof objectName !== 'string' || !Number.isInteger(count) || count <= 0) {
+                    throw new Error('Invalid arguments');
                 }
-                if (typeof objectName !== 'string') {
-                    throw new Error('objectName must be a string');
-                }
-                if (!Number.isInteger(count) || count <= 0) {
-                    throw new Error('count must be a positive integer');
-                }
-
                 const data = _getNamespaceData(namespace);
-                const prev = data[objectName] || 0;
-                data[objectName] = prev + count;
+                data[objectName] = (data[objectName] || 0) + count;
                 _saveNamespaceData(namespace, data);
             }
 
-            /**
-             * 清空指定命名空间下的所有频率数据
-             * @param {string} namespace - 命名空间
-             * @throws {Error} namespace不是字符串时抛出错误
-             */
             function clearNamespace(namespace) {
-                if (typeof namespace !== 'string') {
-                    throw new Error('namespace must be a string');
-                }
-                const key = `freqStore_${namespace}`;
-                localStorage.removeItem(key);
+                if (typeof namespace !== 'string') throw new Error('namespace must be a string');
+                localStorage.removeItem(`freqStore_${namespace}`);
             }
 
-            /**
-             * 基于频次的随机抽取函数
-             * @param {string} namespace - 命名空间
-             * @param {number} n - 要抽取的数据条数（非负整数）
-             * @returns {string[]} 长度为n的对象名数组，元素可重复，概率与频率成正比
-             * @throws {Error} 参数非法时抛出错误
-             */
             function randomExtract(namespace, n) {
-                if (typeof namespace !== 'string') {
-                    throw new Error('namespace must be a string');
-                }
-                if (!Number.isInteger(n) || n < 0) {
-                    throw new Error('n must be a non-negative integer');
-                }
-
+                if (typeof namespace !== 'string' || !Number.isInteger(n) || n < 0) throw new Error('Invalid arguments');
                 const data = _getNamespaceData(namespace);
-                const entries = Object.entries(data); // [[name, freq], ...]
-
-                if (entries.length === 0 || n === 0) {
-                    return [];
-                }
-
-                // 提取频率数组并计算总频次
-                const freqs = entries.map(item => item[1]);
-                const total = freqs.reduce((sum, f) => sum + f, 0);
+                const entries = Object.entries(data);
+                if (entries.length === 0 || n === 0) return [];
+                const freqs = entries.map(e => e[1]);
+                const total = freqs.reduce((s, f) => s + f, 0);
                 if (total === 0) return [];
-
-                // 构建前缀和数组（用于二分查找）
                 const prefix = [];
-                let runningSum = 0;
-                for (const freq of freqs) {
-                    runningSum += freq;
-                    prefix.push(runningSum);
-                }
-
+                let sum = 0;
+                for (const f of freqs) { sum += f; prefix.push(sum); }
                 const result = [];
                 for (let i = 0; i < n; i++) {
-                    const rand = Math.random() * total; // [0, total)
-                    // 二分查找第一个大于 rand 的前缀和索引
+                    const rand = Math.random() * total;
                     let left = 0, right = prefix.length - 1;
                     while (left < right) {
                         const mid = Math.floor((left + right) / 2);
-                        if (prefix[mid] <= rand) {
-                            left = mid + 1;
-                        } else {
-                            right = mid;
-                        }
+                        if (prefix[mid] <= rand) left = mid + 1;
+                        else right = mid;
                     }
                     result.push(entries[left][0]);
                 }
                 return result;
             }
 
-
-
             function getRandomNote() {
                 if (testCorrectCount < 5) {
-                    const idx = Math.floor(Math.random() * noteData.length);
-                    return noteData[idx];
+                    return noteData[Math.floor(Math.random() * noteData.length)];
                 }
-
                 if (randomIdx >= randomArrayMaxLen) {
                     randomIdx = 0;
                     randomArray = randomExtract(errorKeyName, randomArrayMaxLen);
-                    console.log('刷新随机数组');
                 }
                 const idx = parseInt(randomArray[randomIdx++]);
-                console.log('返回随机数组第', randomIdx, '个元素, 取值为', idx);
                 return noteData[idx];
             }
 
             function updateTestDisplay() {
                 if (!testCurrentNote) return;
                 const note = testCurrentNote;
-                // 更新音符名
-                const noteNameSpan = testTarget.querySelector('.note-name');
-                if (noteNameSpan) noteNameSpan.textContent = note.name;
-                // 更新简谱显示
+                testTarget.querySelector('.note-name').textContent = note.name;
                 const jianpuSpan = testTarget.querySelector('.jianpu-display');
                 const dotSpan = testTarget.querySelector('.dot-above');
-                if (jianpuSpan) {
-                    // 清除内容但保留dot-above
-                    jianpuSpan.childNodes.forEach(child => {
-                        if (child === dotSpan) return;
-                        child.remove();
-                    });
-                    jianpuSpan.insertBefore(document.createTextNode(note.jianpuNum), dotSpan || jianpuSpan
-                        .firstChild);
-                }
-                if (dotSpan) {
-                    dotSpan.textContent = '·'.repeat(note.dotsAbove);
-                }
-                // 更新分数
+                jianpuSpan.childNodes.forEach(c => { if (c !== dotSpan) c.remove(); });
+                jianpuSpan.insertBefore(document.createTextNode(note.jianpuNum), dotSpan || jianpuSpan.firstChild);
+                dotSpan.textContent = '·'.repeat(note.dotsAbove);
                 testScore.textContent = `✅ ${testCorrectCount}`;
-                // 清除反馈
                 testFeedback.textContent = '';
                 testFeedback.className = 'test-feedback';
             }
@@ -1090,9 +1096,7 @@
             function handleTestAnswer(keyIndex) {
                 const pressedNote = noteData[keyIndex];
                 if (!pressedNote || !testCurrentNote) return;
-
                 if (pressedNote.index === testCurrentNote.index) {
-                    // 正确
                     testCorrectCount++;
                     testScore.textContent = `✅ ${testCorrectCount}`;
                     testFeedback.textContent = '✓ 正确！';
@@ -1102,14 +1106,10 @@
                         testFeedback.textContent = '';
                         testFeedback.className = 'test-feedback';
                     }, 800);
-                    // 短暂延迟后换下一个
-                    setTimeout(() => {
-                        if (isTestMode) pickNewTestNote();
-                    }, 600);
+                    setTimeout(() => { if (currentMode === 'test') pickNewTestNote(); }, 600);
                 } else {
-                    // 错误
-                    recordFrequency(errorKeyName, pressedNote.index.toString(), 1)
-                    recordFrequency(errorKeyName, testCurrentNote.index.toString(), 1)
+                    recordFrequency(errorKeyName, pressedNote.index.toString(), 1);
+                    recordFrequency(errorKeyName, testCurrentNote.index.toString(), 1);
                     testFeedback.textContent = '✗ 再试一次';
                     testFeedback.className = 'test-feedback wrong';
                     if (testFeedbackTimeout) clearTimeout(testFeedbackTimeout);
@@ -1120,113 +1120,227 @@
                 }
             }
 
+            // ============ 曲谱模式逻辑 ============
+            function normalizeTarget(scoreEntry) {
+                const arr = Array.isArray(scoreEntry) ? scoreEntry : [scoreEntry];
+                return arr.sort((a, b) => a - b);
+            }
+
+            function updateScoreHighlight() {
+                // 清除所有高亮
+                keyPathElements.forEach(el => el.classList.remove('score-highlight'));
+                // 高亮目标键
+                targetIndices.forEach(idx => {
+                    if (keyPathElements[idx]) keyPathElements[idx].classList.add('score-highlight');
+                });
+            }
+
+            function updateScoreDisplay() {
+                const notes = targetIndices.map(i => noteData[i]);
+                const nameStr = notes.map(n => n.name).join('+');
+                scoreTarget.querySelector('.note-names').textContent = nameStr;
+
+                // 简谱显示（取第一个音符为代表）
+                const firstNote = notes[0];
+                const jianpuSpan = scoreTarget.querySelector('.jianpu-display');
+                const dotSpan = scoreTarget.querySelector('.dot-above');
+                jianpuSpan.childNodes.forEach(c => { if (c !== dotSpan) c.remove(); });
+                jianpuSpan.insertBefore(document.createTextNode(firstNote.jianpuNum), dotSpan || jianpuSpan.firstChild);
+                dotSpan.textContent = '·'.repeat(firstNote.dotsAbove);
+
+                scoreProgress.textContent = `${scoreIndex + 1}/${demoScore.length}`;
+                scoreFeedback.textContent = '';
+                scoreFeedback.className = 'score-feedback';
+            }
+
+            function advanceScore() {
+                if (scoreIndex < demoScore.length - 1) {
+                    scoreIndex++;
+                } else {
+                    // 循环或结束：这里选择循环到开头
+                    scoreIndex = 0;
+                }
+                targetIndices = normalizeTarget(demoScore[scoreIndex]);
+                updateScoreHighlight();
+                updateScoreDisplay();
+            }
+
+            function onScoreCorrect() {
+                // 正确反馈
+                scoreFeedback.textContent = '✓ 正确！';
+                scoreFeedback.className = 'score-feedback correct';
+                setTimeout(() => {
+                    if (currentMode === 'score') {
+                        scoreFeedback.textContent = '';
+                        scoreFeedback.className = 'score-feedback';
+                    }
+                }, 800);
+
+                // 设置等待释放状态
+                waitingForRelease = true;
+                canMatch = false;
+                matchingPointers = new Set(pointerKeyMap.keys());
+
+                // 前进到下一目标
+                advanceScore();
+            }
+
+            function onScoreInputChange() {
+                if (!canMatch || waitingForRelease) return;
+
+                // 检查当前按下集合是否等于目标集合
+                if (pressedIndices.size !== targetIndices.length) return;
+                const sortedPressed = [...pressedIndices].sort((a, b) => a - b);
+                if (sortedPressed.every((val, i) => val === targetIndices[i])) {
+                    onScoreCorrect();
+                }
+                // 按错无提示，静待修正
+            }
+
+            function enterScoreMode() {
+                if (currentMode === 'score') return;
+                // 退出其他模式
+                if (currentMode === 'test') exitTestMode();
+                currentMode = 'score';
+
+                // 初始化状态
+                scoreIndex = 0;
+                targetIndices = normalizeTarget(demoScore[scoreIndex]);
+                pressedIndices.clear();
+                waitingForRelease = false;
+                canMatch = true;
+                matchingPointers.clear();
+
+                // UI更新
+                kalimbaWrapper.classList.remove('test-mode-active');
+                scorePanel.classList.remove('hidden');
+                updateScoreHighlight();
+                updateScoreDisplay();
+                scoreModeBtn.classList.add('accent');
+            }
+
+            function exitScoreMode() {
+                currentMode = 'free';
+                scorePanel.classList.add('hidden');
+                // 清除高亮
+                keyPathElements.forEach(el => el.classList.remove('score-highlight'));
+                scoreModeBtn.classList.remove('accent');
+            }
+
+            // ============ 模式切换入口 ============
             function enterTestMode() {
-                isTestMode = true;
+                if (currentMode === 'test') return;
+                if (currentMode === 'score') exitScoreMode();
+                currentMode = 'test';
                 testCorrectCount = 0;
                 testCurrentNote = null;
                 kalimbaWrapper.classList.add('test-mode-active');
                 testPanel.classList.remove('hidden');
                 testToggleBtn.textContent = '退出测试';
+                testToggleBtn.classList.add('accent');
                 testFeedback.textContent = '';
                 testFeedback.className = 'test-feedback';
                 testScore.textContent = '✅ 0';
+                testModeBtn.classList.add('accent');
                 pickNewTestNote();
-                // 更新按钮样式
-                testToggleBtn.classList.add('accent');
             }
 
             function exitTestMode() {
-                isTestMode = false;
+                currentMode = 'free';
                 testCurrentNote = null;
                 kalimbaWrapper.classList.remove('test-mode-active');
                 testPanel.classList.add('hidden');
                 testFeedback.textContent = '';
                 testFeedback.className = 'test-feedback';
                 if (testFeedbackTimeout) clearTimeout(testFeedbackTimeout);
-                testToggleBtn.textContent = '测试模式';
+                testToggleBtn.textContent = '退出测试';
                 testToggleBtn.classList.remove('accent');
+                testModeBtn.classList.remove('accent');
             }
 
             function toggleTestMode() {
-                if (isTestMode) {
+                if (currentMode === 'test') {
                     exitTestMode();
                 } else {
                     enterTestMode();
                 }
             }
 
-            // 测试面板按钮
+            function toggleScoreMode() {
+                if (currentMode === 'score') {
+                    exitScoreMode();
+                } else {
+                    enterScoreMode();
+                }
+            }
+
             testToggleBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                toggleTestMode();
+                exitTestMode();
             });
 
-            // 也允许通过点击测试面板中的其他区域来不做操作
-            testPanel.addEventListener('pointerdown', (e) => {
+            scoreExitBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
+                exitScoreMode();
             });
 
-            // ============ 全屏模式 ============
+            testModeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (currentMode === 'test') {
+                    exitTestMode();
+                } else {
+                    enterTestMode();
+                }
+            });
+
+            scoreModeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (currentMode === 'score') {
+                    exitScoreMode();
+                } else {
+                    enterScoreMode();
+                }
+            });
+
+            // 面板阻止冒泡以免触发琴键
+            testPanel.addEventListener('pointerdown', e => e.stopPropagation());
+            scorePanel.addEventListener('pointerdown', e => e.stopPropagation());
+
+            // ============ 全屏 ============
             function isFullscreen() {
-                return !!(
-                    document.fullscreenElement ||
-                    document.webkitFullscreenElement ||
-                    document.msFullscreenElement
-                );
+                return !!(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement);
             }
 
             function enterFullscreen() {
                 const el = document.documentElement;
-                if (el.requestFullscreen) {
-                    el.requestFullscreen().catch(() => { });
-                } else if (el.webkitRequestFullscreen) {
-                    el.webkitRequestFullscreen();
-                } else if (el.msRequestFullscreen) {
-                    el.msRequestFullscreen();
-                }
+                if (el.requestFullscreen) el.requestFullscreen().catch(() => { });
+                else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+                else if (el.msRequestFullscreen) el.msRequestFullscreen();
             }
 
             function exitFullscreen() {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen().catch(() => { });
-                } else if (document.webkitExitFullscreen) {
-                    document.webkitExitFullscreen();
-                } else if (document.msExitFullscreen) {
-                    document.msExitFullscreen();
-                }
+                if (document.exitFullscreen) document.exitFullscreen().catch(() => { });
+                else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+                else if (document.msExitFullscreen) document.msExitFullscreen();
             }
 
             function toggleFullscreen() {
-                if (isFullscreen()) {
-                    exitFullscreen();
-                } else {
-                    enterFullscreen();
-                }
+                isFullscreen() ? exitFullscreen() : enterFullscreen();
+                // 全屏不再自动进入测试模式，保持当前模式
             }
 
             function updateFullscreenUI() {
                 const fs = isFullscreen();
-                if (fs) {
-                    document.body.classList.add('fullscreen-mode');
-                    fullscreenBtn.innerHTML = '⛶';
-                    fullscreenBtn.title = '退出全屏';
-                } else {
-                    document.body.classList.remove('fullscreen-mode');
-                    fullscreenBtn.innerHTML = '⛶';
-                    fullscreenBtn.title = '全屏模式（推荐横屏）';
-                }
+                document.body.classList.toggle('fullscreen-mode', fs);
+                fullscreenBtn.textContent = '⛶';
+                fullscreenBtn.title = fs ? '退出全屏' : '全屏模式（推荐横屏）';
             }
 
-            fullscreenBtn.addEventListener('click', (e) => {
+            fullscreenBtn.addEventListener('click', e => {
                 e.stopPropagation();
                 toggleFullscreen();
-                enterTestMode();
             });
-
-            fullscreenBtn.addEventListener('pointerdown', (e) => {
-                e.stopPropagation();
-            });
-
+            fullscreenBtn.addEventListener('pointerdown', e => e.stopPropagation());
             document.addEventListener('fullscreenchange', updateFullscreenUI);
             document.addEventListener('webkitfullscreenchange', updateFullscreenUI);
             document.addEventListener('msfullscreenchange', updateFullscreenUI);
@@ -1234,30 +1348,15 @@
 
             // ============ 键盘快捷键 ============
             document.addEventListener('keydown', (e) => {
-                // 按键映射：使用键盘模拟部分琴键（可选功能）
-                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target
-                    .isContentEditable) return;
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) return;
                 if (e.key === 't' || e.key === 'T') {
-                    // T键切换测试模式
-                    if (!e.ctrlKey && !e.metaKey && !e.altKey) {
-                        toggleTestMode();
-                    }
+                    if (!e.ctrlKey && !e.metaKey && !e.altKey) toggleTestMode();
+                } else if (e.key === 's' || e.key === 'S') {
+                    if (!e.ctrlKey && !e.metaKey && !e.altKey) toggleScoreMode();
                 } else if (e.key === 'f' || e.key === 'F') {
-                    // F键切换全屏
-                    if (!e.ctrlKey && !e.metaKey && !e.altKey) {
-                        toggleFullscreen();
-                    }
+                    if (!e.ctrlKey && !e.metaKey && !e.altKey) toggleFullscreen();
                 }
-                // 数字键1-7可以触发中间部分琴键（C4-B4）
-                const keyMap = {
-                    '1': 8,
-                    '2': 7,
-                    '3': 9,
-                    '4': 6,
-                    '5': 10,
-                    '6': 5,
-                    '7': 11
-                }; // 近似映射
+                const keyMap = { '1': 8, '2': 7, '3': 9, '4': 6, '5': 10, '6': 5, '7': 11 };
                 if (keyMap[e.key] !== undefined && !e.ctrlKey && !e.metaKey && !e.altKey) {
                     triggerNote(keyMap[e.key]);
                 }
@@ -1265,29 +1364,19 @@
 
             // ============ 初始化 ============
             function init() {
-                // 尝试预初始化音频上下文
-                try {
-                    getAudioContext();
-                } catch (e) {
-                    // 忽略
-                }
-
-                // 初始化统计数据模块, 给每个key默认添加1次, 避免出现异常数据
+                try { getAudioContext(); } catch (e) { }
+                // 初始化错误频率存储
                 for (let idx = 0; idx < noteData.length; idx++) {
-                    const e = noteData[idx];
-                    recordFrequency(errorKeyName, e.index.toString(), 1);
+                    recordFrequency(errorKeyName, noteData[idx].index.toString(), 1);
                 }
-  
-                randomArray = randomExtract(errorKeyName, 200);
-                console.log('随机抽取数据', randomArray);
+                randomArray = randomExtract(errorKeyName, randomArrayMaxLen);
+                // 默认模式为自由演奏，无面板
             }
 
             init();
 
-            // ============ 窗口大小变化时更新（响应式） ============
             function handleResize() {
                 updateFullscreenUI();
-                // 在横屏全屏时微调
                 const isLandscape = window.innerWidth > window.innerHeight;
                 if (isFullscreen() && isLandscape) {
                     kalimbaWrapper.style.maxWidth = '95vw';
@@ -1297,13 +1386,9 @@
                     kalimbaWrapper.style.maxWidth = '850px';
                 }
             }
-
             window.addEventListener('resize', handleResize);
-            window.addEventListener('orientationchange', () => {
-                setTimeout(handleResize, 300);
-            });
+            window.addEventListener('orientationchange', () => setTimeout(handleResize, 300));
             handleResize();
-
         })();
     </script>
 </body>
