@@ -2,3 +2,6 @@
 node_modules
 public
 db.json
+
+# Mac
+.DS_Store
