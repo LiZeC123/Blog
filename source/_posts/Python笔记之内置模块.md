@@ -17,59 +17,148 @@ cover_picture: images/python.jpg
 
 Python提供了一些重要的内置函数, 可以大致划分为如下的几组, 其中的大部分函数根据名称就可以了解含义, 因此在一个表中归纳, 少部分函数属于单独的模块, 因此在单独的表格中归纳.  所有的内置函数的详细信息可以使用Python的帮助系统, 或者查阅官方文档的[Built-in Functions](https://docs.python.org/3.6/library/functions.html)章节.
 
+以下是根据你原有内容及最新 Python 3 特性重写的完整文档，可直接替换博客原文。文档中所有函数均附**典型签名**与**简短说明**，并删除了无效的 `display`，补充了遗漏的常用内置函数。
 
-类型			| 方法
----------------|------------------------------------------------------------------------
-创建数据结构	| bytearray, dict, enumerate, frozenset, list, map, set, str, tuple
-数据类型转换    | complex, float, int, bool, bytes, bin, hex, oct
-数值计算		| min, max, pow, round, sum, divmod
-哈希值			| hash, id
-迭代器			| iter, next
-I/O操作         | input, open
-格式化			| display, format
-不常见方法		| memoryview, super, slice
+---
 
+### 类型工厂（创建对象）
 
-元操作函数               | 说明
-------------------------|-------------------------------------
-compile(source,file,m)	| 编译一个指定的文件
-eval() / exec()			| 将字符串视为语句或代码片段执行
-dir()					| 返回对象包含的全部名字
-type()					| 返回一个对象的类型
-repr()                  | 获得一个对象的可读的字符串
-globals()               | 获得当前状态下的所有全局变量
-locals()                | 获得当前作用域下的全部局部变量
+这些函数用于创建或转换数据类型。
 
-> 不建议修改globals和locals返回的变量, 这些修改可能是无效的
-
-
-序列操作函数             | 说明
-------------------------|----------------------------------------------------------
-range(start,end,step)   | 产生一个包含start,不包含end的序列, 步长为step
-reversed(seq)			| 产生一个反序的迭代器对象
-sorted()				| 对给定的列表排序
-filter(func,iter)		| 接受一个函数与一个可迭代对象, 产生一个过滤后的可迭代对象
-map(func,iter)			| 接受一个函数与一个可迭代对象, 执行map操作
-zip()                   | 将多个序列的对应元素打包成一个元组, 返回这些元组构成的列表
+| 函数        | 典型签名                                         | 说明                                  |
+| ----------- | ------------------------------------------------ | ------------------------------------- |
+| `bytearray` | `bytearray([source[, encoding[, errors]]])`      | 返回一个可变的字节序列                |
+| `bytes`     | `bytes([source[, encoding[, errors]]])`          | 返回一个不可变的字节序列              |
+| `dict`      | `dict(**kwargs)` 或 `dict(mapping, **kwargs)`    | 创建字典                              |
+| `frozenset` | `frozenset([iterable])`                          | 创建不可变集合                        |
+| `list`      | `list([iterable])`                               | 创建列表                              |
+| `set`       | `set([iterable])`                                | 创建集合                              |
+| `str`       | `str(object='')` 或 `str(b'', encoding='utf-8')` | 创建字符串                            |
+| `tuple`     | `tuple([iterable])`                              | 创建元组                              |
+| `bool`      | `bool([x])`                                      | 将 `x` 转换为布尔值（`True`/`False`） |
+| `int`       | `int([x], base=10)`                              | 将数字或字符串转换为整数              |
+| `float`     | `float([x])`                                     | 将数字或字符串转换为浮点数            |
+| `complex`   | `complex([real[, imag]])`                        | 创建复数                              |
+| `bin`       | `bin(x)`                                         | 整数转二进制字符串（如 `'0b101'`）    |
+| `hex`       | `hex(x)`                                         | 整数转十六进制字符串（如 `'0xff'`）   |
+| `oct`       | `oct(x)`                                         | 整数转八进制字符串（如 `'0o77'`）     |
+| `chr`       | `chr(i)`                                         | 将 Unicode 码位（整数）转换为字符     |
+| `ord`       | `ord(c)`                                         | 将字符转换为 Unicode 码位（整数）     |
 
 
-反射操作函数     | 说明
-----------------|----------------------------------------------------------
-hasattr         | 判断一个对象是否具有指定的属性
-getattr         | `getattr(x,'y')` 等价于 `x.y`
-setattr         | 对指定对象的指定属性进行赋值
-delattr         | `delattr(x, 'y')` 等价于 `del x.y`
-isinstance      | 判断**一个对象**是否指某个类型的实例
-issubclass      | 判断**一个类**是否是某个类型的子类
+### 迭代器与可迭代对象处理
+
+这些函数用于操作迭代器、生成惰性序列或处理可迭代对象。
+
+| 函数        | 典型签名                                      | 说明                                                                                   |
+| ----------- | --------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `enumerate` | `enumerate(iterable, start=0)`                | 返回一个迭代器，产生 `(index, element)` 元组                                           |
+| `map`       | `map(func, *iterables)`                       | 将 `func` 应用于每个元素并返回迭代器（Python 3 中不再返回列表）                        |
+| `filter`    | `filter(function, iterable)`                  | 返回使 `function` 为真的元素迭代器；若 `function` 为 `None`，则过滤掉假值              |
+| `zip`       | `zip(*iterables, strict=False)`               | 聚合各可迭代对象中的对应元素为元组迭代器；`strict=True` 时要求长度相等（Python 3.10+） |
+| `range`     | `range(stop)` 或 `range(start, stop[, step])` | 返回一个不可变的等差数列对象（惰性，Python 3 中不再返回列表）                          |
+| `reversed`  | `reversed(seq)`                               | 返回反向迭代器，要求 `seq` 支持 `__reversed__()` 或序列协议                            |
+| `iter`      | `iter(object[, sentinel])`                    | 从可迭代对象获取迭代器；若提供 `sentinel`，则反复调用 `object` 直至返回 `sentinel`     |
+| `next`      | `next(iterator[, default])`                   | 返回迭代器的下一项；若耗尽且提供了 `default`，则返回它，否则抛出 `StopIteration`       |
+| `slice`     | `slice(stop)` 或 `slice(start, stop[, step])` | 创建一个切片对象，可用于自定义类的索引操作                                             |
 
 
-装饰器函数       | 说明
-----------------|-----------------------
-classmethod     | 将函数装饰为类方法
-property        | 将函数装饰为一个只读字段(直接访问函数名获得值)
-staticmethod    | 将函数装饰为静态方法
+### 数值与序列计算
 
-> 注意: Java等语言中的类方法在Python中对应的概念是静态方法, 而不是类方法
+这些函数用于数学计算、聚合或比较。
+
+| 函数     | 典型签名                                                              | 说明                                                              |
+| -------- | --------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| `min`    | `min(iterable, *[, key, default])`<br>`min(arg1, arg2, *args[, key])` | 返回最小值；可指定 `key` 函数和 `default`（避免空可迭代对象异常） |
+| `max`    | 同上                                                                  | 返回最大值                                                        |
+| `sum`    | `sum(iterable, /, start=0)`                                           | 对可迭代对象求和，可以加 `start` 初始值                           |
+| `pow`    | `pow(base, exp[, mod])`                                               | 计算 `base` 的 `exp` 次幂；若提供 `mod`，则计算模幂（效率更高）   |
+| `round`  | `round(number[, ndigits])`                                            | 四舍五入到指定小数位（**银行家舍入**：.5 时向偶数取整）           |
+| `divmod` | `divmod(a, b)`                                                        | 返回 `(a // b, a % b)` 元组                                       |
+| `abs`    | `abs(x)`                                                              | 返回绝对值                                                        |
+| `len`    | `len(s)`                                                              | 返回对象长度（元素个数）                                          |
+| `sorted` | `sorted(iterable, *, key=None, reverse=False)`                        | 返回一个已排序的**新列表**（不修改原可迭代对象）                  |
+| `all`    | `all(iterable)`                                                       | 若所有元素均为真（或可迭代对象为空），返回 `True`                 |
+| `any`    | `any(iterable)`                                                       | 若任一元素为真，返回 `True`；空可迭代对象返回 `False`             |
+
+
+### 内省与反射
+
+这些函数用于在运行时检查对象类型、属性、变量等。
+
+| 函数         | 典型签名                                    | 说明                                                          |
+| ------------ | ------------------------------------------- | ------------------------------------------------------------- |
+| `type`       | `type(object)`<br>`type(name, bases, dict)` | 返回对象的类型；也可动态创建新类                              |
+| `isinstance` | `isinstance(obj, classinfo)`                | 判断 `obj` 是否为 `classinfo`（可以是元组）的实例             |
+| `issubclass` | `issubclass(cls, classinfo)`                | 判断 `cls` 是否为 `classinfo` 的子类                          |
+| `hasattr`    | `hasattr(obj, name)`                        | 判断对象是否有指定属性                                        |
+| `getattr`    | `getattr(obj, name[, default])`             | 获取属性值；若不存在且未提供 `default`，抛出 `AttributeError` |
+| `setattr`    | `setattr(obj, name, value)`                 | 设置对象属性值                                                |
+| `delattr`    | `delattr(obj, name)`                        | 删除对象属性，等价于 `del obj.name`                           |
+| `dir`        | `dir([object])`                             | 返回对象的所有属性名称列表；无参数时返回当前作用域中的名称    |
+| `vars`       | `vars([object])`                            | 返回对象的 `__dict__` 属性；无参数时返回当前局部变量字典      |
+| `globals`    | `globals()`                                 | 返回当前全局符号表的字典（**不建议修改**内部变量）            |
+| `locals`     | `locals()`                                  | 返回当前局部符号表的字典（在函数内部修改该字典通常无效）      |
+| `id`         | `id(object)`                                | 返回对象的唯一标识（通常是内存地址）                          |
+| `hash`       | `hash(object)`                              | 返回对象的哈希值（要求对象不可变）                            |
+| `callable`   | `callable(object)`                          | 判断对象是否可调用（如函数、类、实现了 `__call__` 的对象）    |
+
+### 动态代码执行与编译
+
+这些函数用于动态编译、执行或求值 Python 代码。
+
+| 函数      | 典型签名                                                           | 说明                                                                        |
+| --------- | ------------------------------------------------------------------ | --------------------------------------------------------------------------- |
+| `compile` | `compile(source, filename, mode, flags=0, ...)`                    | 将源码编译为代码对象或 AST 对象；`mode` 可为 `'exec'`、`'eval'`、`'single'` |
+| `eval`    | `eval(expression[, globals[, locals]])`                            | 求值一个表达式（如 `'3+5'`）并返回结果；不能执行语句                        |
+| `exec`    | `exec(object[, globals[, locals]])`                                | 动态执行 Python 代码（语句或代码块），**无返回值**（或返回 `None`）         |
+| `repr`    | `repr(object)`                                                     | 返回对象的“官方”字符串表示，通常可用于 `eval()` 重新创建该对象              |
+| `ascii`   | `ascii(object)`                                                    | 类似 `repr()`，但将非 ASCII 字符转义为 `\uxxxx` 形式                        |
+| `print`   | `print(*objects, sep=' ', end='\n', file=sys.stdout, flush=False)` | 打印对象，可指定分隔符、结束符、输出文件和是否刷新缓冲区                    |
+| `input`   | `input([prompt])`                                                  | 从标准输入读取一行字符串（Python 3 中不会自动 `eval`）                      |
+
+> **安全警告**：`eval()` 和 `exec()` 可以执行任意代码，切勿用于处理未信任的用户输入！
+
+
+### 输入输出与对象序列化
+
+这些函数用于文件操作、内存视图和特殊对象支持。
+
+| 函数           | 典型签名                                                                                                  | 说明                                                                                |
+| -------------- | --------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `open`         | `open(file, mode='r', buffering=-1, encoding=None, errors=None, newline=None, closefd=True, opener=None)` | 打开文件并返回文件对象；建议明确指定 `encoding` 参数（如 `'utf-8'`）                |
+| `memoryview`   | `memoryview(obj)`                                                                                         | 创建一个内存视图对象，用于零拷贝访问支持缓冲区协议的对象（如 `bytes`、`bytearray`） |
+| `super`        | `super([type[, object-or-type]])`                                                                         | 返回一个代理对象，用于调用父类的方法（Python 3 中可无参数调用，自动推断类和实例）   |
+| `property`     | `property(fget=None, fset=None, fdel=None, doc=None)`                                                     | 创建属性，支持装饰器用法（`@property`、`@方法名.setter`）                           |
+| `classmethod`  | `classmethod(function)`                                                                                   | 将方法转换为类方法，第一个参数为 `cls`（类本身）                                    |
+| `staticmethod` | `staticmethod(function)`                                                                                  | 将方法转换为静态方法，无特殊隐式参数                                                |
+| `breakpoint`   | `breakpoint(*args, **kws)`                                                                                | 进入调试器（Python 3.7+），默认调用 `pdb.set_trace()`                               |
+| `help`         | `help([object])`                                                                                          | 启动内置帮助系统，或输出对象的帮助信息                                              |
+
+---
+
+### 装饰器与描述符
+
+- **`classmethod`** 和 **`staticmethod`** 常用于定义不需要实例（或只需要类）的方法。
+- **`property`** 可将方法转换为属性访问，实现 getter/setter。
+- 三者均可作为装饰器使用，例如：
+
+```python
+class MyClass:
+    @classmethod
+    def factory(cls):
+        return cls()
+    
+    @staticmethod
+    def helper():
+        return 42
+    
+    @property
+    def value(self):
+        return self._value
+```
+
+
 
 
 
@@ -155,12 +244,12 @@ Python文件处理
 
 ### 编码与解码
 
-函数		| 作用
-------------|-------------------------------
-ord() 		| 将字符转化为对于的ASCII码
-chr()       | 将数组转化为对于的字符
-str.encode	| 将字符串以指定的编码转化为bytes
-bytes.decode| 将字节数组以指定的编码转化为文字
+| 函数         | 作用                             |
+| ------------ | -------------------------------- |
+| ord()        | 将字符转化为对于的ASCII码        |
+| chr()        | 将数组转化为对于的字符           |
+| str.encode   | 将字符串以指定的编码转化为bytes  |
+| bytes.decode | 将字节数组以指定的编码转化为文字 |
 
 
 Python 3中默认使用UTF8进行编码, 但是也可以将字符串转化为其他编码的字节数组. 例如同样的文字, 使用不同的编码方案, 可以转化为不同的字节数组:
@@ -180,16 +269,16 @@ Python 3中默认使用UTF8进行编码, 但是也可以将字符串转化为其
 
 使用参数与C基本相同,其中buffering为0表示不缓冲, -1为使用系统指定的缓冲区大小, 如果为正值, 则为正值指定的缓冲区大小
 
-方法			| 作用
-----------------|-------------------------------------------------------------------
-open()			| 打开一个文件, 返回一个文件对象
-f.read(size)	| 不使用参数则返回包含整个文件内容的字符串, 否则返回指定字节的数据
-f.readline()	| 返回文件下一行的内容
-f.readlines()	| 返回整个文件内容的列表, 每项是以换行符结尾的字符串
-f.write()		| 把数据写入文件, 接受的对象是字符串, 可以使用str（）转换
-f.writelines() 	| 接受一个列表, 将其写入文件中
-f.seek()		| 文件指针偏移操作
-f.close()		| 关闭文件
+| 方法           | 作用                                                             |
+| -------------- | ---------------------------------------------------------------- |
+| open()         | 打开一个文件, 返回一个文件对象                                   |
+| f.read(size)   | 不使用参数则返回包含整个文件内容的字符串, 否则返回指定字节的数据 |
+| f.readline()   | 返回文件下一行的内容                                             |
+| f.readlines()  | 返回整个文件内容的列表, 每项是以换行符结尾的字符串               |
+| f.write()      | 把数据写入文件, 接受的对象是字符串, 可以使用str（）转换          |
+| f.writelines() | 接受一个列表, 将其写入文件中                                     |
+| f.seek()       | 文件指针偏移操作                                                 |
+| f.close()      | 关闭文件                                                         |
 
 从提供的API来看, Python的文件操作与各种编程语言并没有太大的区别. 根据文档, open函数返回的是一个基于缓冲IO的`TextIOWrapper`, 因此开启文件时除了可以指定文件读取类型, 还可以指定缓冲区大小.
 
@@ -438,32 +527,32 @@ Python OS编程
 
 ### 使用os库
 
-方法			| 操作
-----------------|--------------------------
-getcwd()		| 获得当前工作目录
-listdir(path)	| 返回指定目录下所有的文件和目录名
-remove()		| 删除一个文件
-removedirs(path)| 删除多个文件
-chdir(path)		| 更改当前目录到指定目录
-mkdir(path)		| 新建一个目录
-rmdir(name)		| 删除目录
-rename(old,new)	| 更改文件名
+| 方法             | 操作                             |
+| ---------------- | -------------------------------- |
+| getcwd()         | 获得当前工作目录                 |
+| listdir(path)    | 返回指定目录下所有的文件和目录名 |
+| remove()         | 删除一个文件                     |
+| removedirs(path) | 删除多个文件                     |
+| chdir(path)      | 更改当前目录到指定目录           |
+| mkdir(path)      | 新建一个目录                     |
+| rmdir(name)      | 删除目录                         |
+| rename(old,new)  | 更改文件名                       |
 
 ### 使用os.path库
 
 os.path是os的一个字库, 主要负责与路径相关的操作
 
-方法			| 作用
-----------------|----------------------------------------------------------
-isfile()		| 检验路径是否是一个文件
-isdir()			| 检验路径是否是一个目录
-exists()		| 判断路径是否存在
-splitext()		| 分离扩展名（返回一个二元组, 分别包含文件名和扩展名）
-split()			| 返回一个路径的目录名和文件名
-dirname()		| 获得路径名
-basename()		| 获得文件名
-getsize()		| 获得文件大小, 单位是字节
-join(path,name)	| 将路径与文件名组合获得绝对路径
+| 方法            | 作用                                                 |
+| --------------- | ---------------------------------------------------- |
+| isfile()        | 检验路径是否是一个文件                               |
+| isdir()         | 检验路径是否是一个目录                               |
+| exists()        | 判断路径是否存在                                     |
+| splitext()      | 分离扩展名（返回一个二元组, 分别包含文件名和扩展名） |
+| split()         | 返回一个路径的目录名和文件名                         |
+| dirname()       | 获得路径名                                           |
+| basename()      | 获得文件名                                           |
+| getsize()       | 获得文件大小, 单位是字节                             |
+| join(path,name) | 将路径与文件名组合获得绝对路径                       |
 
 
 ### 遍历目录
@@ -552,12 +641,12 @@ Python事件调度
 
 Python提供了sched库来实现事件调度有关的操作, sched内部维护一个事件队列, 可以安全的在多线程场景下使用. 以下是一些主要的方法
 
-方法			| 作用
-----------------|--------------------------
-scheduler()		| 创建一个调度任务对象
-enter()			| 加入一个事件
-run()			| 运行调度任务中的全部调度事件
-cancel()		| 取消某个调度事件
+| 方法        | 作用                         |
+| ----------- | ---------------------------- |
+| scheduler() | 创建一个调度任务对象         |
+| enter()     | 加入一个事件                 |
+| run()       | 运行调度任务中的全部调度事件 |
+| cancel()    | 取消某个调度事件             |
 
 以下代码演示sched的基本使用, 如果需要更详细的内容, 可以查阅标准库的文档
 
@@ -591,14 +680,14 @@ Turtle
 
 Turtle是一个Python内置的绘图库, 通过Turtle可以绘制简单的线条. 一些主要的方法如下所示
 
-方法					| 含义
-------------------------|-----------------------------------------------------------------------------
-Tultle()				| 定义一个turtle对象, 该对象可以使用turtle的相关函数
-setup(high,wide,x,y)	| 指定窗口的高和长, 并指定窗口左上角的坐标在屏幕上的坐标
-seth(angle)				| 指定运动的方向, 其中angle为角度制, 数值与方向与数学定义相同
-pensize(x)				| 指定运动轨迹的粗细, x为像素单位
-circle(rad,angle)		| 圆形运动, rad正值表示圆心在左侧, 负值表示圆心在右侧, angle表示爬行的角度的角度值
-turtle.fd(x)			| 向前爬行, x表示爬行距离
+| 方法                 | 含义                                                                             |
+| -------------------- | -------------------------------------------------------------------------------- |
+| Tultle()             | 定义一个turtle对象, 该对象可以使用turtle的相关函数                               |
+| setup(high,wide,x,y) | 指定窗口的高和长, 并指定窗口左上角的坐标在屏幕上的坐标                           |
+| seth(angle)          | 指定运动的方向, 其中angle为角度制, 数值与方向与数学定义相同                      |
+| pensize(x)           | 指定运动轨迹的粗细, x为像素单位                                                  |
+| circle(rad,angle)    | 圆形运动, rad正值表示圆心在左侧, 负值表示圆心在右侧, angle表示爬行的角度的角度值 |
+| turtle.fd(x)         | 向前爬行, x表示爬行距离                                                          |
 
 
 
