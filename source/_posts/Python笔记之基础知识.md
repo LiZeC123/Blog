@@ -604,6 +604,17 @@ def spam():
 - [第九章：元编程](https://python3-cookbook.readthedocs.io/zh_CN/latest/chapters/p09_meta_programming.html)
 
 
+### 标记废弃
+
+可以使用装饰器将一个类或者函数标记为废弃, 例如
+
+```py
+@warnings.deprecated("Use MemoryDetail instead")
+class Memory(Base):
+```
+
+在VsCode等IDE中会识别此标记, 并添加删除线效果.
+
 类型注解
 ----------------
 
