@@ -1000,9 +1000,10 @@ ffmpeg -i input_audio.ext -t 300 -c copy output_clip.ext
 
 
 ```bash
-ffmpeg -i input.mp4 -ss 00:00:10 -to 00:00:30 -c copy -avoid_negative_ts make_zero output.mp4
+ffmpeg -ss 00:00:10 -to 00:00:30 -i input.mp4  -c copy -avoid_negative_ts make_zero output.mp4
 ```
 
+> 注意: 先使用-ss参数可以使ffmpeg先按照时间跳过前面视频的解析, 从最接近指定位置的关键帧开始切割. 对于比较靠后或者码率较大的视频, 可以节约大量时间. 缺点是可能截取的位置不精确.
 
 ### 合并多个文件
 
