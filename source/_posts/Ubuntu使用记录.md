@@ -936,10 +936,14 @@ ffmpeg -i input.mp4  -c:v libx265 -preset medium -crf 26 -c:a copy output_1080p.
 
 基于质量因子的方法难以预估最终文件的体积大小, 而采用基于码率的方法则可以较为准确的评估. 例如假设视频当前的码率为`6000kb/s`, 其占用的空间为8GB, 则使用相同编码进行转码, 控制码率为`3000kb/s`, 则最终文件体积一定会在4GB左右.
 
-使用如下指令可将一个给定的视频码率调整为h265格式且码率为`2500kb/s`
+使用如下指令可将给定的视频码率调整为h265格式且码率为`2500kb/s`
 
 ```bash
+# CPU设备推荐H265格式
 ffmpeg -i input.mp4 -c:v libx265 -b:v 2500k -c:a copy output.mp4
+
+# NVIDIA显卡设备推荐AV1格式
+ffmpeg -i input.mp4 -c:v av1_nvenc -b:v 2000k -c:a copy output.mp4
 ```
 
 通常情况下, 对于如下的几种常见编码格式, 可以使用如下的码率
