@@ -317,11 +317,22 @@
             }
 
             // 获取牛头表情 (每隔三天出现一次, 从2026-03-29含当天开始)
+            // 牛按照 空白 月亮 太阳 循环
             function getOxEmoji(year, month, day) {
                 const diff = getDaysDiffFromBase(year, month, day);
-                if (diff >= 0 && diff % 3 === 0) {
-                    return "🐮";
+                if (diff < 0) {
+                    return ""
                 }
+
+                mod = diff % 9
+                if (mod == 0) {
+                    return "🐮"
+                } else if (mod == 3) {
+                    return "🐮🌙"
+                } else if (mod == 6) {
+                    return "🐮🌞"
+                }
+
                 return "";
             }
 
