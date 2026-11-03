@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>配置文件差异对比</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100%;
+            display: flex;
+            flex-direction: column;
+            font-family: -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+            background: #f5f6f8;
+            color: #24292f;
+        }
+
+        header {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            padding: 10px 16px;
+            background: #fff;
+            border-bottom: 1px solid #d8dee4;
+        }
+
+        header h1 {
+            font-size: 15px;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .actions {
+            margin-left: auto;
+            display: flex;
+            gap: 8px;
+        }
+
+        button {
+            font-size: 13px;
+            padding: 5px 14px;
+            border-radius: 6px;
+            border: 1px solid #d0d7de;
+            background: #f6f8fa;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #eef1f4;
+        }
+
+        .inputs {
+            flex: 0 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+            background: #d8dee4;
+        }
+
+        .inputs>div {
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .inputs label {
+            padding: 5px 10px;
+            font-size: 12px;
+            color: #57606a;
+            background: #f5f6f8;
+        }
+
+        textarea {
+            width: 100%;
+            height: 380px;
+            padding: 8px 10px;
+            border: 0;
+            resize: vertical;
+            outline: none;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: 13px;
+            line-height: 1.55;
+            tab-size: 4;
+        }
+
+        .result-wrap {
+            flex: 1 1 auto;
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            border-top: 1px solid #d8dee4;
+            background: #fff;
+        }
+
+        .result-head {
+            flex: 0 0 auto;
+            padding: 5px 14px;
+            font-size: 12px;
+            color: #57606a;
+            background: #f5f6f8;
+            border-bottom: 1px solid #d8dee4;
+        }
+
+        .result {
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow: auto;
+            padding: 6px 0;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            tab-size: 4;
+        }
+
+        .line {
+            display: flex;
+            min-height: 1.6em;
+        }
+
+        .line .mark {
+            flex: 0 0 28px;
+            text-align: center;
+            user-select: none;
+            color: #afb8c1;
+        }
+
+        .line .content {
+            flex: 1 1 auto;
+            padding-right: 14px;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .line.del {
+            background: #ffebe9;
+        }
+
+        .line.del .mark {
+            color: #cf222e;
+        }
+
+        .line.ins {
+            background: #e6ffec;
+        }
+
+        .line.ins .mark {
+            color: #1a7f37;
+        }
+
+        .hl-del {
+            background: #ffc1c0;
+            border-radius: 2px;
+        }
+
+        .hl-ins {
+            background: #abf2bc;
+            border-radius: 2px;
+        }
+
+        .empty {
+            padding: 36px 16px;
+            text-align: center;
+            color: #8c959f;
+            font-size: 14px;
+        }
+
+        @media (max-width: 700px) {
+            .inputs {
+                grid-template-columns: 1fr;
+            }
+
+            textarea {
+                height: 240px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>配置文件差异对比</h1>
+        <div class="actions">
+            <button id="clear">清空</button>
+        </div>
+    </header>
+
+    <div class="inputs">
+        <div>
+            <label>文本 A（原始）</label>
+            <textarea id="left" spellcheck="false" placeholder="粘贴原始配置..."></textarea>
+        </div>
+        <div>
+            <label>文本 B（对比）</label>
+            <textarea id="right" spellcheck="false" placeholder="粘贴新配置..."></textarea>
+        </div>
+    </div>
+
+    <div class="result-wrap">
+        <div class="result-head"><span id="stat">粘贴两段文本后将自动对比</span></div>
+        <div class="result" id="result">
+            <div class="empty">粘贴两段文本后将自动对比</div>
+        </div>
+    </div>
+
+    <!-- 主 CDN；若加载失败，脚本会自动从 jsDelivr 补加载 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/diff_match_patch/20121119/diff_match_patch.js"></script>
+    <script>
+        (function () {
+            'use strict';
+
+            var leftEl = document.getElementById('left');
+            var rightEl = document.getElementById('right');
+            var resultEl = document.getElementById('result');
+            var statEl = document.getElementById('stat');
+
+            var INITIAL_TIP = '粘贴两段文本后将自动对比';
+            var WAIT_TIP = '等待另一侧输入内容…';
+            var DEBOUNCE_MS = 200;
+
+            var dmp = null;
+            var dmpPromise = null;
+            var timer = null;
+
+            /* ---------- 依赖加载 ---------- */
+
+            function ensureDMP() {
+                if (typeof diff_match_patch !== 'undefined') {
+                    if (!dmp) dmp = new diff_match_patch();
+                    return Promise.resolve();
+                }
+                if (dmpPromise) return dmpPromise;
+
+                dmpPromise = new Promise(function (resolve, reject) {
+                    var s = document.createElement('script');
+                    s.src = 'https://cdn.jsdelivr.net/npm/diff-match-patch@1.0.5/index.js';
+                    s.onload = function () {
+                        dmp = new diff_match_patch();
+                        resolve();
+                    };
+                    s.onerror = function () {
+                        dmpPromise = null;
+                        reject(new Error('diff 库加载失败'));
+                    };
+                    document.head.appendChild(s);
+                });
+                return dmpPromise;
+            }
+
+            /* ---------- 工具 ---------- */
+
+            function escapeHtml(s) {
+                return s.replace(/[&<>"']/g, function (c) {
+                    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+                });
+            }
+
+            // 按行拆分，同时去掉末尾换行产生的空元素
+            function splitLines(text) {
+                if (text === '') return [];
+                var lines = text.split('\n');
+                if (lines.length > 1 && lines[lines.length - 1] === '') lines.pop();
+                return lines;
+            }
+
+            /* ---------- diff 计算 ---------- */
+
+            // 行级 diff：把每一行映射成一个字符再比较，避免字符级碎片
+            function lineDiff(text1, text2) {
+                var a = dmp.diff_linesToChars_(text1, text2);
+                var diffs = dmp.diff_main(a.chars1, a.chars2, false);
+                dmp.diff_charsToLines_(diffs, a.lineArray);
+                return diffs;
+            }
+
+            // 对一对删除/新增行做字符级 diff，返回两侧的 HTML
+            function inlineDiff(oldLine, newLine) {
+                var sub = dmp.diff_main(oldLine, newLine);
+                dmp.diff_cleanupSemantic(sub);
+
+                var delHtml = '', insHtml = '';
+                for (var i = 0; i < sub.length; i++) {
+                    var op = sub[i][0];
+                    var e = escapeHtml(sub[i][1]);
+                    if (op === 0) {
+                        delHtml += e;
+                        insHtml += e;
+                    } else if (op === -1) {
+                        delHtml += '<span class="hl-del">' + e + '</span>';
+                    } else {
+                        insHtml += '<span class="hl-ins">' + e + '</span>';
+                    }
+                }
+                return { delHtml: delHtml, insHtml: insHtml };
+            }
+
+            /* ---------- 组装渲染数据 ---------- */
+
+            function buildParts(diffs) {
+                var parts = [];
+                var stats = { add: 0, del: 0 };
+                var i = 0;
+
+                while (i < diffs.length) {
+                    if (diffs[i][0] === 0) {
+                        var eqLines = splitLines(diffs[i][1]);
+                        for (var e = 0; e < eqLines.length; e++) {
+                            parts.push({ type: 'eq', html: escapeHtml(eqLines[e]) });
+                        }
+                        i++;
+                        continue;
+                    }
+
+                    // 收集连续的删除行
+                    var delLines = [];
+                    while (i < diffs.length && diffs[i][0] === -1) {
+                        delLines = delLines.concat(splitLines(diffs[i][1]));
+                        i++;
+                    }
+                    // 收集紧随其后的新增行
+                    var insLines = [];
+                    while (i < diffs.length && diffs[i][0] === 1) {
+                        insLines = insLines.concat(splitLines(diffs[i][1]));
+                        i++;
+                    }
+
+                    // 能配对的行做行内字符级高亮，配不上的整行高亮
+                    var paired = Math.min(delLines.length, insLines.length);
+                    for (var k = 0; k < paired; k++) {
+                        var r = inlineDiff(delLines[k], insLines[k]);
+                        parts.push({ type: 'del', html: r.delHtml });
+                        parts.push({ type: 'ins', html: r.insHtml });
+                    }
+                    for (var d = paired; d < delLines.length; d++) {
+                        parts.push({ type: 'del', html: escapeHtml(delLines[d]) });
+                    }
+                    for (var n = paired; n < insLines.length; n++) {
+                        parts.push({ type: 'ins', html: escapeHtml(insLines[n]) });
+                    }
+
+                    stats.del += delLines.length;
+                    stats.add += insLines.length;
+                }
+
+                return { parts: parts, stats: stats };
+            }
+
+            /* ---------- 渲染 ---------- */
+
+            function showMessage(msg) {
+                resultEl.innerHTML = '<div class="empty">' + escapeHtml(msg) + '</div>';
+                statEl.textContent = msg;
+            }
+
+            function renderParts(parts) {
+                var frag = document.createDocumentFragment();
+                parts.forEach(function (p) {
+                    var div = document.createElement('div');
+                    div.className = 'line ' + p.type;
+                    var mark = p.type === 'del' ? '−' : (p.type === 'ins' ? '+' : '');
+                    div.innerHTML =
+                        '<span class="mark">' + mark + '</span>' +
+                        '<span class="content">' + p.html + '</span>';
+                    frag.appendChild(div);
+                });
+                resultEl.innerHTML = '';
+                resultEl.appendChild(frag);
+            }
+
+            /* ---------- 自动比对 ---------- */
+
+            function autoCompare() {
+                var t1 = leftEl.value;
+                var t2 = rightEl.value;
+
+                if (t1 === '' && t2 === '') {
+                    showMessage(INITIAL_TIP);
+                    return;
+                }
+                if (t1 === '' || t2 === '') {
+                    showMessage(WAIT_TIP);
+                    return;
+                }
+
+                ensureDMP().then(function () {
+                    // 异步加载期间文本可能又变了，重新读取最新值
+                    var a = leftEl.value;
+                    var b = rightEl.value;
+                    if (a === '' || b === '') return; // 已被清空，交给后续 input 事件处理
+
+                    var built = buildParts(lineDiff(a, b));
+                    if (!built.parts.length) {
+                        showMessage(INITIAL_TIP);
+                        return;
+                    }
+
+                    renderParts(built.parts);
+
+                    if (built.stats.add === 0 && built.stats.del === 0) {
+                        statEl.textContent = '两个文本完全一致';
+                    } else {
+                        statEl.textContent =
+                            '新增 ' + built.stats.add + ' 行，删除 ' + built.stats.del + ' 行';
+                    }
+                }).catch(function () {
+                    showMessage('差异库加载失败，请检查网络后重试');
+                });
+            }
+
+            function scheduleCompare() {
+                clearTimeout(timer);
+                timer = setTimeout(autoCompare, DEBOUNCE_MS);
+            }
+
+            /* ---------- 事件 ---------- */
+
+            leftEl.addEventListener('input', scheduleCompare);
+            rightEl.addEventListener('input', scheduleCompare);
+
+            document.getElementById('clear').addEventListener('click', function () {
+                clearTimeout(timer);
+                leftEl.value = '';
+                rightEl.value = '';
+                showMessage(INITIAL_TIP);
+                leftEl.focus();
+            });
+
+            // 保留 Ctrl/Cmd+Enter：跳过防抖立即比对
+            document.addEventListener('keydown', function (e) {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                    e.preventDefault();
+                    clearTimeout(timer);
+                    autoCompare();
+                }
+            });
+        })();
+    </script>
+</body>
+
+</html>
