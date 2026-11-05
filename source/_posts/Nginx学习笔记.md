@@ -153,3 +153,44 @@ Nginx可反向代理某个特定网站(例如Google), 其原理和请求转换�
 - [Nginx反向代理Gοοgle | 若水斋](https://blog.werner.wiki/nginx-reverse-proxy-google/)
 
 > 对于仅想使用Google或者Wikipedia的场景, 使用此方法更加简单可控
+
+
+配置基础认证
+-------------
+
+某些web项目如果希望配置成需要用户名和密码才能访问, 则可以启用Nginx的认证功能, 核心配置如下
+
+```conf
+server {
+    listen 80;
+    server_name your_domain.com; # 替换为你的域名或IP
+
+    location / {
+        # 1. 反向代理的核心配置
+        proxy_pass http://your_backend_server; # 替换为你的后端地址，如 http://127.0.0.1:8080
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+        # 2. 基础身份认证配置
+        auth_basic "Restricted Access";        # 认证提示信息，会显示在浏览器的登录框中
+        auth_basic_user_file /etc/nginx/.htpasswd; # 指向你创建的密码文件
+    }
+}
+```
+
+密码文件可以使用专门的工具生成, 执行
+
+```sh
+sudo apt install apache2-utils -y
+
+# 创建新文件并添加第一个用户，-c 表示创建，会提示输入密码
+sudo htpasswd -c /etc/nginx/.htpasswd your_username
+
+# 之后若要添加更多用户，请省略 -c 参数
+sudo htpasswd /etc/nginx/.htpasswd another_user
+```
+
+完成以上配置后, 浏览器第一次访问页面会受到403, 弹出页面要求输入用户名和密码. 此后该域名下的所有请求浏览器会以base64的方式将用户名和密码发送给服务器, 从而自动的完成校验功能.
+
+由于以明文传输密码, 因此网站需要启用HTTPS. 
