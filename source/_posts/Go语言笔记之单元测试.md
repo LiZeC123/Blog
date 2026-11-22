@@ -41,6 +41,14 @@ go test -v
 go test -run TestFunction
 ```
 
+如果需要执行一个项目下所有的测试用例, 可以在项目的根目录执行
+
+```bash
+go test ./...
+```
+
+
+
 
 基准测试
 ----------
